@@ -7,7 +7,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\OpenApi(
     info: new OA\Info(
-        title: "API Terapia Holística",
+        title: "API Terapia Holistica",
         version: "0.1",
         description: "API para demonstrar endpoints básicos",
         contact: new OA\Contact(email: "multidesk.io@gmail.com")

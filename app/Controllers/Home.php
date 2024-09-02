@@ -42,10 +42,11 @@ class Home extends ResourceController
 
         return $this->respond([
             'status' => "Development",
-            "version" => "1.0.0",
+            "version" => "0.1",
             "php" => phpversion(),
             "memory" => number_format($memoryUsage, 2) . ' MB', // Formata com 2 casas decimais
-            "load"  => number_format($elapsedTime, 4) . ' seconds' // Formata com 4 casas decimais
+            "load"  => number_format($elapsedTime, 4) . ' seconds', // Formata com 4 casas decimais
+            "docs" => site_url("docs")
         ]);
     }
 
