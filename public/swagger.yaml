@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: 'OLISTC API'
+  title: 'Holistic Therapy API'
   description: 'API to demonstrate basic endpoints'
   contact:
     email: multidesk.io@gmail.com
