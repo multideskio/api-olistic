@@ -18,7 +18,7 @@ class Cors extends BaseConfig
 
     public array $api = [
         // Replicando a configuração para uso em APIs específicas
-        'allowedOrigins' => ['http://localhost:8000'],
+        'allowedOrigins' => ['http://localhost:8000', 'https://api.conect.app', 'http://5.161.224.69:8800'],
         'allowedOriginsPatterns' => [],
         'supportsCredentials' => true,
         'allowedHeaders' => [
@@ -33,7 +33,8 @@ class Cors extends BaseConfig
             'GET',
             'POST',
             'PUT',
-            'DELETE'
+            'DELETE',
+            'OPTIONS'
         ],
         'maxAge' => 7200,
     ];
