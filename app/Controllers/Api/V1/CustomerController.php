@@ -3,14 +3,11 @@
 namespace App\Controllers\Api\V1;
 
 use App\Models\CustomersModel;
-use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\RESTful\ResourceController;
 use OpenApi\Attributes as OA;
 
 class CustomerController extends BaseController
 {
-    use ResponseTrait;
     /**
      * Return an array of resource objects, themselves in array format.
      *
@@ -82,6 +79,7 @@ class CustomerController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
+    
     public function index()
     {
         //
@@ -361,6 +359,7 @@ class CustomerController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
+
     public function delete($id = null)
     {
         try {
@@ -368,10 +367,8 @@ class CustomerController extends BaseController
             if (is_null($id)) {
                 return $this->failValidationErrors('O ID do cliente é obrigatório.');
             }
-
             // Chama o método deleteCustomer do model
             $this->modelCustomer->deleteCustomer((int) $id);
-
             // Retorna a resposta de sucesso com o status 200 OK
             return $this->respondDeleted(['message' => 'Customer deletado com sucesso.']);
         } catch (\InvalidArgumentException $e) {

@@ -2,16 +2,12 @@
 
 namespace App\Controllers\Api\V1;
 
-use CodeIgniter\RESTful\ResourceController;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\Config\JwtConfig;
 use App\Models\BlacklistModel;
 use CodeIgniter\API\ResponseTrait;
-use Google\Client as GoogleClient;
-use App\Models\UsersModel;
 use OpenApi\Attributes as OA;
-
 
 class AuthController extends BaseController
 {
@@ -28,7 +24,7 @@ class AuthController extends BaseController
 
     
     #[OA\Post(
-        path: "/api/v1/oauth",
+        path: "/api/v1/login",
         summary: "Login do usuário",
         description: "Autentica o usuário e retorna um token JWT",
         tags: ["Autenticação"],
@@ -82,7 +78,8 @@ class AuthController extends BaseController
             try {
                 $token = $this->userModel->login($email, $password);
                 // Retorna o token como resposta
-                return $this->respond(['token' => $token], 200);
+                $elapsedTime = microtime(true) - APP_START;
+                return $this->respond(['token' => $token, 'load' => number_format($elapsedTime, 4) . ' seconds'], 200);
             } catch (\Exception $e) {
                 // Loga o erro de autenticação
                 log_message('error', 'Erro na autenticação: ' . $e->getMessage());

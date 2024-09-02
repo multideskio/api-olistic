@@ -3,35 +3,23 @@
 namespace App\Controllers\Api\V1;
 
 use App\Config\JwtConfig;
-use CodeIgniter\RESTful\ResourceController;
 use App\Models\UsersModel;
-use CodeIgniter\API\ResponseTrait;
-use Predis\Client as PredisClient;
-use Config\Redis as RedisConfig;
 use OpenApi\Attributes as OA;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
-class UsersController extends ResourceController
+class UsersController extends BaseController
 {
-    use ResponseTrait;
+    
     /**
      * Return an array of resource objects, themselves in array format.
      *
      * @return ResponseInterface
      */
-
-    protected $predis;
     protected $userModel;
     protected $jwtConfig;
 
     public function __construct()
     {
-        // Inicializa o Predis com as configurações do Redis
-        $redisConfig = new RedisConfig();
         $this->jwtConfig = new JwtConfig();
-        $this->predis = new PredisClient($redisConfig->default);
         $this->userModel = new UsersModel();
     }
 
