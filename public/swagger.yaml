@@ -1,27 +1,27 @@
 openapi: 3.0.0
 info:
   title: 'OLISTC API'
-  description: 'API para demonstrar endpoints básicos'
+  description: 'API to demonstrate basic endpoints'
   contact:
     email: multidesk.io@gmail.com
   version: '0.1'
 servers:
   -
     url: 'http://localhost:8000'
-    description: 'Servidor local'
+    description: 'Local server'
   -
     url: 'https://terapia.conect.app'
-    description: 'Servidor online'
+    description: 'Online server'
   -
     url: 'http://5.161.224.69:8800'
-    description: 'Servidor online'
+    description: 'Online server'
 paths:
   /api/v1/oauth:
     post:
       tags:
-        - Autenticação
-      summary: 'Login do usuário'
-      description: 'Autentica o usuário e retorna um token JWT'
+        - Authentication
+      summary: 'User login'
+      description: 'Authenticates the user and returns a JWT token'
       operationId: 919872ddafdc52ec2e298fe45e58364d
       requestBody:
         required: true
@@ -35,7 +35,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: usuario@exemplo.com
+                  example: user@example.com
                 password:
                   type: string
                   format: password
@@ -43,7 +43,7 @@ paths:
               type: object
       responses:
         '200':
-          description: 'Token JWT gerado com sucesso'
+          description: 'JWT token successfully generated'
           content:
             application/json:
               schema:
@@ -51,36 +51,36 @@ paths:
                   token: { type: string, example: eyJhbGciOiJIUzI1NiIsInR... }
                 type: object
         '401':
-          description: 'Credenciais inválidas'
+          description: 'Invalid credentials'
         '400':
-          description: 'Dados de entrada inválidos'
+          description: 'Invalid input data'
   /api/v1/logout:
     get:
       tags:
-        - Autenticação
-      summary: 'Logout do usuário'
-      description: 'Realiza logout e invalida o token JWT'
+        - Authentication
+      summary: 'User logout'
+      description: 'Performs logout and invalidates the JWT token'
       operationId: f9413ca466b6033b3b76dbc7823c0d85
       responses:
         '200':
-          description: 'Logout realizado com sucesso'
+          description: 'Logout successful'
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
       security:
         -
           bearerAuth: []
   /api/v1/customers:
     get:
       tags:
-        - Clientes
-      summary: 'Listar todos os clientes'
-      description: 'Retorna uma lista de clientes com paginação'
+        - Customers
+      summary: 'List all customers'
+      description: 'Returns a paginated list of customers'
       operationId: cfef2f8160bbb288816b3fd50fbe699b
       parameters:
         -
           name: sort_by
           in: query
-          description: 'Campo para ordenação dos resultados'
+          description: 'Field to sort results by'
           required: false
           schema:
             type: string
@@ -91,7 +91,7 @@ paths:
         -
           name: order
           in: query
-          description: 'Ordem de ordenação (ASC ou DESC)'
+          description: 'Sort order (ASC or DESC)'
           required: false
           schema:
             type: string
@@ -102,14 +102,14 @@ paths:
         -
           name: s
           in: query
-          description: 'Termo de busca para filtrar os clientes'
+          description: 'Search term to filter customers'
           required: false
           schema:
             type: string
         -
-          name: limite
+          name: limit
           in: query
-          description: 'Número de itens por página'
+          description: 'Number of items per page'
           required: false
           schema:
             type: integer
@@ -118,14 +118,14 @@ paths:
         -
           name: page
           in: query
-          description: 'Número da página para paginação'
+          description: 'Page number for pagination'
           required: false
           schema:
             type: integer
             default: 1
       responses:
         '200':
-          description: 'Lista de clientes'
+          description: 'Customer list'
           content:
             application/json:
               schema:
@@ -134,17 +134,17 @@ paths:
                   pagination: { type: object }
                 type: object
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
         '500':
-          description: 'Erro interno do servidor'
+          description: 'Internal server error'
       security:
         -
           bearerAuth: []
     post:
       tags:
-        - Clientes
-      summary: 'Criar um novo cliente'
-      description: 'Cria um novo cliente com os dados fornecidos'
+        - Customers
+      summary: 'Create a new customer'
+      description: 'Creates a new customer with the provided data'
       operationId: 42b0a2c98ea46de34f810bae6f78a3b2
       requestBody:
         required: true
@@ -174,60 +174,60 @@ paths:
               type: object
       responses:
         '201':
-          description: 'Cliente criado com sucesso'
+          description: 'Customer successfully created'
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
         '403':
-          description: 'Usuário sem permissão'
+          description: 'User not authorized'
         '422':
-          description: 'Erro de validação'
+          description: 'Validation error'
         '500':
-          description: 'Erro interno do servidor'
+          description: 'Internal server error'
       security:
         -
           bearerAuth: []
   '/api/v1/customers/{id}':
     get:
       tags:
-        - Clientes
-      summary: 'Obter detalhes de um cliente'
-      description: 'Retorna os detalhes de um cliente específico'
+        - Customers
+      summary: 'Get customer details'
+      description: 'Returns the details of a specific customer'
       operationId: 41841ce6e3057a13ab532a7ab1f96af6
       parameters:
         -
           name: id
           in: path
-          description: 'ID do cliente'
+          description: 'Customer ID'
           required: true
           schema:
             type: integer
       responses:
         '200':
-          description: 'Detalhes do cliente'
+          description: 'Customer details'
           content:
             application/json:
               schema:
                 type: object
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
         '404':
-          description: 'Cliente não encontrado'
+          description: 'Customer not found'
         '500':
-          description: 'Erro interno do servidor'
+          description: 'Internal server error'
       security:
         -
           bearerAuth: []
     put:
       tags:
-        - Clientes
-      summary: 'Atualizar um cliente'
-      description: 'Atualiza os dados de um cliente existente'
+        - Customers
+      summary: 'Update a customer'
+      description: 'Updates the data of an existing customer'
       operationId: 05e9e14aa12404b2a58d51869e1505f7
       parameters:
         -
           name: id
           in: path
-          description: 'ID do cliente'
+          description: 'Customer ID'
           required: true
           schema:
             type: integer
@@ -259,54 +259,54 @@ paths:
               type: object
       responses:
         '200':
-          description: 'Cliente atualizado com sucesso'
+          description: 'Customer successfully updated'
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
         '404':
-          description: 'Cliente não encontrado'
+          description: 'Customer not found'
         '422':
-          description: 'Erro de validação'
+          description: 'Validation error'
         '500':
-          description: 'Erro interno do servidor'
+          description: 'Internal server error'
       security:
         -
           bearerAuth: []
     delete:
       tags:
-        - Clientes
-      summary: 'Excluir um cliente'
-      description: 'Exclui um cliente existente'
+        - Customers
+      summary: 'Delete a customer'
+      description: 'Deletes an existing customer'
       operationId: b96d5675d3de38142446856e2258f0fb
       parameters:
         -
           name: id
           in: path
-          description: 'ID do cliente'
+          description: 'Customer ID'
           required: true
           schema:
             type: integer
       responses:
         '200':
-          description: 'Cliente deletado com sucesso'
+          description: 'Customer successfully deleted'
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
         '404':
-          description: 'Cliente não encontrado'
+          description: 'Customer not found'
         '500':
-          description: 'Erro interno do servidor'
+          description: 'Internal server error'
       security:
         -
           bearerAuth: []
   /api/v1/user/me:
     get:
       tags:
-        - Usuários
-      summary: 'Obter informações do usuário autenticado'
-      description: 'Retorna as informações do usuário autenticado usando JWT'
+        - Users
+      summary: 'Get authenticated user information'
+      description: 'Returns the information of the authenticated user using JWT'
       operationId: c01da61cb97dc778549fec55810d4b26
       responses:
         '200':
-          description: 'Informações do usuário'
+          description: 'User information'
           content:
             application/json:
               schema:
@@ -314,24 +314,24 @@ paths:
                   id: { type: integer, example: 1 }
                   name: { type: string, example: 'John Doe' }
                   email: { type: string, example: john.doe@example.com }
-                  role: { type: string, example: PROFISSIONAL }
+                  role: { type: string, example: PROFESSIONAL }
                   type: { type: string, example: cache }
                 type: object
         '401':
-          description: 'Não autorizado'
+          description: 'Unauthorized'
       security:
         -
           bearerAuth: []
   /api/v1/users:
     get:
       tags:
-        - Usuários
-      summary: 'Listar usuários'
-      description: 'Retorna uma lista de usuários, com cache usando Redis'
+        - Users
+      summary: 'List users'
+      description: 'Returns a list of users, with cache using Redis'
       operationId: fb3b9d612f472659bcf1ab9f534217bd
       responses:
         '200':
-          description: 'Lista de usuários'
+          description: 'User list'
           content:
             application/json:
               schema:
@@ -340,9 +340,9 @@ paths:
                   data: { type: array, items: { properties: { user: { type: integer, example: 1 }, name: { type: string, example: 'John Doe' }, email: { type: string, example: john.doe@example.com } }, type: object } }
                 type: object
         '401':
-          description: 'Token inválido ou ausente'
+          description: 'Invalid or missing token'
         '403':
-          description: 'Usuário sem permissão'
+          description: 'User not authorized'
       security:
         -
           bearerAuth: []
@@ -350,12 +350,12 @@ paths:
     get:
       tags:
         - Status
-      summary: 'Endpoint de status'
-      description: 'Retorna o status da aplicação'
+      summary: 'Status endpoint'
+      description: 'Returns the application status'
       operationId: 5b8bbea83af70a9a8a53b270333d2915
       responses:
         '200':
-          description: 'Status da aplicação'
+          description: 'Application status'
           content:
             application/json:
               schema:
@@ -375,11 +375,11 @@ tags:
     name: Status
     description: ''
   -
-    name: Autenticação
-    description: 'Operações relacionadas à autenticação de usuários'
+    name: Authentication
+    description: 'Operations related to user authentication'
   -
-    name: Usuários
-    description: 'Gerenciamento de usuários'
+    name: Users
+    description: 'User management'
   -
-    name: Clientes
-    description: Clientes
+    name: Customers
+    description: 'Customers'
