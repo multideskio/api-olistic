@@ -34,11 +34,18 @@ class Home extends ResourceController
 
     public function index()
     {
-        //
+
+        $elapsedTime = microtime(true) - APP_START;
+
+        // Calcula o uso de memória em MB
+        $memoryUsage = memory_get_usage() / (1024 * 1024);
+
         return $this->respond([
             'status' => "Development",
             "version" => "1.0.0",
-            "php" => phpversion()
+            "php" => phpversion(),
+            "memory" => number_format($memoryUsage, 2) . ' MB', // Formata com 2 casas decimais
+            "load"  => number_format($elapsedTime, 4) . ' seconds' // Formata com 4 casas decimais
         ]);
     }
 

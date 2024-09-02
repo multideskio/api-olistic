@@ -7,7 +7,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\OpenApi(
     info: new OA\Info(
-        title: "OLISTC API",
+        title: "API Terapia Holística",
         version: "0.1",
         description: "API para demonstrar endpoints básicos",
         contact: new OA\Contact(email: "multidesk.io@gmail.com")
@@ -30,7 +30,7 @@ use OpenApi\Attributes as OA;
         new OA\Tag(name: "Status", description: ""),
         new OA\Tag(name: "Autenticação", description: "Operações relacionadas à autenticação de usuários"),
         new OA\Tag(name: "Usuários", description: "Gerenciamento de usuários"),
-        new OA\Tag(name: "Customers", description: "Gerenciamento de clientes"),
+        new OA\Tag(name: "Clientes", description: "Gerenciamento de clientes"),
         // Outras tags podem ser adicionadas aqui
     ]
 )]
