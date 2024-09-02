@@ -18,7 +18,7 @@ class Cors extends BaseConfig
 
     public array $api = [
         // Replicando a configuração para uso em APIs específicas
-        'allowedOrigins' => ['http://localhost:8000', 'https://api.conect.app', 'http://5.161.224.69:8800'],
+        'allowedOrigins' => ['http://localhost:8000', 'https://terapia.conect.app', 'http://5.161.224.69:8800'],
         'allowedOriginsPatterns' => [],
         'supportsCredentials' => true,
         'allowedHeaders' => [

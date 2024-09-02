@@ -8,6 +8,7 @@ use App\Models\UsersModel;
 use CodeIgniter\API\ResponseTrait;
 use Predis\Client as PredisClient;
 use Config\Redis as RedisConfig;
+use OpenApi\Attributes as OA;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -29,67 +30,70 @@ class UsersController extends ResourceController
     {
         // Inicializa o Predis com as configurações do Redis
         $redisConfig = new RedisConfig();
-        
         $this->jwtConfig = new JwtConfig();
-
-
         $this->predis = new PredisClient($redisConfig->default);
-
         $this->userModel = new UsersModel();
     }
 
+    #[OA\Get(
+        path: "/api/v1/user/me",
+        summary: "Obter informações do usuário autenticado",
+        description: "Retorna as informações do usuário autenticado usando JWT",
+        tags: ["Usuários"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Informações do usuário",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer", example: 1),
+                        new OA\Property(property: "name", type: "string", example: "John Doe"),
+                        new OA\Property(property: "email", type: "string", example: "john.doe@example.com"),
+                        new OA\Property(property: "role", type: "string", example: "PROFISSIONAL"),
+                        new OA\Property(property: "type", type: "string", example: "cache")
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Não autorizado")
+        ]
+    )]
+
     public function me()
     {
-        try{
-            return $this->respond($this->userModel->me());
-        }catch(\Exception $e){
-            return $this->fail($e->getMessage());
-        }
-    }
-
-
-    public function me0()
-    {
-
         try {
-            // Obtém o token JWT do cabeçalho da requisição
-            $authHeader = $this->request->getServer('HTTP_AUTHORIZATION');
-            $token = explode(' ', $authHeader)[1];
-
-            // Decodifica o token JWT já validado pelo filtro
-            $decoded = json_decode(base64_decode(explode('.', $token)[1]), true);
-            $userId = $decoded['sub'];
-
-            // Usa o ID do usuário como chave de cache
-            $cacheKey = 'user_' . $userId;
-            $user = $this->predis->get($cacheKey);
-
-            if (!$user) {
-                // Busca no banco de dados se não estiver no cache
-                $user = $this->userModel->find($userId);
-
-                if (!$user) {
-                    return $this->fail('User not found', 404);
-                }
-
-                // Serializa os dados do usuário e armazena no Redis com expiração de 5 minutos
-                $this->predis->setex($cacheKey, 300, json_encode($user));
-            } else {
-                // Decodifica os dados do usuário se forem retornados do cache
-                $user = json_decode($user, true);
-            }
-
-            return $this->respond([
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'role' => $user['role'],
-            ]);
+            return $this->respond($this->userModel->me());
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
         }
     }
 
+    #[OA\Get(
+        path: "/api/v1/users",
+        summary: "Listar usuários",
+        description: "Retorna uma lista de usuários, com cache usando Redis",
+        tags: ["Usuários"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Lista de usuários",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "status", type: "string", example: "cache"),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: "user", type: "integer", example: 1),
+                                new OA\Property(property: "name", type: "string", example: "John Doe"),
+                                new OA\Property(property: "email", type: "string", example: "john.doe@example.com")
+                            ]
+                        ))
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Não autorizado")
+        ]
+    )]
 
     public function index()
     {
@@ -118,7 +122,7 @@ class UsersController extends ResourceController
     public function show($id = null)
     {
         //
-
+        return $this->respondNoContent();
     }
 
     /**
@@ -129,6 +133,7 @@ class UsersController extends ResourceController
     public function new()
     {
         //
+        return $this->respondNoContent();
     }
 
     /**
@@ -139,6 +144,7 @@ class UsersController extends ResourceController
     public function create()
     {
         //
+        return $this->respondNoContent();
     }
 
     /**
@@ -151,6 +157,7 @@ class UsersController extends ResourceController
     public function edit($id = null)
     {
         //
+        return $this->respondNoContent();
     }
 
     /**
@@ -163,6 +170,7 @@ class UsersController extends ResourceController
     public function update($id = null)
     {
         //
+        return $this->respondNoContent();
     }
 
     /**
@@ -175,5 +183,6 @@ class UsersController extends ResourceController
     public function delete($id = null)
     {
         //
+        return $this->respondNoContent();
     }
 }

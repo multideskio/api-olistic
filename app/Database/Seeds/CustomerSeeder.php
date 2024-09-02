@@ -27,13 +27,11 @@ class CustomerSeeder extends Seeder
                 'doc'      => $faker->cpf(false), // Gera CPF sem pontos e traços
                 'generous' => $faker->randomElement(['M', 'F', 'O']), // Gêneros: Masculino, Feminino, Outro
             ];
-
-            // Insere os dados no banco de dados
-
         }
-        
+
+        // Insere os dados no banco de dados
         $customerModel->insertBatch($data);
         
-        echo "100 cadastros de customers foram inseridos com sucesso. \n\n\n";
+        echo "100 cadastros de clientes foram inseridos com sucesso. \n\n\n";
     }
 }

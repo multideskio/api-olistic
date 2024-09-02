@@ -7,6 +7,17 @@ use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 
+    /**
+ * @OA\Info(
+ *     title="Minha API",
+ *     version="1.0",
+ *     description="Descrição da sua API aqui",
+ *     @OA\Contact(
+ *         email="seuemail@dominio.com"
+ *     )
+ * )
+ */
+
 class CustomerController extends ResourceController
 {
     use ResponseTrait;

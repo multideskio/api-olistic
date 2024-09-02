@@ -1,0 +1,152 @@
+openapi: 3.0.0
+info:
+  title: 'OLISTC API'
+  description: 'API para demonstrar endpoints básicos'
+  contact:
+    email: multidesk.io@gmail.com
+  version: '0.1'
+servers:
+  -
+    url: 'http://localhost:8000'
+    description: 'Servidor local'
+  -
+    url: 'https://terapia.conect.app'
+    description: 'Servidor online'
+  -
+    url: 'http://5.161.224.69:8800'
+    description: 'Servidor online'
+paths:
+  /api/v1/oauth:
+    post:
+      tags:
+        - Autenticação
+      summary: 'Login do usuário'
+      description: 'Autentica o usuário e retorna um token JWT'
+      operationId: 919872ddafdc52ec2e298fe45e58364d
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: usuario@exemplo.com
+                password:
+                  type: string
+                  format: password
+                  example: '123456'
+              type: object
+      responses:
+        '200':
+          description: 'Token JWT gerado com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  token: { type: string, example: eyJhbGciOiJIUzI1NiIsInR... }
+                type: object
+        '401':
+          description: 'Credenciais inválidas'
+        '400':
+          description: 'Dados de entrada inválidos'
+  /api/v1/logout:
+    get:
+      tags:
+        - Autenticação
+      summary: 'Logout do usuário'
+      description: 'Realiza logout e invalida o token JWT'
+      operationId: f9413ca466b6033b3b76dbc7823c0d85
+      responses:
+        '200':
+          description: 'Logout realizado com sucesso'
+        '401':
+          description: 'Token inválido ou ausente'
+      security:
+        -
+          bearerAuth: []
+  /api/v1/user/me:
+    get:
+      tags:
+        - Usuários
+      summary: 'Obter informações do usuário autenticado'
+      description: 'Retorna as informações do usuário autenticado usando JWT'
+      operationId: c01da61cb97dc778549fec55810d4b26
+      responses:
+        '200':
+          description: 'Informações do usuário'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: integer, example: 1 }
+                  name: { type: string, example: 'John Doe' }
+                  email: { type: string, example: john.doe@example.com }
+                  role: { type: string, example: PROFISSIONAL }
+                  type: { type: string, example: cache }
+                type: object
+        '401':
+          description: 'Não autorizado'
+      security:
+        -
+          bearerAuth: []
+  /api/v1/users:
+    get:
+      tags:
+        - Usuários
+      summary: 'Listar usuários'
+      description: 'Retorna uma lista de usuários, com cache usando Redis'
+      operationId: fb3b9d612f472659bcf1ab9f534217bd
+      responses:
+        '200':
+          description: 'Lista de usuários'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string, example: cache }
+                  data: { type: array, items: { properties: { user: { type: integer, example: 1 }, name: { type: string, example: 'John Doe' }, email: { type: string, example: john.doe@example.com } }, type: object } }
+                type: object
+        '401':
+          description: 'Não autorizado'
+      security:
+        -
+          bearerAuth: []
+  /:
+    get:
+      tags:
+        - Status
+      summary: 'Endpoint de status'
+      description: 'Retorna o status da aplicação'
+      operationId: 5b8bbea83af70a9a8a53b270333d2915
+      responses:
+        '200':
+          description: 'Status da aplicação'
+          content:
+            application/json:
+              schema:
+                properties:
+                  status: { type: string, example: Development }
+                  version: { type: string, example: 1.0.0 }
+                  php: { type: string, example: 8.1.2 }
+                type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      bearerFormat: JWT
+      scheme: bearer
+tags:
+  -
+    name: Autenticação
+    description: Autenticação
+  -
+    name: Usuários
+    description: Usuários
+  -
+    name: Status
+    description: Status

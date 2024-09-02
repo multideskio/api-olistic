@@ -1,5 +1,5 @@
 <?php
-// app/Controllers/Api/V1/AuthController.php
+
 namespace App\Controllers\Api\V1;
 
 use CodeIgniter\RESTful\ResourceController;
@@ -10,8 +10,13 @@ use App\Models\BlacklistModel;
 use CodeIgniter\API\ResponseTrait;
 use Google\Client as GoogleClient;
 use App\Models\UsersModel;
+use OpenApi\Attributes as OA;
 
-class AuthController extends ResourceController
+
+/**
+ * @OA\PathItem(path="/api/v1")
+ */
+class AuthController extends BaseController
 {
     use ResponseTrait;
 
@@ -24,71 +29,36 @@ class AuthController extends ResourceController
         $this->userModel = new \App\Models\UsersModel();
     }
 
-    // Método para iniciar o login com Google
-    /* public function googleLogin()
-    {
-        $client = new GoogleClient();
-        $client->setClientId('');
-        $client->setClientSecret('');
-        $client->setRedirectUri('http://localhost:8181/api/v1/auth/google/callback');
-        $client->addScope('email');
-        $client->addScope('profile');
-
-        // Redireciona para o URL de autenticação do Google
-        $authUrl = $client->createAuthUrl();
-        return redirect()->to($authUrl);
-    }
-
-    // Método de callback após o Google autenticar o usuário
-    public function googleCallback()
-    {
-        try {
-            $client = new GoogleClient();
-            $client->setClientId('');
-            $client->setClientSecret('');
-            $client->setRedirectUri('http://localhost:8181/api/v1/auth/google/callback');
-
-            $code = $this->request->getGet('code');
-
-            if ($code) {
-                $token = $client->fetchAccessTokenWithAuthCode($code);
-                $client->setAccessToken($token);
-
-                // Obtém os dados do perfil do usuário autenticado
-                $oauth2 = new \Google\Service\Oauth2($client);
-                $googleUser = $oauth2->userinfo->get();
-
-                // Busca ou cria o usuário no banco de dados
-                $userModel = new UsersModel();
-                $user = $userModel->getUserByEmail($googleUser->email);
-
-                if (!$user) {
-                    // Retorna uma mensagem de erro se o email não estiver cadastrado no sistema
-                    return $this->fail('Email not registered in the system', 404);
-                }
-
-                // Gera o JWT para o usuário autenticado
-                $payload = [
-                    'iss' => $this->jwtConfig->issuer,
-                    'aud' => $this->jwtConfig->audience,
-                    'iat' => time(),
-                    'exp' => time() + $this->jwtConfig->tokenExpiration,
-                    'sub' => $user['id'],
-                    'role' => $user['role'],
-                ];
-
-                $jwt = JWT::encode($payload, $this->jwtConfig->jwtSecret, 'HS256');
-
-                // Retorna o token JWT para o cliente
-                return $this->respond(['token' => $jwt]);
-            }
-            return $this->fail('Failed to authenticate with Google', 400);
-        } catch (\Exception $e) {
-
-            return $this->fail($e->getMessage());
-        }
-    } */
-
+    
+    #[OA\Post(
+        path: "/api/v1/oauth",
+        summary: "Login do usuário",
+        description: "Autentica o usuário e retorna um token JWT",
+        tags: ["Autenticação"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["email", "password"],
+                properties: [
+                    new OA\Property(property: "email", type: "string", format: "email", example: "usuario@exemplo.com"),
+                    new OA\Property(property: "password", type: "string", format: "password", example: "123456")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Token JWT gerado com sucesso",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "token", type: "string", example: "eyJhbGciOiJIUzI1NiIsInR...")
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Credenciais inválidas"),
+            new OA\Response(response: 400, description: "Dados de entrada inválidos")
+        ]
+    )]
     public function login()
     {
         try {
@@ -126,6 +96,19 @@ class AuthController extends ResourceController
             return $this->fail($e->getMessage());
         }
     }
+
+
+    #[OA\Get(
+        path: "/api/v1/logout",
+        summary: "Logout do usuário",
+        description: "Realiza logout e invalida o token JWT",
+        tags: ["Autenticação"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Logout realizado com sucesso"),
+            new OA\Response(response: 401, description: "Token inválido ou ausente")
+        ]
+    )]
 
     // Método para realizar logout e adicionar o token à blacklist
     public function logout()
