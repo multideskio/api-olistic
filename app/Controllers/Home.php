@@ -41,7 +41,7 @@ class Home extends ResourceController
         $memoryUsage = memory_get_usage() / (1024 * 1024);
 
         return $this->respond([
-            'status' => "Development",
+            'status' => getenv("CI_ENVIRONMENT"),
             "version" => "0.1",
             "php" => phpversion(),
             "memory" => number_format($memoryUsage, 2) . ' MB', // Formata com 2 casas decimais
