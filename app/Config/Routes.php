@@ -31,12 +31,13 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
 
     //dados do usuário
     $routes->get('user/me', 'Api\V1\UsersController::me');
+});
 
+// Rotas acessíveis para múltiplas roles
+$routes->group('api/v1', ['filter' => 'jwt:SUPERADMIN'], function ($routes) {
     //rota protegida para criação de usuários, porém precisa da lógica para adicionar um usuário a um plano
     $routes->resource('users', ['controller' => 'Api\V1\UsersController']);
 });
-
-
 
 //Rotas liberadas apenas para os profissionais e superadmins
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function ($routes) {

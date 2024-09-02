@@ -69,6 +69,234 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/customers:
+    get:
+      tags:
+        - Clientes
+      summary: 'Listar todos os clientes'
+      description: 'Retorna uma lista de clientes com paginação'
+      operationId: cfef2f8160bbb288816b3fd50fbe699b
+      parameters:
+        -
+          name: sort_by
+          in: query
+          description: 'Campo para ordenação dos resultados'
+          required: false
+          schema:
+            type: string
+            default: id
+            enum:
+              - id
+              - update
+        -
+          name: order
+          in: query
+          description: 'Ordem de ordenação (ASC ou DESC)'
+          required: false
+          schema:
+            type: string
+            default: ASC
+            enum:
+              - ASC
+              - DESC
+        -
+          name: s
+          in: query
+          description: 'Termo de busca para filtrar os clientes'
+          required: false
+          schema:
+            type: string
+        -
+          name: limite
+          in: query
+          description: 'Número de itens por página'
+          required: false
+          schema:
+            type: integer
+            default: 15
+            maximum: 200
+        -
+          name: page
+          in: query
+          description: 'Número da página para paginação'
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: 'Lista de clientes'
+          content:
+            application/json:
+              schema:
+                properties:
+                  rows: { type: array, items: { type: object } }
+                  pagination: { type: object }
+                type: object
+        '401':
+          description: 'Token inválido ou ausente'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
+    post:
+      tags:
+        - Clientes
+      summary: 'Criar um novo cliente'
+      description: 'Cria um novo cliente com os dados fornecidos'
+      operationId: 42b0a2c98ea46de34f810bae6f78a3b2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                photo:
+                  type: string
+                  nullable: true
+                birthDate:
+                  type: string
+                  format: date
+                  nullable: true
+                doc:
+                  type: string
+                  nullable: true
+                generous:
+                  type: string
+                  nullable: true
+              type: object
+      responses:
+        '201':
+          description: 'Cliente criado com sucesso'
+        '401':
+          description: 'Token inválido ou ausente'
+        '403':
+          description: 'Usuário sem permissão'
+        '422':
+          description: 'Erro de validação'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
+  '/api/v1/customers/{id}':
+    get:
+      tags:
+        - Clientes
+      summary: 'Obter detalhes de um cliente'
+      description: 'Retorna os detalhes de um cliente específico'
+      operationId: 41841ce6e3057a13ab532a7ab1f96af6
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID do cliente'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Detalhes do cliente'
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: 'Token inválido ou ausente'
+        '404':
+          description: 'Cliente não encontrado'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
+    put:
+      tags:
+        - Clientes
+      summary: 'Atualizar um cliente'
+      description: 'Atualiza os dados de um cliente existente'
+      operationId: 05e9e14aa12404b2a58d51869e1505f7
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID do cliente'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                photo:
+                  type: string
+                  nullable: true
+                birthDate:
+                  type: string
+                  format: date
+                  nullable: true
+                doc:
+                  type: string
+                  nullable: true
+                generous:
+                  type: string
+                  nullable: true
+              type: object
+      responses:
+        '200':
+          description: 'Cliente atualizado com sucesso'
+        '401':
+          description: 'Token inválido ou ausente'
+        '404':
+          description: 'Cliente não encontrado'
+        '422':
+          description: 'Erro de validação'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
+    delete:
+      tags:
+        - Clientes
+      summary: 'Excluir um cliente'
+      description: 'Exclui um cliente existente'
+      operationId: b96d5675d3de38142446856e2258f0fb
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID do cliente'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Cliente deletado com sucesso'
+        '401':
+          description: 'Token inválido ou ausente'
+        '404':
+          description: 'Cliente não encontrado'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
   /api/v1/user/me:
     get:
       tags:
@@ -112,7 +340,9 @@ paths:
                   data: { type: array, items: { properties: { user: { type: integer, example: 1 }, name: { type: string, example: 'John Doe' }, email: { type: string, example: john.doe@example.com } }, type: object } }
                 type: object
         '401':
-          description: 'Não autorizado'
+          description: 'Token inválido ou ausente'
+        '403':
+          description: 'Usuário sem permissão'
       security:
         -
           bearerAuth: []
@@ -142,11 +372,14 @@ components:
       scheme: bearer
 tags:
   -
+    name: Status
+    description: ''
+  -
     name: Autenticação
-    description: Autenticação
+    description: 'Operações relacionadas à autenticação de usuários'
   -
     name: Usuários
-    description: Usuários
+    description: 'Gerenciamento de usuários'
   -
-    name: Status
-    description: Status
+    name: Clientes
+    description: Clientes

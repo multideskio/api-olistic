@@ -91,7 +91,8 @@ class UsersController extends ResourceController
                     ]
                 )
             ),
-            new OA\Response(response: 401, description: "Não autorizado")
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 403, description: 'Usuário sem permissão'),
         ]
     )]
 

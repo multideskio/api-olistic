@@ -6,19 +6,9 @@ use App\Models\CustomersModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
+use OpenApi\Attributes as OA;
 
-    /**
- * @OA\Info(
- *     title="Minha API",
- *     version="1.0",
- *     description="Descrição da sua API aqui",
- *     @OA\Contact(
- *         email="seuemail@dominio.com"
- *     )
- * )
- */
-
-class CustomerController extends ResourceController
+class CustomerController extends BaseController
 {
     use ResponseTrait;
     /**
@@ -33,6 +23,65 @@ class CustomerController extends ResourceController
         $this->modelCustomer = new CustomersModel();
     }
 
+    #[OA\Get(
+        path: '/api/v1/customers',
+        summary: 'Listar todos os clientes',
+        description: 'Retorna uma lista de clientes com paginação',
+        tags: ['Clientes'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'sort_by',
+                in: 'query',
+                required: false,
+                description: 'Campo para ordenação dos resultados',
+                schema: new OA\Schema(type: 'string', enum: ['id', 'update'], default: 'id')
+            ),
+            new OA\Parameter(
+                name: 'order',
+                in: 'query',
+                required: false,
+                description: 'Ordem de ordenação (ASC ou DESC)',
+                schema: new OA\Schema(type: 'string', enum: ['ASC', 'DESC'], default: 'ASC')
+            ),
+            new OA\Parameter(
+                name: 's',
+                in: 'query',
+                required: false,
+                description: 'Termo de busca para filtrar os clientes',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'limite',
+                in: 'query',
+                required: false,
+                description: 'Número de itens por página',
+                schema: new OA\Schema(type: 'integer', default: 15, maximum: 200)
+            ),
+            new OA\Parameter(
+                name: 'page',
+                in: 'query',
+                required: false,
+                description: 'Número da página para paginação',
+                schema: new OA\Schema(type: 'integer', default: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Lista de clientes',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'rows', type: 'array', items: new OA\Items(type: 'object')),
+                        new OA\Property(property: 'pagination', type: 'object')
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     public function index()
     {
         //
@@ -53,6 +102,33 @@ class CustomerController extends ResourceController
      *
      * @return ResponseInterface
      */
+
+    #[OA\Get(
+        path: '/api/v1/customers/{id}',
+        summary: 'Obter detalhes de um cliente',
+        description: 'Retorna os detalhes de um cliente específico',
+        tags: ['Clientes'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID do cliente',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Detalhes do cliente',
+                content: new OA\JsonContent(type: 'object')
+            ),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 404, description: 'Cliente não encontrado'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     public function show($id = null)
     {
         try {
@@ -95,6 +171,35 @@ class CustomerController extends ResourceController
      *
      * @return ResponseInterface
      */
+    #[OA\Post(
+        path: '/api/v1/customers',
+        summary: 'Criar um novo cliente',
+        description: 'Cria um novo cliente com os dados fornecidos',
+        tags: ['Clientes'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'name', type: 'string'),
+                    new OA\Property(property: 'email', type: 'string'),
+                    new OA\Property(property: 'phone', type: 'string'),
+                    new OA\Property(property: 'photo', type: 'string', nullable: true),
+                    new OA\Property(property: 'birthDate', type: 'string', format: 'date', nullable: true),
+                    new OA\Property(property: 'doc', type: 'string', nullable: true),
+                    new OA\Property(property: 'generous', type: 'string', nullable: true)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Cliente criado com sucesso'),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 403, description: 'Usuário sem permissão'),
+            new OA\Response(response: 422, description: 'Erro de validação'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     public function create()
     {
         try {
@@ -155,6 +260,44 @@ class CustomerController extends ResourceController
      *
      * @return ResponseInterface
      */
+    #[OA\Put(
+        path: '/api/v1/customers/{id}',
+        summary: 'Atualizar um cliente',
+        description: 'Atualiza os dados de um cliente existente',
+        tags: ['Clientes'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID do cliente',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'name', type: 'string'),
+                    new OA\Property(property: 'email', type: 'string'),
+                    new OA\Property(property: 'phone', type: 'string'),
+                    new OA\Property(property: 'photo', type: 'string', nullable: true),
+                    new OA\Property(property: 'birthDate', type: 'string', format: 'date', nullable: true),
+                    new OA\Property(property: 'doc', type: 'string', nullable: true),
+                    new OA\Property(property: 'generous', type: 'string', nullable: true)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Cliente atualizado com sucesso'),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 404, description: 'Cliente não encontrado'),
+            new OA\Response(response: 422, description: 'Erro de validação'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     public function update($id = null)
     {
         try {
@@ -196,6 +339,28 @@ class CustomerController extends ResourceController
      *
      * @return ResponseInterface
      */
+    #[OA\Delete(
+        path: '/api/v1/customers/{id}',
+        summary: 'Excluir um cliente',
+        description: 'Exclui um cliente existente',
+        tags: ['Clientes'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID do cliente',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Cliente deletado com sucesso'),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 404, description: 'Cliente não encontrado'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     public function delete($id = null)
     {
         try {

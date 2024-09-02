@@ -7,29 +7,6 @@ use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 use OpenApi\Attributes as OA;
 
-#[OA\OpenApi(
-    info: new OA\Info(
-        title: "OLISTC API",
-        version: "0.1",
-        description: "API para demonstrar endpoints básicos",
-        contact: new OA\Contact(email: "multidesk.io@gmail.com")
-    ),
-    servers: [
-        new OA\Server(
-            url: "http://localhost:8000",
-            description: "Servidor local"
-        ),
-        new OA\Server(
-            url: "https://terapia.conect.app",
-            description: "Servidor online"
-        ),
-        new OA\Server(
-            url: "http://5.161.224.69:8800",
-            description: "Servidor online"
-        )
-    ]
-)]
-
 class Home extends ResourceController
 {
     use ResponseTrait;

@@ -13,9 +13,6 @@ use App\Models\UsersModel;
 use OpenApi\Attributes as OA;
 
 
-/**
- * @OA\PathItem(path="/api/v1")
- */
 class AuthController extends BaseController
 {
     use ResponseTrait;
