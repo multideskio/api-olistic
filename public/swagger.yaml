@@ -40,13 +40,13 @@ paths:
       security:
         -
           bearerAuth: []
-  /api/v1/oauth:
+  /api/v1/login:
     post:
       tags:
         - Autenticação
       summary: 'Login do usuário'
       description: 'Autentica o usuário e retorna um token JWT'
-      operationId: 919872ddafdc52ec2e298fe45e58364d
+      operationId: 3b889298fc72067506f70fb423b6a004
       requestBody:
         required: true
         content:
@@ -375,7 +375,7 @@ paths:
       tags:
         - Webhooks
       summary: 'Cria um usuário com base nas informações do webhook recebido da GREEM'
-      description: 'Cria um usuário com base nas informações do webhook recebido da GREEM'
+      description: 'Processa o webhook da GREEM para criar ou atualizar um usuário com base nas informações da transação recebida.'
       operationId: c91254e0581a732cec2f000083d393ac
       parameters:
         -
@@ -385,9 +385,41 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        description: 'Dados do webhook da GREEM'
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                currentStatus:
+                  description: 'Status atual da transação'
+                  type: string
+                  example: paid
+                client:
+                  description: 'Informações do cliente'
+                  properties: { email: { description: 'Email do cliente', type: string }, name: { description: 'Nome do cliente', type: string } }
+                  type: object
+                product:
+                  description: 'Informações do produto'
+                  properties: { id: { description: 'ID do produto', type: integer } }
+                  type: object
+              type: object
       responses:
+        '201':
+          description: 'Transação processada com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { description: 'Mensagem de sucesso', type: string }
+                type: object
+        '400':
+          description: 'Requisição inválida'
         '401':
           description: 'Token inválido ou ausente'
+        '403':
+          description: 'Sem permissão para executar'
         '500':
           description: 'Erro interno do servidor'
   /:
