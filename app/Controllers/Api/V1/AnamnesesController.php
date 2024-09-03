@@ -271,6 +271,103 @@ class AnamnesesController extends BaseController
         //
     }
 
+
+    #[OA\Put(
+        path: '/api/v1/anamneses/{id}',
+        summary: 'Edite uma Anamnese',
+        description: 'Edite anamnese com base no ID fornecido na url.',
+        tags: ['Anamneses'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID da anamnese',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            description: 'Dados necessários para criar uma anamnese.',
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'mentalDesequilibrio', type: 'string', description: 'Desequilíbrio mental', enum: ['sim', 'não']),
+                    new OA\Property(property: 'mentalPercentual', type: 'integer', description: 'Percentual de desequilíbrio mental', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'emocionalDesequilibrio', type: 'string', description: 'Desequilíbrio emocional', enum: ['sim', 'não']),
+                    new OA\Property(property: 'emocionalPercentual', type: 'integer', description: 'Percentual de desequilíbrio emocional', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'espiritualDesequilibrio', type: 'string', description: 'Desequilíbrio espiritual', enum: ['sim', 'não']),
+                    new OA\Property(property: 'espiritualPercentual', type: 'integer', description: 'Percentual de desequilíbrio espiritual', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'fisicoDesequilibrio', type: 'string', description: 'Desequilíbrio físico', enum: ['sim', 'não']),
+                    new OA\Property(property: 'fisicoPercentual', type: 'integer', description: 'Percentual de desequilíbrio físico', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraCoronarioDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra coronário', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraCoronarioPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra coronário', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraCoronarioAtividade', type: 'string', description: 'Atividade do chakra coronário', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraCoronarioOrgao', type: 'string', description: 'Órgão afetado pelo chakra coronário', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraFrontalDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra frontal', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraFrontalPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra frontal', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraFrontalAtividade', type: 'string', description: 'Atividade do chakra frontal', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraFrontalOrgao', type: 'string', description: 'Órgão afetado pelo chakra frontal', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraLaringeoDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra laríngeo', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraLaringeoPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra laríngeo', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraLaringeoAtividade', type: 'string', description: 'Atividade do chakra laríngeo', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraLaringeoOrgao', type: 'string', description: 'Órgão afetado pelo chakra laríngeo', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraCardiacoDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra cardíaco', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraCardiacoPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra cardíaco', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraCardiacoAtividade', type: 'string', description: 'Atividade do chakra cardíaco', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraCardiacoOrgao', type: 'string', description: 'Órgão afetado pelo chakra cardíaco', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraPlexoSolarDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra plexo solar', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraPlexoSolarPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra plexo solar', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraPlexoSolarAtividade', type: 'string', description: 'Atividade do chakra plexo solar', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraPlexoSolarOrgao', type: 'string', description: 'Órgão afetado pelo chakra plexo solar', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraSacroDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra sacro', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraSacroPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra sacro', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraSacroAtividade', type: 'string', description: 'Atividade do chakra sacro', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraSacroOrgao', type: 'string', description: 'Órgão afetado pelo chakra sacro', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraBasicoDesequilibrio', type: 'string', description: 'Desequilíbrio do chakra básico', enum: ['sim', 'não']),
+                    new OA\Property(property: 'chakraBasicoPercentual', type: 'integer', description: 'Percentual de desequilíbrio do chakra básico', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'chakraBasicoAtividade', type: 'string', description: 'Atividade do chakra básico', enum: ['HIPO', 'HIPER']),
+                    new OA\Property(property: 'chakraBasicoOrgao', type: 'string', description: 'Órgão afetado pelo chakra básico', enum: ['sim', 'não']),
+                    new OA\Property(property: 'tamanhoAura', type: 'integer', description: 'Tamanho da aura', minimum: 0),
+                    new OA\Property(property: 'tamanhoAbertura', type: 'integer', description: 'Tamanho da abertura', minimum: 0),
+                    new OA\Property(
+                        property: 'corFalta',
+                        type: 'array',
+                        description: 'Cores em falta',
+                        items: new OA\Items(type: 'string')
+                    ),
+                    new OA\Property(
+                        property: 'corExcesso',
+                        type: 'array',
+                        description: 'Cores em excesso',
+                        items: new OA\Items(type: 'string')
+                    ),
+                    new OA\Property(property: 'energia', type: 'integer', description: 'Nível de energia', minimum: 0),
+                    new OA\Property(property: 'areasFamiliar', type: 'string', description: 'Área familiar', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
+                    new OA\Property(property: 'areasAfetivo', type: 'string', description: 'Área afetiva', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
+                    new OA\Property(property: 'areasProfissional', type: 'string', description: 'Área profissional', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
+                    new OA\Property(property: 'areasFinanceiro', type: 'string', description: 'Área financeira', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
+                    new OA\Property(property: 'areasMissao', type: 'string', description: 'Área de missão', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente'])
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Anamnese criada com sucesso',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', description: 'Mensagem de sucesso')
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: 'Requisição inválida'),
+            new OA\Response(response: 422, description: 'Erros de validação'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     /**
      * Add or update a model resource, from "posted" properties.
      *

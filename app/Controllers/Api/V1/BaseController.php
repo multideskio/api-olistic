@@ -11,9 +11,9 @@ use OpenApi\Attributes as OA;
 #[OA\OpenApi(
     info: new OA\Info(
         title: "API Terapia Holistica",
-        version: "0.1",
-        description: "API para demonstrar endpoints básicos",
-        contact: new OA\Contact(email: "multidesk.io@gmail.com")
+        version: "1.0.0",
+        description: "`API para demonstrar endpoints básicos`",
+        contact: new OA\Contact(name: "Multidesk.io", email: "webmaster@multidesk.io", url: "https://terapia.conect.app")
     ),
     servers: [
         new OA\Server(
@@ -22,10 +22,6 @@ use OpenApi\Attributes as OA;
         ),
         new OA\Server(
             url: "https://terapia.conect.app",
-            description: "Servidor online"
-        ),
-        new OA\Server(
-            url: "http://5.161.224.69:8800",
             description: "Servidor online"
         )
     ],
@@ -61,11 +57,8 @@ class BaseController extends ResourceController
     {
         //$redisConfig = new RedisConfig();
         //$this->predis = new PredisClient($redisConfig->default);
-
         $this->validation = \Config\Services::validation();
-
         $this->request = service('request');
-
         helper('auxiliar');
     }
 }

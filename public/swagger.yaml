@@ -1,19 +1,18 @@
 openapi: 3.0.0
 info:
   title: 'API Terapia Holistica'
-  description: 'API para demonstrar endpoints básicos'
+  description: '`API para demonstrar endpoints básicos`'
   contact:
-    email: multidesk.io@gmail.com
-  version: '0.1'
+    name: Multidesk.io
+    url: 'https://terapia.conect.app'
+    email: webmaster@multidesk.io
+  version: 1.0.0
 servers:
   -
     url: 'http://localhost:8000'
     description: 'Servidor local'
   -
     url: 'https://terapia.conect.app'
-    description: 'Servidor online'
-  -
-    url: 'http://5.161.224.69:8800'
     description: 'Servidor online'
 paths:
   /api/v1/anamneses:
@@ -56,6 +55,242 @@ paths:
                 idCustomer:
                   description: 'ID do cliente'
                   type: integer
+                mentalDesequilibrio:
+                  description: 'Desequilíbrio mental'
+                  type: string
+                  enum: [sim, não]
+                mentalPercentual:
+                  description: 'Percentual de desequilíbrio mental'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                emocionalDesequilibrio:
+                  description: 'Desequilíbrio emocional'
+                  type: string
+                  enum: [sim, não]
+                emocionalPercentual:
+                  description: 'Percentual de desequilíbrio emocional'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                espiritualDesequilibrio:
+                  description: 'Desequilíbrio espiritual'
+                  type: string
+                  enum: [sim, não]
+                espiritualPercentual:
+                  description: 'Percentual de desequilíbrio espiritual'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                fisicoDesequilibrio:
+                  description: 'Desequilíbrio físico'
+                  type: string
+                  enum: [sim, não]
+                fisicoPercentual:
+                  description: 'Percentual de desequilíbrio físico'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraCoronarioDesequilibrio:
+                  description: 'Desequilíbrio do chakra coronário'
+                  type: string
+                  enum: [sim, não]
+                chakraCoronarioPercentual:
+                  description: 'Percentual de desequilíbrio do chakra coronário'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraCoronarioAtividade:
+                  description: 'Atividade do chakra coronário'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraCoronarioOrgao:
+                  description: 'Órgão afetado pelo chakra coronário'
+                  type: string
+                  enum: [sim, não]
+                chakraFrontalDesequilibrio:
+                  description: 'Desequilíbrio do chakra frontal'
+                  type: string
+                  enum: [sim, não]
+                chakraFrontalPercentual:
+                  description: 'Percentual de desequilíbrio do chakra frontal'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraFrontalAtividade:
+                  description: 'Atividade do chakra frontal'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraFrontalOrgao:
+                  description: 'Órgão afetado pelo chakra frontal'
+                  type: string
+                  enum: [sim, não]
+                chakraLaringeoDesequilibrio:
+                  description: 'Desequilíbrio do chakra laríngeo'
+                  type: string
+                  enum: [sim, não]
+                chakraLaringeoPercentual:
+                  description: 'Percentual de desequilíbrio do chakra laríngeo'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraLaringeoAtividade:
+                  description: 'Atividade do chakra laríngeo'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraLaringeoOrgao:
+                  description: 'Órgão afetado pelo chakra laríngeo'
+                  type: string
+                  enum: [sim, não]
+                chakraCardiacoDesequilibrio:
+                  description: 'Desequilíbrio do chakra cardíaco'
+                  type: string
+                  enum: [sim, não]
+                chakraCardiacoPercentual:
+                  description: 'Percentual de desequilíbrio do chakra cardíaco'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraCardiacoAtividade:
+                  description: 'Atividade do chakra cardíaco'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraCardiacoOrgao:
+                  description: 'Órgão afetado pelo chakra cardíaco'
+                  type: string
+                  enum: [sim, não]
+                chakraPlexoSolarDesequilibrio:
+                  description: 'Desequilíbrio do chakra plexo solar'
+                  type: string
+                  enum: [sim, não]
+                chakraPlexoSolarPercentual:
+                  description: 'Percentual de desequilíbrio do chakra plexo solar'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraPlexoSolarAtividade:
+                  description: 'Atividade do chakra plexo solar'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraPlexoSolarOrgao:
+                  description: 'Órgão afetado pelo chakra plexo solar'
+                  type: string
+                  enum: [sim, não]
+                chakraSacroDesequilibrio:
+                  description: 'Desequilíbrio do chakra sacro'
+                  type: string
+                  enum: [sim, não]
+                chakraSacroPercentual:
+                  description: 'Percentual de desequilíbrio do chakra sacro'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraSacroAtividade:
+                  description: 'Atividade do chakra sacro'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraSacroOrgao:
+                  description: 'Órgão afetado pelo chakra sacro'
+                  type: string
+                  enum: [sim, não]
+                chakraBasicoDesequilibrio:
+                  description: 'Desequilíbrio do chakra básico'
+                  type: string
+                  enum: [sim, não]
+                chakraBasicoPercentual:
+                  description: 'Percentual de desequilíbrio do chakra básico'
+                  type: integer
+                  maximum: 100
+                  minimum: 0
+                chakraBasicoAtividade:
+                  description: 'Atividade do chakra básico'
+                  type: string
+                  enum: [HIPO, HIPER]
+                chakraBasicoOrgao:
+                  description: 'Órgão afetado pelo chakra básico'
+                  type: string
+                  enum: [sim, não]
+                tamanhoAura:
+                  description: 'Tamanho da aura'
+                  type: integer
+                  minimum: 0
+                tamanhoAbertura:
+                  description: 'Tamanho da abertura'
+                  type: integer
+                  minimum: 0
+                corFalta:
+                  description: 'Cores em falta'
+                  type: array
+                  items: { type: string }
+                corExcesso:
+                  description: 'Cores em excesso'
+                  type: array
+                  items: { type: string }
+                energia:
+                  description: 'Nível de energia'
+                  type: integer
+                  minimum: 0
+                areasFamiliar:
+                  description: 'Área familiar'
+                  type: string
+                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                areasAfetivo:
+                  description: 'Área afetiva'
+                  type: string
+                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                areasProfissional:
+                  description: 'Área profissional'
+                  type: string
+                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                areasFinanceiro:
+                  description: 'Área financeira'
+                  type: string
+                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                areasMissao:
+                  description: 'Área de missão'
+                  type: string
+                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+              type: object
+      responses:
+        '201':
+          description: 'Anamnese criada com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { description: 'Mensagem de sucesso', type: string }
+                type: object
+        '400':
+          description: 'Requisição inválida'
+        '422':
+          description: 'Erros de validação'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
+  '/api/v1/anamneses/{id}':
+    put:
+      tags:
+        - Anamneses
+      summary: 'Edite uma Anamnese'
+      description: 'Edite anamnese com base no ID fornecido na url.'
+      operationId: 6750d05c3d1db3655160808c8e2137a3
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID da anamnese'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 'Dados necessários para criar uma anamnese.'
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
                 mentalDesequilibrio:
                   description: 'Desequilíbrio mental'
                   type: string
