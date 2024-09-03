@@ -265,6 +265,9 @@ paths:
           description: 'Erros de validação'
         '500':
           description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
   /api/v1/login:
     post:
       tags:

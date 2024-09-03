@@ -81,6 +81,7 @@ class AnamnesesController extends BaseController
         summary: 'Criar nova Anamnese',
         description: 'Cria uma nova anamnese para o cliente com base nos dados fornecidos.',
         tags: ['Anamneses'],
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             description: 'Dados necessários para criar uma anamnese.',
