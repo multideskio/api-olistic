@@ -19,14 +19,14 @@ use OpenApi\Attributes as OA;
     <li>Para gerar o token, utilize o endpoint login.</li>
     <li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li>
 </ul>",
-        contact: new OA\Contact(
+        /*contact: new OA\Contact(
             name: 'Paulo Henrique',
             email: "webmaster@multidesk.io",
             url: "https://terapia.conect.app"
         ),
         license: new OA\License(
             name: 'API EM DESENVOLVIMENTO'
-        )
+        )*/
     ),
     servers: [
         new OA\Server(

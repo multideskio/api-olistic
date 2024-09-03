@@ -2,12 +2,6 @@ openapi: 3.0.0
 info:
   title: 'Therapeutic Radiesthesia API'
   description: "`API para demonstrar endpoints básicos do sistema`<br>\n<ul>\n    <li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li>\n    <li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li>\n    <li>Para gerar o token, utilize o endpoint login.</li>\n    <li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li>\n</ul>"
-  contact:
-    name: 'Paulo Henrique'
-    url: 'https://terapia.conect.app'
-    email: webmaster@multidesk.io
-  license:
-    name: 'API EM DESENVOLVIMENTO'
   version: 1.0.0
 servers:
   -
