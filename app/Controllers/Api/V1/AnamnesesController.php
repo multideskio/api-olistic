@@ -3,6 +3,7 @@
 namespace App\Controllers\Api\V1;
 
 use App\Models\AnamnesesModel;
+use App\Models\CustomersModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 use OpenApi\Attributes as OA;
@@ -83,13 +84,7 @@ class AnamnesesController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
-    /**
-     * Return the properties of a resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
+
     public function show($id = null)
     {
         //
@@ -116,11 +111,6 @@ class AnamnesesController extends BaseController
         }
     }
 
-    /**
-     * Return a new resource object, with default properties.
-     *
-     * @return ResponseInterface
-     */
     public function new()
     {
         //
@@ -216,11 +206,6 @@ class AnamnesesController extends BaseController
         ]
     )]
 
-    /**
-     * Create a new resource object, from "posted" parameters.
-     *
-     * @return ResponseInterface
-     */
     public function create()
     {
         try {
@@ -310,15 +295,6 @@ class AnamnesesController extends BaseController
         // ...
     }
 
-
-
-    /**
-     * Return the editable properties of a resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
     public function edit($id = null)
     {
         //
@@ -421,13 +397,7 @@ class AnamnesesController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
-    /**
-     * Add or update a model resource, from "posted" properties.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
+
     public function update($id = null)
     {
         //
@@ -519,8 +489,6 @@ class AnamnesesController extends BaseController
             $data = $this->modelAnamnese->updateAnamnese($input, $id);
 
             return $this->respond($data);
-
-            
         } catch (\RuntimeException $e) {
             // Responde com erro de execução (400 Bad Request)
             return $this->fail($e->getMessage(), 400);
@@ -550,13 +518,7 @@ class AnamnesesController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
-    /**
-     * Delete the designated resource object from the model.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
+
     public function delete($id = null)
     {
         //
@@ -578,6 +540,59 @@ class AnamnesesController extends BaseController
         } catch (\Exception $e) {
             // Responde com erro interno (500 Internal Server Error)
             return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
+        }
+    }
+
+
+    #[OA\Get(
+        path: '/anamnese/{slug}',
+        summary: 'Consulta de anamnese sem login',
+        description: 'Consulta aberta para compartilhamento com o cliente',
+        tags: ['Anamneses'],
+        parameters: [
+            new OA\Parameter(
+                name: 'slug',
+                in: 'path',
+                required: true,
+                description: 'Slug da anamnese',
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Anamense encontrada'),
+            new OA\Response(response: 404, description: 'Anamense encontrada'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
+    public function slug($slug)
+    {
+        try {
+            // Verifica se o ID foi fornecido
+            if (is_null($slug)) {
+                return $this->failValidationErrors('O slug da anamanese é obrigatória.');
+            }
+            
+            $anamnese = $this->modelAnamnese->where('slug', $slug)->first();
+            
+            if (!$anamnese) {
+                return $this->failNotFound('Anamanese não econtrada.');
+            }
+            
+            $modelCustomer = new CustomersModel();
+
+            $customer = $modelCustomer->find($anamnese['id_customer']);
+
+            if (!$customer) {
+                return $this->failNotFound('Cliente não econtrado.');
+            }
+
+            return $this->respond([
+                'customer' => $customer,
+                'anamnese' => $anamnese
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->fail($e->getMessage());
         }
     }
 }

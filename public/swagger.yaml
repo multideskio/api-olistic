@@ -564,6 +564,28 @@ paths:
       security:
         -
           bearerAuth: []
+  '/anamnese/{slug}':
+    get:
+      tags:
+        - Anamneses
+      summary: 'Consulta de anamnese sem login'
+      description: 'Consulta aberta para compartilhamento com o cliente'
+      operationId: 19f47510d07f04837b986af47c594f51
+      parameters:
+        -
+          name: slug
+          in: path
+          description: 'Slug da anamnese'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Anamense encontrada'
+        '404':
+          description: 'Anamense encontrada'
+        '500':
+          description: 'Erro interno do servidor'
   /api/v1/login:
     post:
       tags:
