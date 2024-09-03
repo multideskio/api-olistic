@@ -220,11 +220,13 @@ paths:
                   type: integer
                   minimum: 0
                 corFalta:
-                  description: 'Cor em falta'
-                  type: string
+                  description: 'Cores em falta'
+                  type: array
+                  items: { type: string }
                 corExcesso:
-                  description: 'Cor em excesso'
-                  type: string
+                  description: 'Cores em excesso'
+                  type: array
+                  items: { type: string }
                 energia:
                   description: 'Nível de energia'
                   type: integer

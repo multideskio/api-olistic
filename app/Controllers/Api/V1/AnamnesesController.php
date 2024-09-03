@@ -71,11 +71,7 @@ class AnamnesesController extends BaseController
         //
     }
 
-    /**
-     * Create a new resource object, from "posted" parameters.
-     *
-     * @return ResponseInterface
-     */
+
     #[OA\Post(
         path: '/api/v1/anamneses',
         summary: 'Criar nova Anamnese',
@@ -127,8 +123,18 @@ class AnamnesesController extends BaseController
                     new OA\Property(property: 'chakraBasicoOrgao', type: 'string', description: 'Órgão afetado pelo chakra básico', enum: ['sim', 'não']),
                     new OA\Property(property: 'tamanhoAura', type: 'integer', description: 'Tamanho da aura', minimum: 0),
                     new OA\Property(property: 'tamanhoAbertura', type: 'integer', description: 'Tamanho da abertura', minimum: 0),
-                    new OA\Property(property: 'corFalta', type: 'string', description: 'Cor em falta'),
-                    new OA\Property(property: 'corExcesso', type: 'string', description: 'Cor em excesso'),
+                    new OA\Property(
+                        property: 'corFalta',
+                        type: 'array',
+                        description: 'Cores em falta',
+                        items: new OA\Items(type: 'string')
+                    ),
+                    new OA\Property(
+                        property: 'corExcesso',
+                        type: 'array',
+                        description: 'Cores em excesso',
+                        items: new OA\Items(type: 'string')
+                    ),
                     new OA\Property(property: 'energia', type: 'integer', description: 'Nível de energia', minimum: 0),
                     new OA\Property(property: 'areasFamiliar', type: 'string', description: 'Área familiar', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
                     new OA\Property(property: 'areasAfetivo', type: 'string', description: 'Área afetiva', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
@@ -136,7 +142,6 @@ class AnamnesesController extends BaseController
                     new OA\Property(property: 'areasFinanceiro', type: 'string', description: 'Área financeira', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
                     new OA\Property(property: 'areasMissao', type: 'string', description: 'Área de missão', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente'])
                 ]
-
             )
         ),
         responses: [
@@ -155,6 +160,12 @@ class AnamnesesController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
+
+    /**
+     * Create a new resource object, from "posted" parameters.
+     *
+     * @return ResponseInterface
+     */
     public function create()
     {
         try {
