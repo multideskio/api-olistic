@@ -497,7 +497,7 @@ class AnamnesesController extends BaseController
 
 
     #[OA\Delete(
-        path: '/api/v1/anamnese/{id}',
+        path: '/api/v1/anamneses/{id}',
         summary: 'Excluir uma anamnese',
         description: 'Exclui uma anamnese existente',
         tags: ['Anamneses'],

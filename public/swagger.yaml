@@ -531,13 +531,12 @@ paths:
       security:
         -
           bearerAuth: []
-  '/api/v1/anamnese/{id}':
     delete:
       tags:
         - Anamneses
       summary: 'Excluir uma anamnese'
       description: 'Exclui uma anamnese existente'
-      operationId: 5fe1d0c9fe635d727b9ca0b602ee5cab
+      operationId: f4ce47a53066d02bf807af45f0e81b77
       parameters:
         -
           name: id
