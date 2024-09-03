@@ -25,6 +25,8 @@ $routes->get('teste', function () {
 
 // Rotas acessíveis para múltiplas roles
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'], function ($routes) {
+    
+    $routes->resource('anamneses', ['controller' => 'Api\V1\AnamnesesController']);
 
     //A busca pelo cliente está aberta para todos os usuários buscarem de acordo com seu próprio ID
     $routes->get('customers', 'Api\V1\CustomerController::index');
@@ -41,17 +43,21 @@ $routes->group('api/v1', ['filter' => 'jwt:SUPERADMIN'], function ($routes) {
 
 //Rotas liberadas apenas para os profissionais e superadmins
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function ($routes) {
+    
     $routes->resource('customers', ['controller' => 'Api\V1\CustomerController']);
+
 });
 
 
 
 // Rota de login sem filtro JWT
 $routes->post('api/v1/login', 'Api\V1\AuthController::login');
+$routes->get('api/v1/login', 'Api\V1\AuthController::aviso');
+
 $routes->get('api/v1/logout', 'Api\V1\AuthController::logout');
 
 $routes->get('api/v1/google', 'Api\V1\AuthController::googleLogin');
 $routes->get('api/v1/auth/google/callback', 'Api\V1\AuthController::googleCallback');
 
 
-$routes->post('api/v1/webhook/greem/(:any)', 'Api\V1\WebhookController::greem/$1');
+$routes->post('api/v1/webhook/greem', 'Api\V1\WebhookController::greem');

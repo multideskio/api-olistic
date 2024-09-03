@@ -4,15 +4,18 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class SubscriptionsModel extends Model
+class TemplatesEmailModel extends Model
 {
-    protected $table            = 'subscriptions';
+    protected $table            = 'templatesemails';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['idPlan', 'idUser'];
+    protected $allowedFields    = ['platformId',
+            'type',
+            'template',
+            'status'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

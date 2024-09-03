@@ -78,15 +78,20 @@ class WebhookLibraries
 
         $searchUpdate = $this->modelSubscriptions->where(['idUser' => $user['id']])->findAll();
 
+        $email = new EmailsLibraries;
+        
         if (count($searchUpdate)) {
             foreach ($searchUpdate as $row) {
                 $this->modelSubscriptions->delete($row['id']);
             }
+            
             $this->modelSubscriptions->insert([
                 'idPlan' => $rowPlan['id'],
                 'idUser' => $user['id']
             ]);
+            
             $resp = ['message' => 'Inscrição atualizada'];
+
             $modelLogs->insert([
                 'platformId' => 1,
                 'idUser' => $user['id'],
@@ -94,7 +99,11 @@ class WebhookLibraries
                 'description' => 'Inscrição atualizada'
             ]);
 
+            $email->send($user['email'], 'Seu conta foi atualizada', view('emails/update-subscription', $user));
+
+            log_message('info', 'Email sent to user: ' . $user['email']);
             log_message('info', 'Subscription updated for user: ' . $user['id']);
+
         } else {
             $this->modelSubscriptions->insert([
                 'idPlan' => $rowPlan['id'],
@@ -106,15 +115,12 @@ class WebhookLibraries
                 'type' => 'subscription_created',
                 'description' => 'Inscrição criada'
             ]);
-            $resp = ['message' => 'Inscrição criada'];
+            $resp = ['message' => 'Inscrição criada', 'code' => 201];
 
+            $email->send($user['email'], 'Seu acesso chegou', view('emails/subscription', $user));
+            log_message('info', 'Email sent to user: ' . $user['email']);
             log_message('info', 'Subscription created for user: ' . $user['id']);
         }
-
-        $email = new EmailsLibraries;
-        $email->send($user['email'], 'Seu acesso chegou', view('emails/subscription', $user));
-
-        log_message('info', 'Email sent to user: ' . $user['email']);
         return $resp;
     }
 
@@ -128,7 +134,7 @@ class WebhookLibraries
         }
 
         log_message('info', 'Subscription cancelled for refunded transaction.');
-        return ['status' => 'Inscrição cancelada'];
+        return ['status' => 'Inscrição cancelada', 'code' => 200];
     }
 
     protected function processChargebackTransaction($request, array $user): array
@@ -141,7 +147,7 @@ class WebhookLibraries
         }
 
         log_message('info', 'Subscription cancelled due to chargeback.');
-        return ['status' => 'Inscrição cancelada por extorno'];
+        return ['status' => 'Inscrição cancelada por extorno', 'code' => 200];
     }
 
     protected function getUserData($request): array

@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Api\V1;
 
-use app\Libraries\WebhookLibraries;
+use App\Libraries\WebhookLibraries;
 use CodeIgniter\HTTP\ResponseInterface;
 use OpenApi\Attributes as OA;
 
@@ -96,22 +96,14 @@ class WebhookController extends BaseController
 
 
     #[OA\Post(
-        path: '/api/v1/webhook/greem/{id_plano}',
+        path: '/api/v1/webhook/greem',
         summary: 'Cria um usuário com base nas informações do webhook recebido da GREEM',
-        description: 'Processa o webhook da GREEM para criar ou atualizar um usuário com base nas informações da transação recebida.',
+        description: "Processa o webhook da GREEM para criar ou atualizar um usuário com base nas informações da transação recebida.\n</br>O produto deverá ter sido cadastrado previamente informando o ID do produto da GREEM",
         tags: ['Webhooks'],
-        parameters: [
-            new OA\Parameter(
-                name: 'id_plano',
-                in: 'path',
-                required: true,
-                description: 'ID do plano na GREEM',
-                schema: new OA\Schema(type: 'string')
-            )
-        ],
+        
         requestBody: new OA\RequestBody(
             required: true,
-            description: 'Dados do webhook da GREEM',
+            description: 'Dados do webhook da GREEM.',
             content: new OA\JsonContent(
                 type: 'object',
                 properties: [
@@ -127,7 +119,8 @@ class WebhookController extends BaseController
                         description: 'Informações do cliente',
                         properties: [
                             new OA\Property(property: 'email', type: 'string', description: 'Email do cliente'),
-                            new OA\Property(property: 'name', type: 'string', description: 'Nome do cliente')
+                            new OA\Property(property: 'name', type: 'string', description: 'Nome do cliente'),
+                            new OA\Property(property: 'cellphone', type: 'string', description: 'Telefone do cliente')
                         ]
                     ),
                     new OA\Property(
@@ -135,7 +128,8 @@ class WebhookController extends BaseController
                         type: 'object',
                         description: 'Informações do produto',
                         properties: [
-                            new OA\Property(property: 'id', type: 'integer', description: 'ID do produto')
+                            new OA\Property(property: 'id', type: 'integer', description: 'ID do produto'),
+                            new OA\Property(property: 'name', type: 'integer', description: 'Nome do produto')
                         ]
                     )
                 ]
@@ -158,18 +152,12 @@ class WebhookController extends BaseController
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
-    public function greem($id_plano = null)
+    public function greem()
     {
         try {
-            // Verifica o id do webhook interno
-            if (!$id_plano) {
-                throw new \Exception('Sem permissão para executar');
-            }
-
             // Ações da class WebhookLibraries
             $webhook = $this->webhookLibraries->processTransaction($this->request);
-
-            return $this->respondCreated($webhook);
+            return $this->respond($webhook, $webhook['code']);
         } catch (\Exception $e) {
             return $this->failForbidden($e->getMessage());
         }

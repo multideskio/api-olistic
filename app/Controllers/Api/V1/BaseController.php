@@ -53,6 +53,8 @@ class BaseController extends ResourceController
 
     // Esta classe pode ser utilizada para definir anotações gerais e ser estendida pelos controladores específicos.
     protected $request;
+    protected $validation;
+
     //protected $predis;
 
     public function __construct()
@@ -60,8 +62,10 @@ class BaseController extends ResourceController
         //$redisConfig = new RedisConfig();
         //$this->predis = new PredisClient($redisConfig->default);
 
+        $this->validation = \Config\Services::validation();
+
         $this->request = service('request');
-        
+
         helper('auxiliar');
     }
 }

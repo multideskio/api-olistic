@@ -129,4 +129,9 @@ class AuthController extends BaseController
             return $this->fail('Invalid token: ' . $e->getMessage(), 401);
         }
     }
+
+
+    public function aviso(){
+        return $this->fail(['message' => 'Função não disponivel no momento'], 404);
+    }
 }
