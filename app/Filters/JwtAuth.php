@@ -34,9 +34,20 @@ class JwtAuth implements FilterInterface
             // Verifica se a role do usuário está dentro das permitidas
             $role = $decoded->role ?? null;
 
-            // Se não tiver role no token ou role não for permitido, nega o acesso
             if (!$role || !in_array($role, $arguments)) {
                 return $this->forbiddenResponse('Access denied for your role');
+            }
+
+            // Calcula o tempo restante para expiração do token
+            $currentTime = time();
+            $timeRemaining = $decoded->exp - $currentTime;
+
+            // Se o tempo restante for menor que o limite (ex: 600 segundos), renova o token
+            if ($timeRemaining < 600) { // 10 minutos
+                $newToken = $this->renewToken($decoded);
+                
+                // Adiciona o novo token no cabeçalho da resposta
+                $request->setHeader('X-Renewed-Token', $newToken);
             }
 
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
@@ -51,6 +62,20 @@ class JwtAuth implements FilterInterface
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         // Não é necessário implementar nada aqui para autenticação JWT
+    }
+
+    private function renewToken($decoded)
+    {
+        // Gera um novo payload com o tempo de expiração estendido
+        $newPayload = [
+            'iat' => time(),
+            'exp' => time() + $this->jwtConfig->tokenExpiration, // Novo tempo de expiração
+            'role' => $decoded->role,
+            'uid' => $decoded->uid // Outros dados que você pode precisar
+        ];
+
+        // Gera o novo token com o payload atualizado
+        return JWT::encode($newPayload, $this->jwtConfig->jwtSecret, 'HS256');
     }
 
     private function unauthorizedResponse($message)

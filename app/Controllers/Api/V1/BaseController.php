@@ -10,32 +10,32 @@ use OpenApi\Attributes as OA;
 
 #[OA\OpenApi(
     info: new OA\Info(
-        title: "API Terapia Holistica",
+        title: "Therapeutic Radiesthesia API",
         version: "1.0.0",
-        description: "`API para demonstrar endpoints básicos do sistema`<br><br>
-        <ul>
-            <li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li>
-            <li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li>
-            <li>Para gerar o token, utilize o endpoint login.</li>
-            <li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li>
-        </ul>",
+        description: '`API para demonstrar endpoints básicos do sistema`<br>
+<ul>
+    <li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li>
+    <li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li>
+    <li>Para gerar o token, utilize o endpoint login.</li>
+    <li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li>
+</ul>',
         contact: new OA\Contact(
-            name: "Multidesk.io",
+            name: 'Paulo Henrique',
             email: "webmaster@multidesk.io",
             url: "https://terapia.conect.app"
         ),
         license: new OA\License(
-            name: 'MIT'
+            name: 'API EM DESENVOLVIMENTO'
         )
     ),
     servers: [
         new OA\Server(
-            url: "http://localhost:8000",
-            description: "Servidor local"
+            url: "https://api.conect.app",
+            description: "Servidor online"
         ),
         new OA\Server(
-            url: "https://terapia.conect.app",
-            description: "Servidor online"
+            url: "http://localhost:8000",
+            description: "Servidor local"
         )
     ],
     tags: [
