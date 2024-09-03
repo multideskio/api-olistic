@@ -1,11 +1,13 @@
 openapi: 3.0.0
 info:
   title: 'API Terapia Holistica'
-  description: '`API para demonstrar endpoints básicos`'
+  description: "`API para demonstrar endpoints básicos do sistema`<br><br>\n        <ul>\n            <li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li>\n            <li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li>\n            <li>Para gerar o token, utilize o endpoint login.</li>\n            <li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li>\n        </ul>"
   contact:
     name: Multidesk.io
     url: 'https://terapia.conect.app'
     email: webmaster@multidesk.io
+  license:
+    name: MIT
   version: 1.0.0
 servers:
   -
@@ -270,6 +272,36 @@ paths:
         -
           bearerAuth: []
   '/api/v1/anamneses/{id}':
+    get:
+      tags:
+        - Anamneses
+      summary: 'Obter detalhes de uma anamnese'
+      description: 'Retorna os detalhes de uma anamnese específica'
+      operationId: 5e5bf56100b7ce399455f92ed6a031c9
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID da anamnese'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Detalhes da Anamnese'
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: 'Token inválido ou ausente'
+        '404':
+          description: 'Anamnese não encontrada'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
     put:
       tags:
         - Anamneses
@@ -500,6 +532,33 @@ paths:
           description: 'Requisição inválida'
         '422':
           description: 'Erros de validação'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
+  '/api/v1/anamnese/{id}':
+    delete:
+      tags:
+        - Anamneses
+      summary: 'Excluir uma anamnese'
+      description: 'Exclui uma anamnese existente'
+      operationId: 5fe1d0c9fe635d727b9ca0b602ee5cab
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID do cliente'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Cliente deletado com sucesso'
+        '401':
+          description: 'Token inválido ou ausente'
+        '404':
+          description: 'Cliente não encontrado'
         '500':
           description: 'Erro interno do servidor'
       security:

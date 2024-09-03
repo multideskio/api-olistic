@@ -47,8 +47,42 @@ class AnamnesesController extends BaseController
     public function index()
     {
         //
+        try {
+            $input = $this->request->getVar();
+            $data  = $this->modelAnamnese->search($input);
+            return $this->respond($data);
+        } catch (\Exception $e) {
+            return $this->fail($e->getMessage());
+        }
     }
 
+
+    #[OA\Get(
+        path: '/api/v1/anamneses/{id}',
+        summary: 'Obter detalhes de uma anamnese',
+        description: 'Retorna os detalhes de uma anamnese específica',
+        tags: ['Anamneses'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID da anamnese',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Detalhes da Anamnese',
+                content: new OA\JsonContent(type: 'object')
+            ),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 404, description: 'Anamnese não encontrada'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     /**
      * Return the properties of a resource object.
      *
@@ -59,6 +93,27 @@ class AnamnesesController extends BaseController
     public function show($id = null)
     {
         //
+        try {
+            // Verifica se o ID foi fornecido
+            if (is_null($id)) {
+                return $this->failValidationErrors('O ID do cliente é obrigatório.');
+            }
+
+            // Chama o método showCustomer do model para obter os dados do customer com anamneses
+            $data = $this->modelAnamnese->showAnamnese((int) $id);
+
+            // Retorna a resposta de sucesso com os dados do customer
+            return $this->respond($data);
+        } catch (\InvalidArgumentException $e) {
+            // Responde com erro de validação (422 Unprocessable Entity)
+            return $this->failValidationErrors($e->getMessage());
+        } catch (\RuntimeException $e) {
+            // Responde com erro de execução (404 Not Found ou 403 Forbidden)
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Responde com erro interno (500 Internal Server Error)
+            return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -244,8 +299,6 @@ class AnamnesesController extends BaseController
                 return $this->failValidationErrors([$errors]);
             }
 
-
-
             $data = $this->modelAnamnese->createAnamnese($input);
             return $this->respond($data);
         } catch (\Exception $e) {
@@ -378,8 +431,125 @@ class AnamnesesController extends BaseController
     public function update($id = null)
     {
         //
+        try {
+            // Verifica se o ID foi fornecido
+            if (is_null($id)) {
+                return $this->failValidationErrors('O ID do cliente é obrigatório.');
+            }
+
+            // Obtém os dados da requisição (assume-se que os dados estão em JSON)
+            $input = $this->request->getVar();
+
+            // Converte o input para um array, se necessário
+            if (is_object($input)) {
+                $input = (array) $input;
+            }
+
+            // Defina as regras de validação
+            $rules = [
+                'mentalDesequilibrio' => 'required|in_list[sim,não]',
+                'mentalPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'emocionalDesequilibrio' => 'required|in_list[sim,não]',
+                'emocionalPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'espiritualDesequilibrio' => 'required|in_list[sim,não]',
+                'espiritualPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'fisicoDesequilibrio' => 'required|in_list[sim,não]',
+                'fisicoPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraCoronarioDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraCoronarioPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraCoronarioAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraCoronarioOrgao' => 'required|in_list[sim,não]',
+                'chakraFrontalDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraFrontalPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraFrontalAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraFrontalOrgao' => 'required|in_list[sim,não]',
+                'chakraLaringeoDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraLaringeoPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraLaringeoAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraLaringeoOrgao' => 'required|in_list[sim,não]',
+                'chakraCardiacoDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraCardiacoPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraCardiacoAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraCardiacoOrgao' => 'required|in_list[sim,não]',
+                'chakraPlexoSolarDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraPlexoSolarPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraPlexoSolarAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraPlexoSolarOrgao' => 'required|in_list[sim,não]',
+                'chakraSacroDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraSacroPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraSacroAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraSacroOrgao' => 'required|in_list[sim,não]',
+                'chakraBasicoDesequilibrio' => 'required|in_list[sim,não]',
+                'chakraBasicoPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'chakraBasicoAtividade' => 'required|in_list[HIPO, HIPER]',
+                'chakraBasicoOrgao' => 'required|in_list[sim,não]',
+                'tamanhoAura' => 'required|integer|greater_than_equal_to[0]',
+                'tamanhoAbertura' => 'required|integer|greater_than_equal_to[0]',
+                'corFalta' => 'required',
+                'corExcesso' => 'required',
+                'energia' => 'required|integer|greater_than_equal_to[0]',
+                'areasFamiliar' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                'areasAfetivo' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                'areasProfissional' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                'areasFinanceiro' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                'areasMissao' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+            ];
+
+            // Defina as mensagens de erro personalizadas
+            $messages = [
+                'required' => 'O campo {field} é obrigatório.',
+                'in_list' => 'O valor para o campo {field} deve ser um dos seguintes: {param}.',
+                'integer' => 'O campo {field} deve ser um número inteiro.',
+                'greater_than_equal_to' => 'O campo {field} deve ser maior ou igual a {param}.',
+                'less_than_equal_to' => 'O campo {field} deve ser menor ou igual a {param}.',
+                'checkArray' => 'O campo {field} deve ser um array.', // Mensagem personalizada para array
+            ];
+
+            // Configura a validação
+            $validation = \Config\Services::validation();
+
+            // Verifica se a validação falha
+            if (!$validation->setRules($rules, $messages)->run($input)) {
+                // Obtenha os erros de validação
+                $errors = $validation->getErrors();
+                // Retorna os erros como uma resposta de erro
+                return $this->failValidationErrors([$errors]);
+            }
+
+            $data = $this->modelAnamnese->updateAnamnese($input, $id);
+
+            return $this->respond($data);
+
+            
+        } catch (\RuntimeException $e) {
+            // Responde com erro de execução (400 Bad Request)
+            return $this->fail($e->getMessage(), 400);
+        }
     }
 
+
+    #[OA\Delete(
+        path: '/api/v1/anamnese/{id}',
+        summary: 'Excluir uma anamnese',
+        description: 'Exclui uma anamnese existente',
+        tags: ['Anamneses'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID do cliente',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Cliente deletado com sucesso'),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 404, description: 'Cliente não encontrado'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
     /**
      * Delete the designated resource object from the model.
      *
@@ -390,5 +560,24 @@ class AnamnesesController extends BaseController
     public function delete($id = null)
     {
         //
+        try {
+            // Verifica se o ID foi fornecido
+            if (is_null($id)) {
+                return $this->failValidationErrors('O ID da anamnese é obrigatório.');
+            }
+            // Chama o método deleteCustomer do model
+            $data = $this->modelAnamnese->deleteAnamnese((int) $id);
+            // Retorna a resposta de sucesso com o status 200 OK
+            return $this->respondDeleted(['message' => 'Anamnenese deletada com sucesso.', 'data' => $data]);
+        } catch (\InvalidArgumentException $e) {
+            // Responde com erro de validação (422 Unprocessable Entity)
+            return $this->failValidationErrors($e->getMessage());
+        } catch (\RuntimeException $e) {
+            // Responde com erro de execução (404 Not Found ou 403 Forbidden)
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Responde com erro interno (500 Internal Server Error)
+            return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
+        }
     }
 }
