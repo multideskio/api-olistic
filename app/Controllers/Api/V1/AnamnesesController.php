@@ -22,6 +22,106 @@ class AnamnesesController extends BaseController
         $this->modelAnamnese = new AnamnesesModel();
     }
 
+    #[OA\Delete(
+        path: '/api/v1/anamneses/{id}',
+        summary: 'Excluir uma anamnese',
+        description: 'Exclui uma anamnese existente',
+        tags: ['Anamneses'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID do cliente',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Cliente deletado com sucesso'),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 404, description: 'Cliente não encontrado'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
+
+    public function delete($id = null)
+    {
+        //
+        try {
+            // Verifica se o ID foi fornecido
+            if (is_null($id)) {
+                return $this->failValidationErrors('O ID da anamnese é obrigatório.');
+            }
+            // Chama o método deleteCustomer do model
+            $data = $this->modelAnamnese->deleteAnamnese((int) $id);
+            // Retorna a resposta de sucesso com o status 200 OK
+            return $this->respondDeleted(['message' => 'Anamnenese deletada com sucesso.', 'data' => $data]);
+        } catch (\InvalidArgumentException $e) {
+            // Responde com erro de validação (422 Unprocessable Entity)
+            return $this->failValidationErrors($e->getMessage());
+        } catch (\RuntimeException $e) {
+            // Responde com erro de execução (404 Not Found ou 403 Forbidden)
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Responde com erro interno (500 Internal Server Error)
+            return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
+        }
+    }
+
+
+    #[OA\Get(
+        path: '/anamnese/{slug}',
+        summary: 'Consulta de anamnese sem login',
+        description: 'Consulta aberta para compartilhamento com o cliente',
+        tags: ['Anamneses'],
+        parameters: [
+            new OA\Parameter(
+                name: 'slug',
+                in: 'path',
+                required: true,
+                description: 'Slug da anamnese',
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Anamense encontrada'),
+            new OA\Response(response: 404, description: 'Anamense encontrada'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
+
+    public function slug($slug)
+    {
+        try {
+            // Verifica se o ID foi fornecido
+            if (is_null($slug)) {
+                return $this->failValidationErrors('O slug da anamanese é obrigatória.');
+            }
+
+            $anamnese = $this->modelAnamnese->where('slug', $slug)->first();
+
+            if (!$anamnese) {
+                return $this->failNotFound('Anamanese não econtrada.');
+            }
+
+            $modelCustomer = new CustomersModel();
+
+            $customer = $modelCustomer->find($anamnese['id_customer']);
+
+            if (!$customer) {
+                return $this->failNotFound('Cliente não econtrado.');
+            }
+
+            return $this->respond([
+                'customer' => $customer,
+                'anamnese' => $anamnese
+            ]);
+        } catch (\Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+    }
+
     #[OA\Get(
         path: '/api/v1/anamneses',
         summary: 'Listar todas as Anamneses',
@@ -492,107 +592,6 @@ class AnamnesesController extends BaseController
         } catch (\RuntimeException $e) {
             // Responde com erro de execução (400 Bad Request)
             return $this->fail($e->getMessage(), 400);
-        }
-    }
-
-
-    #[OA\Delete(
-        path: '/api/v1/anamneses/{id}',
-        summary: 'Excluir uma anamnese',
-        description: 'Exclui uma anamnese existente',
-        tags: ['Anamneses'],
-        security: [['bearerAuth' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                in: 'path',
-                required: true,
-                description: 'ID do cliente',
-                schema: new OA\Schema(type: 'integer')
-            )
-        ],
-        responses: [
-            new OA\Response(response: 200, description: 'Cliente deletado com sucesso'),
-            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
-            new OA\Response(response: 404, description: 'Cliente não encontrado'),
-            new OA\Response(response: 500, description: 'Erro interno do servidor')
-        ]
-    )]
-
-    public function delete($id = null)
-    {
-        //
-        try {
-            // Verifica se o ID foi fornecido
-            if (is_null($id)) {
-                return $this->failValidationErrors('O ID da anamnese é obrigatório.');
-            }
-            // Chama o método deleteCustomer do model
-            $data = $this->modelAnamnese->deleteAnamnese((int) $id);
-            // Retorna a resposta de sucesso com o status 200 OK
-            return $this->respondDeleted(['message' => 'Anamnenese deletada com sucesso.', 'data' => $data]);
-        } catch (\InvalidArgumentException $e) {
-            // Responde com erro de validação (422 Unprocessable Entity)
-            return $this->failValidationErrors($e->getMessage());
-        } catch (\RuntimeException $e) {
-            // Responde com erro de execução (404 Not Found ou 403 Forbidden)
-            return $this->failNotFound($e->getMessage());
-        } catch (\Exception $e) {
-            // Responde com erro interno (500 Internal Server Error)
-            return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
-        }
-    }
-
-
-    #[OA\Get(
-        path: '/anamnese/{slug}',
-        summary: 'Consulta de anamnese sem login',
-        description: 'Consulta aberta para compartilhamento com o cliente',
-        tags: ['Anamneses'],
-        parameters: [
-            new OA\Parameter(
-                name: 'slug',
-                in: 'path',
-                required: true,
-                description: 'Slug da anamnese',
-                schema: new OA\Schema(type: 'string')
-            )
-        ],
-        responses: [
-            new OA\Response(response: 200, description: 'Anamense encontrada'),
-            new OA\Response(response: 404, description: 'Anamense encontrada'),
-            new OA\Response(response: 500, description: 'Erro interno do servidor')
-        ]
-    )]
-    public function slug($slug)
-    {
-        try {
-            // Verifica se o ID foi fornecido
-            if (is_null($slug)) {
-                return $this->failValidationErrors('O slug da anamanese é obrigatória.');
-            }
-            
-            $anamnese = $this->modelAnamnese->where('slug', $slug)->first();
-            
-            if (!$anamnese) {
-                return $this->failNotFound('Anamanese não econtrada.');
-            }
-            
-            $modelCustomer = new CustomersModel();
-
-            $customer = $modelCustomer->find($anamnese['id_customer']);
-
-            if (!$customer) {
-                return $this->failNotFound('Cliente não econtrado.');
-            }
-
-            return $this->respond([
-                'customer' => $customer,
-                'anamnese' => $anamnese
-            ]);
-
-        } catch (\Exception $e) {
-            return $this->fail($e->getMessage());
         }
     }
 }

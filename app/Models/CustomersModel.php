@@ -278,6 +278,11 @@ class CustomersModel extends Model
             ->get()
             ->getResultArray();
 
+        $timeline = $this->db->table('timelines')
+            ->where('idCustomer', $id)
+            ->get()
+            ->getResultArray();
+
         // Retornar os dados do customer com as anamneses
         return [
             'id' => $customer['id'],
@@ -290,6 +295,7 @@ class CustomersModel extends Model
             'birthDate' => $customer['birthDate'],
             'anamneses_count' => $customer['anamneses_count'],
             'anamneses' => $anamneses, // Lista de anamneses associadas
+            'timelines' => $timeline
         ];
     }
 
