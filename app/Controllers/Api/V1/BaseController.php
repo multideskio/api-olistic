@@ -12,19 +12,13 @@ use OpenApi\Attributes as OA;
     info: new OA\Info(
         title: "Therapeutic Radiesthesia API",
         version: "1.0.0",
-        description: "`API para demonstrar endpoints básicos do sistema`<br>
-<ul>
-    <li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li>
-    <li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li>
-    <li>Para gerar o token, utilize o endpoint login.</li>
-    <li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li>
-</ul>",
-        /*contact: new OA\Contact(
+        description: "`API para demonstrar endpoints básicos do sistema`<br><ul><li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li><li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li><li>Para gerar o token, utilize o endpoint login.</li><li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li></ul>",
+        contact: new OA\Contact(
             name: 'Paulo Henrique',
             email: "webmaster@multidesk.io",
-            url: "https://terapia.conect.app"
+            url: "https://api.conect.app"
         ),
-        license: new OA\License(
+        /*license: new OA\License(
             name: 'API EM DESENVOLVIMENTO'
         )*/
     ),
