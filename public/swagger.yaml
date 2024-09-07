@@ -587,8 +587,8 @@ paths:
     post:
       tags:
         - Autenticação
-      summary: 'Login do usuário'
-      description: 'Autentica o usuário e retorna um token JWT'
+      summary: Login
+      description: 'Retorna um token JWT'
       operationId: 3b889298fc72067506f70fb423b6a004
       requestBody:
         required: true

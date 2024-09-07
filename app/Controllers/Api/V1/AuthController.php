@@ -25,8 +25,8 @@ class AuthController extends BaseController
     
     #[OA\Post(
         path: "/api/v1/login",
-        summary: "Login do usuário",
-        description: "Autentica o usuário e retorna um token JWT",
+        summary: "Login",
+        description: "Retorna um token JWT",
         tags: ["Autenticação"],
         requestBody: new OA\RequestBody(
             required: true,
