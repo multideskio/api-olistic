@@ -893,9 +893,56 @@ paths:
     get:
       tags:
         - Usuários
-      summary: 'Listar usuários'
-      description: 'Retorna uma lista de usuários, com cache usando Redis'
+      summary: 'Lita de usuários - ROTA ADMIN*'
+      description: 'Retorna uma lista de usuários.'
       operationId: fb3b9d612f472659bcf1ab9f534217bd
+      parameters:
+        -
+          name: sort_by
+          in: query
+          description: 'Campo para ordenação dos resultados'
+          required: false
+          schema:
+            type: string
+            default: id
+            enum:
+              - id
+              - update
+        -
+          name: order
+          in: query
+          description: 'Ordem de ordenação (ASC ou DESC)'
+          required: false
+          schema:
+            type: string
+            default: ASC
+            enum:
+              - ASC
+              - DESC
+        -
+          name: s
+          in: query
+          description: 'Termo de busca para filtrar os clientes'
+          required: false
+          schema:
+            type: string
+        -
+          name: limite
+          in: query
+          description: 'Número de itens por página'
+          required: false
+          schema:
+            type: integer
+            default: 15
+            maximum: 200
+        -
+          name: page
+          in: query
+          description: 'Número da página para paginação'
+          required: false
+          schema:
+            type: integer
+            default: 1
       responses:
         '200':
           description: 'Lista de usuários'

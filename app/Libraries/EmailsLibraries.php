@@ -28,7 +28,7 @@ class EmailsLibraries
         $this->remetente     = $data['e-remetente'];
         $this->nomeRemetente = $data['n-remetente'];
 
-        log_message('info', 'EmailsLibraries initialized successfully.');
+        log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::__construct] EmailsLibraries initialized successfully.');
     }
 
     protected function data(): array
@@ -36,7 +36,7 @@ class EmailsLibraries
         $modelAdmin = new PlatformModel();
         $data = $modelAdmin->find(1);
 
-        log_message('info', 'Data retrieved from PlatformModel.');
+        log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::data] Data retrieved from PlatformModel.');
 
         return [
             'SMTPHost'    => $data['smtpHost'],
@@ -61,13 +61,13 @@ class EmailsLibraries
         $config['mailType']   = 'html';
         $this->email->initialize($config);
 
-        log_message('info', 'SMTP configuration initialized.');
+        log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::initializeSMTP] SMTP configuration initialized.');
     }
 
     public function send(string $email, string $assunto, string $message)
     {
         try {
-            log_message('info', 'Preparing to send email.');
+            log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::send] Preparing to send email.');
 
             $this->email->setFrom($this->remetente, $this->nomeRemetente);
             $this->email->setTo($email);
@@ -75,14 +75,14 @@ class EmailsLibraries
             $this->email->setMessage($message);
 
             if ($this->email->send()) {
-                log_message('info', "Email sent successfully to {$email}.");
+                log_message('info', "[LINE " . __LINE__ . "] [EmailsLibraries::send] Email sent successfully to {$email}.");
             } else {
                 $error = $this->email->printDebugger(['headers']);
-                log_message('error', 'Email sending failed: ' . $error);
-                throw new Exception('Falha ao enviar o email. Detalhes: ' . $error);
+                log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::send] Email sending failed: ' . $error);
+                throw new Exception('[LINE ' . __LINE__ . '] [EmailsLibraries::send] Falha ao enviar o email. Detalhes: ' . $error);
             }
         } catch (Exception $e) {
-            log_message('error', $e->getMessage());
+            log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::send] ' . $e->getMessage());
             throw $e;
         }
     }
@@ -90,7 +90,7 @@ class EmailsLibraries
     public function testarEnvioEmail(string $email, string $assunto, string $message): bool
     {
         try {
-            log_message('info', 'Preparing to send test email.');
+            log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] Preparing to send test email.');
 
             $this->email->setFrom($this->remetente, $this->nomeRemetente);
             $this->email->setTo($email);
@@ -98,15 +98,15 @@ class EmailsLibraries
             $this->email->setMessage($message);
 
             if ($this->email->send()) {
-                log_message('info', "Test email sent successfully to {$email}.");
+                log_message('info', "[LINE " . __LINE__ . "] [EmailsLibraries::testarEnvioEmail] Test email sent successfully to {$email}.");
                 return true;
             } else {
                 $error = $this->email->printDebugger(['headers']);
-                log_message('error', 'Test email sending failed: ' . $error);
-                throw new Exception('Falha ao enviar o email de teste. Detalhes: ' . $error);
+                log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] Test email sending failed: ' . $error);
+                throw new Exception('[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] Falha ao enviar o email de teste. Detalhes: ' . $error);
             }
         } catch (Exception $e) {
-            log_message('error', $e->getMessage());
+            log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] ' . $e->getMessage());
             return false;
         }
     }

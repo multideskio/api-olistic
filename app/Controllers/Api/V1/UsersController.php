@@ -58,10 +58,47 @@ class UsersController extends BaseController
 
     #[OA\Get(
         path: "/api/v1/users",
-        summary: "Listar usuários",
-        description: "Retorna uma lista de usuários, com cache usando Redis",
+        summary: "Lita de usuários - ROTA ADMIN*",
+        description: "Retorna uma lista de usuários.",
         tags: ["Usuários"],
         security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'sort_by',
+                in: 'query',
+                required: false,
+                description: 'Campo para ordenação dos resultados',
+                schema: new OA\Schema(type: 'string', enum: ['id', 'update'], default: 'id')
+            ),
+            new OA\Parameter(
+                name: 'order',
+                in: 'query',
+                required: false,
+                description: 'Ordem de ordenação (ASC ou DESC)',
+                schema: new OA\Schema(type: 'string', enum: ['ASC', 'DESC'], default: 'ASC')
+            ),
+            new OA\Parameter(
+                name: 's',
+                in: 'query',
+                required: false,
+                description: 'Termo de busca para filtrar os clientes',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'limite',
+                in: 'query',
+                required: false,
+                description: 'Número de itens por página',
+                schema: new OA\Schema(type: 'integer', default: 15, maximum: 200)
+            ),
+            new OA\Parameter(
+                name: 'page',
+                in: 'query',
+                required: false,
+                description: 'Número da página para paginação',
+                schema: new OA\Schema(type: 'integer', default: 1)
+            )
+        ],
         responses: [
             new OA\Response(
                 response: 200,

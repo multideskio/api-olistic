@@ -159,7 +159,7 @@ class WebhookController extends BaseController
             $webhook = $this->webhookLibraries->processTransaction($this->request);
             return $this->respond($webhook, $webhook['code']);
         } catch (\Exception $e) {
-            return $this->failForbidden($e->getMessage());
+            //return $this->failForbidden($e->getMessage());
         }
     }
 }

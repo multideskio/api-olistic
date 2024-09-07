@@ -16,7 +16,7 @@ class UsersModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['platformId', 'name', 'photo', 'email', 'phone', 'password', 'token', 'checked'];
+    protected $allowedFields    = ['platformId', 'name', 'photo', 'email', 'phone', 'password', 'token', 'checked', 'admin'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -39,9 +39,9 @@ class UsersModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['beforeData'];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
+    protected $beforeUpdate   = ['beforeData'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
@@ -56,38 +56,52 @@ class UsersModel extends Model
         $this->jwtConfig = new JwtConfig;
     }
 
+    protected function beforeData(array $data): array{
+
+        if (array_key_exists("password", $data["data"])) {
+            $data["data"]["password"] = password_hash($data["data"]["password"], PASSWORD_BCRYPT);
+        }
+
+        return $data;
+    }
+
     public function login($email, $password)
     {
         try {
             // Verifica o login (e-mail e senha)
             log_message('info', 'Tentativa de login para o email: ' . $email);
             $user = $this->verifyLogin($email, $password);
+            
             if (!$user) {
                 throw new \RuntimeException('Credenciais inválidas');
             }
 
-            // Verifica se o usuário possui uma inscrição ativa
-            log_message('info', 'Verificando inscrição ativa para o usuário ID: ' . $user['id']);
-            $subscription = $this->verifySubscription($user['id']);
-            if (!$subscription) {
-                throw new \RuntimeException('Usuário sem inscrição ativa');
-            }
+            if($user['admin'] == 0){
+                // Verifica se o usuário possui uma inscrição ativa
+                log_message('info', 'Verificando inscrição ativa para o usuário ID: ' . $user['id']);
+                $subscription = $this->verifySubscription($user['id']);
+                if (!$subscription) {
+                    throw new \RuntimeException('Usuário sem inscrição ativa');
+                }
 
-            // Verifica se o usuário possui um plano ativo
-            log_message('info', 'Verificando plano ativo para o plano ID: ' . $subscription['idPlan']);
-            $plan = $this->verifyPlan($subscription['idPlan']);
-            if (!$plan) {
-                throw new \RuntimeException('Plano do usuário não encontrado');
-            }
+                // Verifica se o usuário possui um plano ativo
+                log_message('info', 'Verificando plano ativo para o plano ID: ' . $subscription['idPlan']);
+                $plan = $this->verifyPlan($subscription['idPlan']);
+                if (!$plan) {
+                    throw new \RuntimeException('Plano do usuário não encontrado');
+                }
 
-            // Determina permissão com base no plano
-            $permission = $this->determinePermission($plan['permissionUser']);
-            if (!$permission) {
-                throw new \RuntimeException('Usuário sem permissão de acesso');
+                // Determina permissão com base no plano
+                $permission = $this->determinePermission($plan['permissionUser']);
+                if (!$permission) {
+                    throw new \RuntimeException('Usuário sem permissão de acesso');
+                }
+            }else{
+                $permission = 'SUPERADMIN';
             }
 
             // Gera o payload do token JWT com base nos dados do plano
-            $payload = $this->generateJwtPayload($user, $plan, $permission);
+            $payload = $this->generateJwtPayload($user, $permission);
 
             // Gera o token JWT
             log_message('info', 'Gerando token JWT para o usuário ID: ' . $user['id']);
@@ -121,7 +135,7 @@ class UsersModel extends Model
         }
     }
 
-    protected function generateJwtPayload($user, $plan, $permission)
+    protected function generateJwtPayload($user, $permission)
     {
         return [
             'iss' => $this->jwtConfig->issuer,
@@ -133,10 +147,7 @@ class UsersModel extends Model
             'data' => [
                 'id' => $user['id'],
                 'email' => $user['email'],
-                'name' => $user['name'],
-                'permission' => $plan['permissionUser'],
-                'plan' => $plan['namePlan'],
-                'planId' => $plan['id']
+                'name' => $user['name']
             ]
         ];
     }
@@ -159,6 +170,8 @@ class UsersModel extends Model
         if (!password_verify($pass, $rowLogin['password'])) {
             throw new Exception('Senha inválida');
         }
+
+
         return $rowLogin;
     }
 

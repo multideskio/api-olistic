@@ -40,7 +40,8 @@ class Users extends Migration
             'email' => [
                 'type' => 'VARCHAR',
                 'constraint' => '100',
-                'null' => true
+                'null' => true,
+                'unique' => true
             ],
             'phone' => [
                 'type' => 'VARCHAR',
@@ -58,6 +59,11 @@ class Users extends Migration
                 'null' => true
             ],
             'checked' => [
+                'type' => 'BOOLEAN',
+                'null' => false,
+                'DEFAULT' => false
+            ],
+            'admin' => [
                 'type' => 'BOOLEAN',
                 'null' => false,
                 'DEFAULT' => false

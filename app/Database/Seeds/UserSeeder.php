@@ -44,6 +44,18 @@ class UserSeeder extends Seeder
 
         $modelUser = new UsersModel();
 
+        $dataUser[0] = [
+            'platformId' => $idPlatform,
+            'name' => 'ADMIN',
+            'email' => 'adm@conect.app',
+            'password' => password_hash('123456', PASSWORD_BCRYPT),
+            'phone' => '+55 (62) 9 8115-4120',
+            'checked' => 1,
+            'admin' => true,
+            //'photo' => null,
+            'token' => time()
+        ];
+
         $dataUser[1] = [
             'platformId' => $idPlatform,
             'name' => 'Demo TP',
@@ -51,7 +63,8 @@ class UserSeeder extends Seeder
             'password' => password_hash('123456', PASSWORD_BCRYPT),
             'phone' => '+55 (62) 9 8115-4120',
             'checked' => 1,
-            'photo' => '/assets/images/users/user-dummy-img.jpg',
+            'admin' => false,
+            //'photo' => '/assets/images/users/user-dummy-img.jpg',
             'token' => time()
         ];
 
@@ -62,9 +75,11 @@ class UserSeeder extends Seeder
             'password' => password_hash('123456', PASSWORD_BCRYPT),
             'phone' => '+55 (62) 9 8115-4120',
             'checked' => 1,
-            'photo' => '/assets/images/users/user-dummy-img.jpg',
+            'admin' => false,
+            //'photo' => '/assets/images/users/user-dummy-img.jpg',
             'token' => time()*10
         ];
+
         $idUser = $modelUser->insertBatch($dataUser);
         
         $modelSubscription = new SubscriptionsModel();
