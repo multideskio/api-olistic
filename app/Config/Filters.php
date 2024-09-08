@@ -29,9 +29,9 @@ class Filters extends BaseFilters
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
-        'secureheaders' => SecureHeaders::class,
+        //'secureheaders' => SecureHeaders::class,
         //'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
+        //'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
 
