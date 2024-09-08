@@ -6,6 +6,16 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
+// Config/Routes.php
+$routes->options('(:any)', function() {
+    return service('response')
+        ->setStatusCode(200)
+        ->setHeader('Access-Control-Allow-Origin', '*') // Substitua '*' pelo domínio específico em produção
+        ->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+        ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+});
+
+
 $routes->get('/', 'Home::index');
 $routes->get('teste', 'Home::teste');
 $routes->get('docs', 'DocsController::index');
