@@ -48,7 +48,7 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function (
 });
 
 // Rota de login sem filtro JWT
-$routes->post('api/v1/login', 'Api\V1\AuthController::login', ['filter' => 'Cors:api']);
+$routes->post('api/v1/login', 'Api\V1\AuthController::login');
 $routes->get('api/v1/login', 'Api\V1\AuthController::aviso');
 $routes->get('api/v1/logout', 'Api\V1\AuthController::logout');
 $routes->get('api/v1/google', 'Api\V1\AuthController::googleLogin');
