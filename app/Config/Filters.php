@@ -56,7 +56,6 @@ class Filters extends BaseFilters
         'before' => [
             //'forcehttps', // Force Global Secure Requests
             'pagecache',  // Web Page Caching
-            'cors'
         ],
         'after' => [
             'pagecache',   // Web Page Caching
@@ -76,6 +75,7 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
+            'cors'
         ],
         'after' => [
             // 'honeypot',
@@ -97,7 +97,6 @@ class Filters extends BaseFilters
      * @var array<string, list<string>>
      */
     public array $methods = [
-        'OPTIONS'
     ];
 
     /**
