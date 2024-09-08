@@ -32,6 +32,7 @@ class Filters extends BaseFilters
         //'secureheaders' => SecureHeaders::class,
         //'cors'          => Cors::class,
         //'forcehttps'    => ForceHTTPS::class,
+        'cors'          => \App\Filters\CorsFilter::class, // Registro do filtro CORS
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
 
@@ -55,7 +56,7 @@ class Filters extends BaseFilters
         'before' => [
             //'forcehttps', // Force Global Secure Requests
             'pagecache',  // Web Page Caching
-            //'cors'
+            'cors'
         ],
         'after' => [
             'pagecache',   // Web Page Caching
