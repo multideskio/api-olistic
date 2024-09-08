@@ -24,7 +24,7 @@ use OpenApi\Attributes as OA;
     ),
     servers: [
         new OA\Server(
-            url: "http://api.multidesk.io",
+            url: "https://api.multidesk.io",
             description: "Servidor online"
         ),
         new OA\Server(
