@@ -17,16 +17,22 @@ class Cors extends BaseConfig
     ];
 
     public array $api = [
-        'allowedOrigins' => [],
-        'allowedOriginsPatterns' => [],
-        'supportsCredentials' => false,
+        'allowedOrigins' => ["*"],
+        'allowedOriginsPatterns' => ["*"],
+        'supportsCredentials' => true,
         'allowedHeaders' => [],
         'exposedHeaders' => [],
-        'allowedMethods' => [],
+        'allowedMethods' => [
+            'GET',
+            'POST',
+            'PUT',
+            'DELETE',
+            'OPTIONS'
+        ],
         'maxAge' => 7200,
     ];
 
-    public array $api001 = [
+    public array $apiAdmin = [
         // Replicando a configuração para uso em APIs específicas
         'allowedOrigins' => ['http://localhost:8000', 'https://terapia.conect.app', 'http://5.161.224.69:8800'],
         'allowedOriginsPatterns' => [],
