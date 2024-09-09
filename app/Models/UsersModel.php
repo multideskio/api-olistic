@@ -125,10 +125,13 @@ class UsersModel extends Model
     {
         switch ($permissionUser) {
             case 1:
+                log_message('info', 'PROFISSIONAL');
                 return "PROFISSIONAL";
             case 2:
+                log_message('info', 'TERAPEUTA_SI');
                 return "TERAPEUTA_SI";
             case 3:
+                log_message('info', 'SUPERADMIN');
                 return "SUPERADMIN";
             default:
                 return null;
