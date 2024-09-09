@@ -12,6 +12,7 @@ use App\Config\JwtConfig;
 class JwtAuth implements FilterInterface
 {
     protected $jwtConfig;
+    protected $newToken = null; // Para armazenar o novo token, se renovado
 
     public function __construct()
     {
@@ -21,11 +22,11 @@ class JwtAuth implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         $header = $request->getServer('HTTP_AUTHORIZATION');
-        if (!$header) {
-            return $this->unauthorizedResponse('Authorization header not found');
+        if (!$header || !preg_match('/Bearer\s(\S+)/', $header, $matches)) {
+            return $this->unauthorizedResponse('Authorization header not found or malformed');
         }
 
-        $token = explode(' ', $header)[1] ?? '';
+        $token = $matches[1];
 
         try {
             // Decodifica o token JWT e valida a assinatura
@@ -44,10 +45,7 @@ class JwtAuth implements FilterInterface
 
             // Se o tempo restante for menor que o limite (ex: 600 segundos), renova o token
             if ($timeRemaining < 600) { // 10 minutos
-                $newToken = $this->renewToken($decoded);
-                
-                // Adiciona o novo token no cabeçalho da resposta
-                $request->setHeader('X-Renewed-Token', $newToken);
+                $this->newToken = $this->renewToken($decoded);
             }
 
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
@@ -61,7 +59,10 @@ class JwtAuth implements FilterInterface
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Não é necessário implementar nada aqui para autenticação JWT
+        // Adiciona o novo token no cabeçalho da resposta, se houver
+        if ($this->newToken) {
+            $response->setHeader('X-Renewed-Token', $this->newToken);
+        }
     }
 
     private function renewToken($decoded)

@@ -9,10 +9,11 @@ use CodeIgniter\Router\RouteCollection;
 // Config/Routes.php
 $routes->options('(:any)', function() {
     return service('response')
-        ->setStatusCode(200) ; // Garante que o status é 200 OK
+        ->setStatusCode(200)// Garante que o status é 200 OK
         //->setHeader('Access-Control-Allow-Origin', 'http://localhost:8000')  // Ajuste para a origem específica necessária
         //->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
         //->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+        ;
 });
 
 $routes->get('/', 'Home::index');
