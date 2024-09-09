@@ -56,7 +56,8 @@ class UsersModel extends Model
         $this->jwtConfig = new JwtConfig;
     }
 
-    protected function beforeData(array $data): array{
+    protected function beforeData(array $data): array
+    {
 
         if (array_key_exists("password", $data["data"])) {
             $data["data"]["password"] = password_hash($data["data"]["password"], PASSWORD_BCRYPT);
@@ -71,12 +72,12 @@ class UsersModel extends Model
             // Verifica o login (e-mail e senha)
             log_message('info', 'Tentativa de login para o email: ' . $email);
             $user = $this->verifyLogin($email, $password);
-            
+
             if (!$user) {
                 throw new \RuntimeException('Credenciais inválidas');
             }
 
-            if($user['admin'] == 0){
+            if ($user['admin'] == 0) {
                 // Verifica se o usuário possui uma inscrição ativa
                 log_message('info', 'Verificando inscrição ativa para o usuário ID: ' . $user['id']);
                 $subscription = $this->verifySubscription($user['id']);
@@ -96,7 +97,7 @@ class UsersModel extends Model
                 if (!$permission) {
                     throw new \RuntimeException('Usuário sem permissão de acesso');
                 }
-            }else{
+            } else {
                 $permission = 'SUPERADMIN';
             }
 
@@ -168,12 +169,14 @@ class UsersModel extends Model
     {
         $rowLogin = $this->where('email', $email)->first();
         if (!$rowLogin) {
+            log_message('info', 'E-mail não encontrado');
             throw new Exception('E-mail não encontrado');
         }
+
         if (!password_verify($pass, $rowLogin['password'])) {
+            log_message('info', 'Senha inválida');
             throw new Exception('Senha inválida');
         }
-
 
         return $rowLogin;
     }
@@ -189,9 +192,10 @@ class UsersModel extends Model
         $modelSubscription = new SubscriptionsModel();
         $rowSubscription = $modelSubscription->where('idUser', $userId)->first();
         if (!$rowSubscription) {
+            log_message('info', 'Você não tem uma inscrição ativa.');
             throw new Exception('Você não tem uma inscrição ativa.');
         }
-
+        log_message('info', 'Inscrição ativa : ' . json_encode($rowSubscription));
         return $rowSubscription;
     }
 
@@ -204,14 +208,19 @@ class UsersModel extends Model
      */
     private function verifyPlan($userId)
     {
-        $modelSubscription = new SubscriptionsModel();
-        $rowSubscription   = $modelSubscription->where('idUser', $userId)->first();
+
+
         $modelPlan         = new PlansModel();
-        $rowPlan           = $modelPlan->where('id', $rowSubscription['idPlan'])->first();
+        $rowPlan           = $modelPlan->where('id', $userId)->first();
+        
         if (!$rowPlan) {
+            log_message('info', 'O plano não está ativo.');
             throw new Exception('O plano não está ativo.');
         }
+        
+        log_message('info', 'Inscrição ativa : ' . json_encode($rowPlan));
         return $rowPlan;
+
     }
 
     private function manageCustomer($rowLogin)
