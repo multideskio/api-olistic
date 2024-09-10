@@ -774,6 +774,18 @@ paths:
           content:
             application/json:
               schema:
+                properties:
+                  id: { type: integer, example: 1 }
+                  name: { type: string, example: 'John Doe' }
+                  photo: { type: string, example: null, nullable: true }
+                  email: { type: string, example: johndoe@example.com }
+                  phone: { type: string, example: '+1234567890' }
+                  doc: { type: string, example: '123456789' }
+                  generous: { type: string, example: M }
+                  birthDate: { type: string, format: date, example: '1990-01-01' }
+                  anamneses_count: { type: integer, example: 0 }
+                  anamneses: { type: array, items: { type: object } }
+                  timelines: { type: array, items: { type: object } }
                 type: object
         '401':
           description: 'Token inválido ou ausente'

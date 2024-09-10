@@ -208,19 +208,14 @@ class UsersModel extends Model
      */
     private function verifyPlan($userId)
     {
-
-
         $modelPlan         = new PlansModel();
         $rowPlan           = $modelPlan->where('id', $userId)->first();
-        
         if (!$rowPlan) {
             log_message('info', 'O plano não está ativo.');
             throw new Exception('O plano não está ativo.');
         }
-        
         log_message('info', 'Inscrição ativa : ' . json_encode($rowPlan));
         return $rowPlan;
-
     }
 
     private function manageCustomer($rowLogin)
@@ -237,9 +232,7 @@ class UsersModel extends Model
                 'photo'  => $rowLogin['photo'],
                 'phone'  => $rowLogin['phone'],
             ];
-
             $idCustomers = $modelCustomers->insert($dataCustomers);
-
             $modelTime = new TimeLinesModel();
             $modelTime->insert(
                 [

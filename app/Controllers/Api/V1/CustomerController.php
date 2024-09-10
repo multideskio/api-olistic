@@ -101,7 +101,7 @@ class CustomerController extends BaseController
      * @return ResponseInterface
      */
 
-    #[OA\Get(
+     #[OA\Get(
         path: '/api/v1/customers/{id}',
         summary: 'Obter detalhes de um cliente',
         description: 'Retorna os detalhes de um cliente específico',
@@ -120,13 +120,29 @@ class CustomerController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Detalhes do cliente',
-                content: new OA\JsonContent(type: 'object')
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                        new OA\Property(property: 'photo', type: 'string', nullable: true, example: null),
+                        new OA\Property(property: 'email', type: 'string', example: 'johndoe@example.com'),
+                        new OA\Property(property: 'phone', type: 'string', example: '+1234567890'),
+                        new OA\Property(property: 'doc', type: 'string', example: '123456789'),
+                        new OA\Property(property: 'generous', type: 'string', example: 'M'),
+                        new OA\Property(property: 'birthDate', type: 'string', format: 'date', example: '1990-01-01'),
+                        new OA\Property(property: 'anamneses_count', type: 'integer', example: 0),
+                        new OA\Property(property: 'anamneses', type: 'array', items: new OA\Items(type: 'object')),
+                        new OA\Property(property: 'timelines', type: 'array', items: new OA\Items(type: 'object'))
+                    ]
+                )
             ),
             new OA\Response(response: 401, description: 'Token inválido ou ausente'),
             new OA\Response(response: 404, description: 'Cliente não encontrado'),
             new OA\Response(response: 500, description: 'Erro interno do servidor')
         ]
     )]
+    
     public function show($id = null)
     {
         try {
