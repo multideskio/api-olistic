@@ -58,7 +58,7 @@ class UsersController extends BaseController
 
     #[OA\Get(
         path: "/api/v1/users",
-        summary: "Lita de usuários - ROTA ADMIN*",
+        summary: "Lista de usuários - ROTA ADMIN",
         description: "Retorna uma lista de usuários.",
         tags: ["Usuários"],
         security: [["bearerAuth" => []]],

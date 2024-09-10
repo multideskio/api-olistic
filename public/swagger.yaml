@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: 'Therapeutic Radiesthesia API'
-  description: '`API para demonstrar endpoints básicos do sistema`<br><ul><li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li><li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li><li>Para gerar o token, utilize o endpoint login.</li><li>Alguns endpoints estão bloqueados para o usuário `PROFISSIONAL` e `TERAPELTA_DE_SI`, peça a liberação para o desenvolvedor.</li></ul>'
+  description: '`API para demonstrar endpoints básicos do sistema`<br><ul><li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li><li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li><li>Para gerar o token, utilize o endpoint login.</li></ul>'
   contact:
     name: 'Paulo Henrique'
     url: 'https://api.conect.app'
@@ -905,7 +905,7 @@ paths:
     get:
       tags:
         - Usuários
-      summary: 'Lita de usuários - ROTA ADMIN*'
+      summary: 'Lista de usuários - ROTA ADMIN'
       description: 'Retorna uma lista de usuários.'
       operationId: fb3b9d612f472659bcf1ab9f534217bd
       parameters:
