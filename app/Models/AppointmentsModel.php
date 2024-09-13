@@ -61,11 +61,13 @@ class AppointmentsModel extends Model
         $currentPage  = $this->validatePageNumber($params['page'] ?? 1);
         $sortBy       = $this->validateSortBy($params['sort_by'] ?? 'id');
         $sortOrder    = $this->validateSortOrder($params['order'] ?? 'ASC');
+        $status      = $this->validateStatus($params['status'] ?? null);
         $itemsPerPage = $this->validateItemsPerPage($params['limite'] ?? null);
         $dateRange    = $this->getDateRange($params);
 
+
         // Build the appointment query
-        $this->buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange);
+        $this->buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status);
 
         // Paginate results and format response
         return $this->paginateResults($itemsPerPage, $currentPage, $params, $dateRange);
@@ -99,6 +101,12 @@ class AppointmentsModel extends Model
         return strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
     }
 
+    private function validateStatus($status)
+    {
+        $allowedSortFields = ['pending', 'completed', 'cancelled'];
+        return in_array($status, $allowedSortFields) ? $status : null;
+    }
+
     private function getDateRange(array $params): array
     {
         $startDate = $this->validateDate($params['start'] ?? null) ?? date('Y-m-d') . ' 00:00:00';
@@ -112,7 +120,7 @@ class AppointmentsModel extends Model
         return ['start' => $startDate, 'end' => $endDate];
     }
 
-    private function buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange): void
+    private function buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status): void
     {
         if ($currentUser['role'] !== 'SUPERADMIN') {
             $this->where('appointments.id_user', $currentUser['id']);
@@ -122,6 +130,10 @@ class AppointmentsModel extends Model
             ->orderBy('appointments.' . $sortBy, $sortOrder)
             ->where('date >=', $dateRange['start'])
             ->where('date <=', $dateRange['end']);
+
+        if($status){
+            $this->where('status', $status);
+        }
 
         if ($searchTerm) {
             $this->groupStart()
