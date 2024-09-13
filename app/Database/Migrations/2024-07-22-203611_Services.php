@@ -13,7 +13,6 @@ class Services extends Migration
         $db->disableForeignKeyChecks();
 
         $this->forge->addField([
-            
             'id' => [
                 'type' => 'BIGINT',
                 'unsigned' => true,

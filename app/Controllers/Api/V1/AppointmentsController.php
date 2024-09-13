@@ -75,25 +75,54 @@ class AppointmentsController extends BaseController
                     properties: [
                         new OA\Property(property: "rows", type: "array", items: new OA\Items(
                             properties: [
-                                new OA\Property(property: "id", type: "integer", example: 101),
-                                new OA\Property(property: "id_user", type: "integer", example: 5),
-                                new OA\Property(property: "id_customer", type: "integer", example: 8),
-                                new OA\Property(property: "date", type: "string", format: "date-time", example: "2024-09-13T15:30:00Z"),
-                                new OA\Property(property: "status", type: "string", example: "confirmado"),
-                                new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-08-20T09:45:00Z"),
-                                new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-09-10T10:20:00Z"),
+                                new OA\Property(property: "id", type: "string", example: "1"),
+                                new OA\Property(property: "id_user", type: "string", example: "1"),
+                                new OA\Property(property: "id_customer", type: "string", example: "1"),
+                                new OA\Property(property: "date", type: "string", format: "date-time", example: "2024-09-13 19:57:06"),
+                                new OA\Property(
+                                    property: "status",
+                                    type: "string",
+                                    enum: ['pending', 'completed', 'cancelled'],
+                                    example: "pending"
+                                ),
+                                new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-09-13 12:28:01"),
+                                new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-09-13 12:28:01"),
                                 new OA\Property(property: "deleted_at", type: "string", format: "date-time", example: null, nullable: true),
-                                new OA\Property(property: "idUser", type: "integer", example: 5),
-                                new OA\Property(property: "name", type: "string", example: "John Doe"),
-                                new OA\Property(property: "photo", type: "string", example: "https://example.com/photos/johndoe.jpg", nullable: true),
-                                new OA\Property(property: "email", type: "string", example: "johndoe@example.com"),
-                                new OA\Property(property: "phone", type: "string", example: "+55 (21) 9 9988-7766"),
-                                new OA\Property(property: "doc", type: "string", example: "123.456.789-00", nullable: true),
-                                new OA\Property(property: "generous", type: "string", example: "masculino", nullable: true),
-                                new OA\Property(property: "birthDate", type: "string", format: "date", example: "1985-05-15", nullable: true)
+                                new OA\Property(property: "idUser", type: "string", example: "1"),
+                                new OA\Property(property: "name", type: "string", example: "ADMIN"),
+                                new OA\Property(property: "photo", type: "string", example: null, nullable: true),
+                                new OA\Property(property: "email", type: "string", example: "adm@conect.app"),
+                                new OA\Property(property: "phone", type: "string", example: "+55 (62) 9 8115-4120"),
+                                new OA\Property(property: "doc", type: "string", example: null, nullable: true),
+                                new OA\Property(
+                                    property: "generous",
+                                    type: "string",
+                                    enum: ["male", "female", "unspecified", "non-binary", "gender fluid", "agender", "other"],
+                                    example: "unspecified"
+                                ),
+                                new OA\Property(property: "birthDate", type: "string", format: "date", example: null, nullable: true)
                             ]
-
                         )),
+                        new OA\Property(
+                            property: "params",
+                            type: "object",
+                            properties: [
+                                new OA\Property(property: "s", type: "string", example: ""),
+                                new OA\Property(property: "order", type: "string", example: ""),
+                                new OA\Property(property: "limite", type: "string", example: ""),
+                                new OA\Property(property: "page", type: "string", example: ""),
+                                new OA\Property(property: "start", type: "string", format: "date", example: "2024-09-10"),
+                                new OA\Property(property: "end", type: "string", format: "date", example: "2024-09-14")
+                            ]
+                        ),
+                        new OA\Property(
+                            property: "dateRange",
+                            type: "object",
+                            properties: [
+                                new OA\Property(property: "start", type: "string", format: "date-time", example: "2024-09-10 00:00:00"),
+                                new OA\Property(property: "end", type: "string", format: "date-time", example: "2024-09-14 00:00:00")
+                            ]
+                        ),
                         new OA\Property(
                             property: "pagination",
                             type: "object",
@@ -101,7 +130,7 @@ class AppointmentsController extends BaseController
                                 new OA\Property(property: "current_page", type: "integer", example: 1),
                                 new OA\Property(property: "total_pages", type: "integer", example: 1),
                                 new OA\Property(property: "total_items", type: "integer", example: 1),
-                                new OA\Property(property: "items_per_page", type: "integer", example: 10),
+                                new OA\Property(property: "items_per_page", type: "integer", example: 15),
                                 new OA\Property(property: "prev_page", type: "integer", example: null, nullable: true),
                                 new OA\Property(property: "next_page", type: "integer", example: null, nullable: true)
                             ]
@@ -114,12 +143,11 @@ class AppointmentsController extends BaseController
         ]
     )]
 
+
     public function index()
     {
         //
         try {
-
-
             $input = $this->request->getVar();
             $data = $this->modelAppointments->listAppointments($input);
             return $this->respond($data);

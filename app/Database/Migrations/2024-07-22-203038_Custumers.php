@@ -49,9 +49,9 @@ class Custumers extends Migration
                 'null' => true
             ],
             'generous' => [
-                'type' => 'varchar',
-                'constraint' => 30,
-                'null' => true
+                'type'       => 'ENUM',
+                'constraint' => ["male", "female", "unspecified", "non-binary", "gender fluid", "agender", "other"],
+                'default'    => 'unspecified',
             ],
             'birthDate' => [
                 'type' => 'date',

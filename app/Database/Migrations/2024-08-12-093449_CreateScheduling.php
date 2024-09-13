@@ -31,8 +31,8 @@ class CreateScheduling extends Migration
             ],
             'status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['pendente', 'concluído', 'cancelado'],
-                'default'    => 'pendente',
+                'constraint' => ['pending', 'completed', 'cancelled'],
+                'default'    => 'pending',
             ],
             'created_at' => [
                 'type' => 'DATETIME',
