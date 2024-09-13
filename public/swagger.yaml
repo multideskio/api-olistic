@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: 'Therapeutic Radiesthesia API'
-  description: '`API para demonstrar endpoints básicos do sistema`<br><ul><li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li><li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li><li>Para gerar o token, utilize o endpoint login.</li></ul>'
+  description: '`API para demonstrar endpoints básicos do sistema`<br><ul><li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li><li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li><li>Para gerar o token, utilize o endpoint login.</li><li>Endpoints marcados como acesso ADMIN.</li></ul>'
   contact:
     name: 'Paulo Henrique'
     url: 'https://api.conect.app'
@@ -583,6 +583,78 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/appointments:
+    get:
+      tags:
+        - Agendamentos
+      summary: 'Lista de agendamentos - última atualização 13/09/2024'
+      description: 'Retorna todos os agendamentos do usuário logado'
+      operationId: d3f60f51ec83391eda9230754668aff5
+      parameters:
+        -
+          name: sort_by
+          in: query
+          description: 'Campo para ordenação dos resultados'
+          required: false
+          schema:
+            type: string
+            default: id
+            enum:
+              - id
+              - date
+              - status
+        -
+          name: order
+          in: query
+          description: 'Ordem de ordenação (ASC ou DESC)'
+          required: false
+          schema:
+            type: string
+            default: ASC
+            enum:
+              - ASC
+              - DESC
+        -
+          name: s
+          in: query
+          description: 'Termo de busca para filtrar os agendamentos'
+          required: false
+          schema:
+            type: string
+        -
+          name: limite
+          in: query
+          description: 'Número de itens por página'
+          required: false
+          schema:
+            type: integer
+            default: 15
+            maximum: 100
+        -
+          name: page
+          in: query
+          description: 'Número da página para paginação'
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: 'Lista de agendamentos'
+          content:
+            application/json:
+              schema:
+                properties:
+                  rows: { type: array, items: { properties: { id: { type: integer, example: 101 }, id_user: { type: integer, example: 5 }, id_customer: { type: integer, example: 8 }, date: { type: string, format: date-time, example: '2024-09-13T15:30:00Z' }, status: { type: string, example: confirmado }, created_at: { type: string, format: date-time, example: '2024-08-20T09:45:00Z' }, updated_at: { type: string, format: date-time, example: '2024-09-10T10:20:00Z' }, deleted_at: { type: string, format: date-time, example: null, nullable: true }, idUser: { type: integer, example: 5 }, name: { type: string, example: 'John Doe' }, photo: { type: string, example: 'https://example.com/photos/johndoe.jpg', nullable: true }, email: { type: string, example: johndoe@example.com }, phone: { type: string, example: '+55 (21) 9 9988-7766' }, doc: { type: string, example: 123.456.789-00, nullable: true }, generous: { type: string, example: masculino, nullable: true }, birthDate: { type: string, format: date, example: '1985-05-15', nullable: true } }, type: object } }
+                  pagination: { properties: { current_page: { type: integer, example: 1 }, total_pages: { type: integer, example: 1 }, total_items: { type: integer, example: 1 }, items_per_page: { type: integer, example: 10 }, prev_page: { type: integer, example: null, nullable: true }, next_page: { type: integer, example: null, nullable: true } }, type: object }
+                type: object
+        '401':
+          description: 'Token inválido ou ausente'
+        '403':
+          description: 'Usuário sem permissão'
+      security:
+        -
+          bearerAuth: []
   /api/v1/login:
     post:
       tags:
@@ -905,8 +977,8 @@ paths:
     get:
       tags:
         - Usuários
-      summary: 'Lista de usuários - ROTA ADMIN'
-      description: 'Retorna uma lista de usuários.'
+      summary: 'Lista de usuários - Acesso admin - última atualização 13/09/2024 04:57'
+      description: 'Retorna todos os usuários e o plano contratado por ele'
       operationId: fb3b9d612f472659bcf1ab9f534217bd
       parameters:
         -
@@ -919,7 +991,8 @@ paths:
             default: id
             enum:
               - id
-              - update
+              - name
+              - email
         -
           name: order
           in: query
@@ -934,7 +1007,7 @@ paths:
         -
           name: s
           in: query
-          description: 'Termo de busca para filtrar os clientes'
+          description: 'Termo de busca para filtrar os usuários'
           required: false
           schema:
             type: string
@@ -946,7 +1019,7 @@ paths:
           schema:
             type: integer
             default: 15
-            maximum: 200
+            maximum: 100
         -
           name: page
           in: query
@@ -962,8 +1035,8 @@ paths:
             application/json:
               schema:
                 properties:
-                  status: { type: string, example: cache }
-                  data: { type: array, items: { properties: { user: { type: integer, example: 1 }, name: { type: string, example: 'John Doe' }, email: { type: string, example: john.doe@example.com } }, type: object } }
+                  rows: { type: array, items: { properties: { id: { type: integer, example: 101 }, name: { type: string, example: 'John Doe' }, email: { type: string, example: john.doe@example.com }, phone: { type: string, example: '+55 (11) 9 8765-4321' }, platformId: { type: integer, example: 2 }, admin: { type: boolean, example: false }, created: { type: string, format: date-time, example: '2024-08-15T10:30:00Z', nullable: true }, update: { type: string, format: date-time, example: '2024-09-12T14:45:00Z', nullable: true }, subscription_id: { type: integer, example: 5, nullable: true }, subscription_create: { type: string, format: date-time, example: '2024-09-09T16:12:03Z', nullable: true }, plan_name: { type: string, example: 'Premium Plan', nullable: true }, plan_id: { type: string, example: abcd1234efgh5678ijkl9101, nullable: true }, plan_permissionUser: { type: integer, example: 3, nullable: true }, plan_timeSubscription: { type: integer, example: 12, nullable: true } }, type: object } }
+                  pagination: { properties: { current_page: { type: integer, example: 1 }, total_pages: { type: integer, example: 1 }, total_items: { type: integer, example: 3 }, items_per_page: { type: integer, example: 15 }, prev_page: { type: integer, example: null, nullable: true }, next_page: { type: integer, example: null, nullable: true } }, type: object }
                 type: object
         '401':
           description: 'Token inválido ou ausente'
@@ -1049,7 +1122,10 @@ tags:
     description: 'Operações relacionadas à autenticação de usuários'
   -
     name: Usuários
-    description: 'Gerenciamento de usuários'
+    description: 'Gerenciamento de usuários - última atualização 13/09'
+  -
+    name: Agendamentos
+    description: 'Agendamento de atendimento - Em desenvolvimento'
   -
     name: Clientes
     description: 'Gerenciamento de clientes'

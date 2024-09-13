@@ -2,66 +2,33 @@
 
 namespace App\Controllers\Api\V1;
 
-use App\Config\JwtConfig;
-use App\Models\UsersModel;
+use App\Models\AppointmentsModel;
+use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\HTTP\ResponseInterface;
 use OpenApi\Attributes as OA;
 
-class UsersController extends BaseController
-{
 
+class AppointmentsController extends BaseController
+{
+    use ResponseTrait;
     /**
      * Return an array of resource objects, themselves in array format.
      *
      * @return ResponseInterface
      */
-    protected $userModel;
-    protected $jwtConfig;
+    protected $modelAppointments;
 
     public function __construct()
     {
-        $this->jwtConfig = new JwtConfig();
-        $this->userModel = new UsersModel();
-    }
-
-    #[OA\Get(
-        path: "/api/v1/user/me",
-        summary: "Obter informações do usuário autenticado",
-        description: "Retorna as informações do usuário autenticado usando JWT",
-        tags: ["Usuários"],
-        security: [["bearerAuth" => []]],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Informações do usuário",
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: "id", type: "integer", example: 1),
-                        new OA\Property(property: "name", type: "string", example: "John Doe"),
-                        new OA\Property(property: "email", type: "string", example: "john.doe@example.com"),
-                        new OA\Property(property: "role", type: "string", example: "PROFISSIONAL"),
-                        new OA\Property(property: "type", type: "string", example: "cache")
-                    ]
-                )
-            ),
-            new OA\Response(response: 401, description: "Não autorizado")
-        ]
-    )]
-
-    public function me()
-    {
-        try {
-            return $this->respond($this->userModel->me());
-        } catch (\Exception $e) {
-            return $this->fail($e->getMessage());
-        }
+        $this->modelAppointments = new AppointmentsModel();
     }
 
 
     #[OA\Get(
-        path: "/api/v1/users",
-        summary: "Lista de usuários - Acesso admin - última atualização 13/09/2024 04:57",
-        description: "Retorna todos os usuários e o plano contratado por ele",
-        tags: ["Usuários"],
+        path: "/api/v1/appointments",
+        summary: "Lista de agendamentos - última atualização 13/09/2024",
+        description: "Retorna todos os agendamentos do usuário logado",
+        tags: ["Agendamentos"],
         security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(
@@ -69,7 +36,7 @@ class UsersController extends BaseController
                 in: 'query',
                 required: false,
                 description: 'Campo para ordenação dos resultados',
-                schema: new OA\Schema(type: 'string', enum: ['id', 'name', 'email'], default: 'id')
+                schema: new OA\Schema(type: 'string', enum: ['id', 'date', 'status'], default: 'id')
             ),
             new OA\Parameter(
                 name: 'order',
@@ -82,7 +49,7 @@ class UsersController extends BaseController
                 name: 's',
                 in: 'query',
                 required: false,
-                description: 'Termo de busca para filtrar os usuários',
+                description: 'Termo de busca para filtrar os agendamentos',
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
@@ -103,25 +70,27 @@ class UsersController extends BaseController
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Lista de usuários",
+                description: "Lista de agendamentos",
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: "rows", type: "array", items: new OA\Items(
                             properties: [
                                 new OA\Property(property: "id", type: "integer", example: 101),
+                                new OA\Property(property: "id_user", type: "integer", example: 5),
+                                new OA\Property(property: "id_customer", type: "integer", example: 8),
+                                new OA\Property(property: "date", type: "string", format: "date-time", example: "2024-09-13T15:30:00Z"),
+                                new OA\Property(property: "status", type: "string", example: "confirmado"),
+                                new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-08-20T09:45:00Z"),
+                                new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-09-10T10:20:00Z"),
+                                new OA\Property(property: "deleted_at", type: "string", format: "date-time", example: null, nullable: true),
+                                new OA\Property(property: "idUser", type: "integer", example: 5),
                                 new OA\Property(property: "name", type: "string", example: "John Doe"),
-                                new OA\Property(property: "email", type: "string", example: "john.doe@example.com"),
-                                new OA\Property(property: "phone", type: "string", example: "+55 (11) 9 8765-4321"),
-                                new OA\Property(property: "platformId", type: "integer", example: 2),
-                                new OA\Property(property: "admin", type: "boolean", example: false),
-                                new OA\Property(property: "created", type: "string", format: "date-time", example: "2024-08-15T10:30:00Z", nullable: true),
-                                new OA\Property(property: "update", type: "string", format: "date-time", example: "2024-09-12T14:45:00Z", nullable: true),
-                                new OA\Property(property: "subscription_id", type: "integer", example: 5, nullable: true),
-                                new OA\Property(property: "subscription_create", type: "string", format: "date-time", example: "2024-09-09T16:12:03Z", nullable: true),
-                                new OA\Property(property: "plan_name", type: "string", example: "Premium Plan", nullable: true),
-                                new OA\Property(property: "plan_id", type: "string", example: "abcd1234efgh5678ijkl9101", nullable: true),
-                                new OA\Property(property: "plan_permissionUser", type: "integer", example: 3, nullable: true),
-                                new OA\Property(property: "plan_timeSubscription", type: "integer", example: 12, nullable: true)
+                                new OA\Property(property: "photo", type: "string", example: "https://example.com/photos/johndoe.jpg", nullable: true),
+                                new OA\Property(property: "email", type: "string", example: "johndoe@example.com"),
+                                new OA\Property(property: "phone", type: "string", example: "+55 (21) 9 9988-7766"),
+                                new OA\Property(property: "doc", type: "string", example: "123.456.789-00", nullable: true),
+                                new OA\Property(property: "generous", type: "string", example: "masculino", nullable: true),
+                                new OA\Property(property: "birthDate", type: "string", format: "date", example: "1985-05-15", nullable: true)
                             ]
 
                         )),
@@ -131,8 +100,8 @@ class UsersController extends BaseController
                             properties: [
                                 new OA\Property(property: "current_page", type: "integer", example: 1),
                                 new OA\Property(property: "total_pages", type: "integer", example: 1),
-                                new OA\Property(property: "total_items", type: "integer", example: 3),
-                                new OA\Property(property: "items_per_page", type: "integer", example: 15),
+                                new OA\Property(property: "total_items", type: "integer", example: 1),
+                                new OA\Property(property: "items_per_page", type: "integer", example: 10),
                                 new OA\Property(property: "prev_page", type: "integer", example: null, nullable: true),
                                 new OA\Property(property: "next_page", type: "integer", example: null, nullable: true)
                             ]
@@ -149,8 +118,10 @@ class UsersController extends BaseController
     {
         //
         try {
+
+
             $input = $this->request->getVar();
-            $data = $this->userModel->listUsers($input);
+            $data = $this->modelAppointments->listAppointments($input);
             return $this->respond($data);
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
@@ -167,7 +138,6 @@ class UsersController extends BaseController
     public function show($id = null)
     {
         //
-        return $this->respondNoContent();
     }
 
     /**
@@ -178,7 +148,6 @@ class UsersController extends BaseController
     public function new()
     {
         //
-        return $this->respondNoContent();
     }
 
     /**
@@ -189,7 +158,7 @@ class UsersController extends BaseController
     public function create()
     {
         //
-        return $this->respondNoContent();
+
     }
 
     /**
@@ -202,7 +171,6 @@ class UsersController extends BaseController
     public function edit($id = null)
     {
         //
-        return $this->respondNoContent();
     }
 
     /**
@@ -215,7 +183,6 @@ class UsersController extends BaseController
     public function update($id = null)
     {
         //
-        return $this->respondNoContent();
     }
 
     /**
@@ -228,6 +195,5 @@ class UsersController extends BaseController
     public function delete($id = null)
     {
         //
-        return $this->respondNoContent();
     }
 }

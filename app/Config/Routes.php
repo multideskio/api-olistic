@@ -54,6 +54,7 @@ $routes->group('api/v1', ['filter' => 'jwt:SUPERADMIN'], function ($routes) {
 //Rotas liberadas apenas para os profissionais e superadmins
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function ($routes) {
     $routes->resource('customers', ['controller' => 'Api\V1\CustomerController']);
+    $routes->resource('appointments', ['controller' => 'Api\V1\AppointmentsController']);
 });
 
 // Rota de login sem filtro JWT

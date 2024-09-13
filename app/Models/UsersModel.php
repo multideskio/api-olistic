@@ -14,7 +14,7 @@ class UsersModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = ['platformId', 'name', 'photo', 'email', 'phone', 'password', 'token', 'checked', 'admin'];
 
@@ -25,7 +25,7 @@ class UsersModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -64,6 +64,103 @@ class UsersModel extends Model
         }
 
         return $data;
+    }
+
+    public function listUsers(array $params): array
+    {
+        //define array
+        $response = [];
+
+        //busca dados do usuário logado
+        $userModel = new UsersModel();
+        $currentUser = $userModel->me();
+
+        //não está logado gera erro.
+        if (!isset($currentUser['id'])) {
+            throw new \RuntimeException('Usuário não autenticado.');
+        }
+
+        //id do usuário logado
+        $currentUserId = $currentUser['id'];
+
+        // Parâmetros de entrada
+        $searchTerm = $params['s'] ?? false;
+        $currentPage = (isset($params['page']) && intval($params['page']) > 0) ? intval($params['page']) : 1;
+        $sortBy = $params['sort_by'] ?? 'id';
+        $sortOrder = strtoupper($params['order'] ?? 'ASC');
+        $itemsPerPage = $this->validateItemsPerPage($params['limite'] ?? null);
+
+
+        // Construir a query principal
+        $this->groupBy('users.id')->orderBy('users.' . $sortBy, $sortOrder);
+
+        // Aplicar filtro de busca se o termo for fornecido
+        if ($searchTerm) {
+            $this->groupStart()
+                ->like('users.name', $searchTerm)
+                ->orLike('users.id', $searchTerm)
+                ->orLike('users.email', $searchTerm)
+                ->orLike('users.phone', $searchTerm)
+                ->groupEnd();
+        }
+
+        // Contar resultados totais para a paginação
+        $totalItems = $this->countAllResults(false); // 'false' mantém a query para a paginação
+
+        // Paginação dos resultados
+        $users = $this->paginate($itemsPerPage, '', $currentPage);
+
+        // Calcular links de navegação para paginação
+        $totalPages = ceil($totalItems / $itemsPerPage);
+        $prevPage = ($currentPage > 1) ? $currentPage - 1 : null;
+        $nextPage = ($currentPage < $totalPages) ? $currentPage + 1 : null;
+
+        $data = [];
+
+        $modelSubscription = new SubscriptionsModel();
+        $modelPlan = new PlansModel();
+
+        foreach ($users as $user) {
+            unset($user['password'], $user['token']);
+
+            $subscription = $modelSubscription->where('idUser', $user['id'])->first();
+            $plan = $subscription ? $modelPlan->where('id', $subscription['idPlan'])->first() : null;
+
+            // Achatar a estrutura de retorno
+            $data[] = [
+                "id" => $user['id'],
+                "name" => $user['name'],
+                "email" => $user['email'],
+                "phone" => $user['phone'],
+                "platformId" => $user['platformId'],
+                "admin" => $user['admin'],
+                "created" => $user['created_at'],
+                "update" => $user['updated_at'],
+                "subscription_id" => $subscription['id'] ?? null,
+                "subscription_create" => $subscription['created_at'] ?? null,
+                "plan_name" => $plan['namePlan'] ?? null,
+                "plan_id" => $plan['idPlan'] ?? null,
+                "plan_permissionUser" => $plan['permissionUser'] ?? null,
+                "plan_timeSubscription" => $plan['timeSubscription'] ?? null,
+            ];
+        }
+
+        // Montar o array de dados a ser retornado
+        $response = [
+            'rows'  => $data, // Resultados paginados com contagem de anamneses
+            'pagination' => [
+                'current_page' => $currentPage,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'items_per_page' => $itemsPerPage,
+                'prev_page' => $prevPage,
+                'next_page' => $nextPage,
+            ],
+            //'num'   => $resultMessage
+        ];
+
+
+        return $response;
     }
 
     public function login($email, $password)
@@ -280,6 +377,7 @@ class UsersModel extends Model
                     'id'    => $user['id'],
                     'name'  => $user['name'],
                     'email' => $user['email'],
+                    'photo' => $user['photo'],
                     'role'  => $role,
                     'type'  => 'cache'
                 ];
@@ -295,6 +393,7 @@ class UsersModel extends Model
                     'id'    => $user['id'],
                     'name'  => $user['name'],
                     'email' => $user['email'],
+                    'photo' => $user['photo'],
                     'role'  => $role,
                     'type'  => 'update'
                 ];
@@ -321,5 +420,23 @@ class UsersModel extends Model
         } catch (\Exception $e) {
             throw new \RuntimeException('Invalid or expired token: ' . $e->getMessage(), 401);
         }
+    }
+
+    private function validateItemsPerPage($value)
+    {
+        // Verifica se o valor está definido, se é numérico, e tenta converter para inteiro
+        $itemsPerPage = (isset($value) && is_numeric($value)) ? intval($value) : 15;
+
+        // Se a conversão falhar, retorna 15
+        if (!$itemsPerPage) {
+            $itemsPerPage = 15;
+        }
+
+        // Verifica o limite máximo de 200
+        if ($itemsPerPage > 200) {
+            $itemsPerPage = 200;
+        }
+
+        return $itemsPerPage;
     }
 }

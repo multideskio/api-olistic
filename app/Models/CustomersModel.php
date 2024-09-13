@@ -88,14 +88,14 @@ class CustomersModel extends Model
         $customers = $this->paginate($itemsPerPage, '', $currentPage);
 
         // Preparar mensagem de contagem de resultados
-        $itemsOnPage = count($customers);
+        /*$itemsOnPage = count($customers);
         if ($searchTerm) {
             $resultMessage = $itemsOnPage === 1 ? "1 resultado encontrado." : "{$itemsOnPage} resultados encontrados.";
         } else {
             $startItem = ($currentPage - 1) * $itemsPerPage + 1;
             $endItem = min($currentPage * $itemsPerPage, $totalItems);
             $resultMessage = "Exibindo resultados {$startItem} a {$endItem} de {$totalItems}.";
-        }
+        }*/
 
         // Calcular links de navegação para paginação
         $totalPages = ceil($totalItems / $itemsPerPage);
