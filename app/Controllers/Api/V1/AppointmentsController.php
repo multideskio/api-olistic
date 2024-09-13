@@ -65,6 +65,27 @@ class AppointmentsController extends BaseController
                 required: false,
                 description: 'Número da página para paginação',
                 schema: new OA\Schema(type: 'integer', default: 1)
+            ),
+            new OA\Parameter(
+                name: 'start',
+                in: 'query',
+                required: false,
+                description: 'Data inicial para filtro de período (inclusive)',
+                schema: new OA\Schema(type: 'string', format: 'date-time', example: '2024-09-01 00:00:00')
+            ),
+            new OA\Parameter(
+                name: 'end',
+                in: 'query',
+                required: false,
+                description: 'Data final para filtro de período (inclusive)',
+                schema: new OA\Schema(type: 'string', format: 'date-time', example: '2024-09-01 23:59:59')
+            ),
+            new OA\Parameter(
+                name: 'status',
+                in: 'query',
+                required: false,
+                description: 'Filtro de status dos agendamentos',
+                schema: new OA\Schema(type: 'string', enum: ['pending', 'completed', 'cancelled'], example: 'pending')
             )
         ],
         responses: [

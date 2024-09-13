@@ -638,6 +638,36 @@ paths:
           schema:
             type: integer
             default: 1
+        -
+          name: start
+          in: query
+          description: 'Data inicial para filtro de período (inclusive)'
+          required: false
+          schema:
+            type: string
+            format: date-time
+            example: '2024-09-01 00:00:00'
+        -
+          name: end
+          in: query
+          description: 'Data final para filtro de período (inclusive)'
+          required: false
+          schema:
+            type: string
+            format: date-time
+            example: '2024-09-01 23:59:59'
+        -
+          name: status
+          in: query
+          description: 'Filtro de status dos agendamentos'
+          required: false
+          schema:
+            type: string
+            enum:
+              - pending
+              - completed
+              - cancelled
+            example: pending
       responses:
         '200':
           description: 'Lista de agendamentos'
