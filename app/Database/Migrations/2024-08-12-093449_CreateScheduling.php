@@ -34,6 +34,12 @@ class CreateScheduling extends Migration
                 'constraint' => ['pending', 'completed', 'cancelled'],
                 'default'    => 'pending',
             ],
+            'type' => [
+                'type'       => 'ENUM',
+                'constraint' => ['consultation', 'anamnesis', 'return'],
+                'default'    => 'consultation',
+            ],
+            
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

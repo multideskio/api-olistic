@@ -53,6 +53,11 @@ class Custumers extends Migration
                 'constraint' => ["male", "female", "unspecified", "non-binary", "gender fluid", "agender", "other"],
                 'default'    => 'unspecified',
             ],
+            'type' => [
+                'type'       => 'ENUM',
+                'constraint' => ["family", "friend", "professional"],
+                'default'    => 'professional',
+            ],
             'birthDate' => [
                 'type' => 'date',
                 'null' => true

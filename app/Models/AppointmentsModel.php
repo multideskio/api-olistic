@@ -12,7 +12,7 @@ class AppointmentsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_user', 'id_customer', 'date', 'status'];
+    protected $allowedFields    = ['id_user', 'id_customer', 'date', 'status', 'type'];
 
     protected bool $allowEmptyInserts = true;
     protected bool $updateOnlyChanged = true;

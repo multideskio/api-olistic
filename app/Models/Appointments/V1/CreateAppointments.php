@@ -23,17 +23,18 @@ class CreateAppointments extends AppointmentsModel
     public function create(array $params)
     {
         $currentUser = $this->getAuthenticatedUser();
-        $customer = $this->getCustomer(intval($currentUser['id']), intval($params['id_customer']));
-        $date = $this->validateDate($params['date']);
+        $customer    = $this->getCustomer(intval($currentUser['id']), intval($params['id_customer']));
+        $date        = $this->validateDate($params['date']);
+        $type        = $this->validateType($params['type']);
 
         // Valida a data do compromisso
         if (!$date) {
-            throw new \RuntimeException('Data de agendamento inválida ou anterior à data atual.'); // 422
+            throw new \RuntimeException('Invalid scheduling date or earlier than the current date.'); // 422
         }
 
         // Verifica conflito de horário com outros compromissos
         if ($this->hasScheduleConflict($date, intval($currentUser['id']))) {
-            throw new \DomainException('Já existe um agendamento no mesmo horário ou em um intervalo de 30 min.'); // 409
+            throw new \DomainException('There is already a schedule at the same time or within a 30-minute interval.'); // 409
         }
 
         // Dados para inserção no banco de dados
@@ -41,19 +42,24 @@ class CreateAppointments extends AppointmentsModel
             'id_user' => $currentUser['id'],
             'id_customer' => $params['id_customer'],
             'date' => $date,
+            'type' => $type
         ];
 
         // Tenta inserir os dados no banco
         if (!$this->insert($data)) {
             $errors = $this->errors();
-            throw new \RuntimeException('Erro ao cadastrar o agendamento: ' . implode(', ', $errors)); // 422
+            throw new \RuntimeException('Error registering the appointment: ' . implode(', ', $errors)); // 422
         }
 
         // Obtém o ID do compromisso recém-criado
         $id = $this->getInsertID();
-        return ['id' => $id, 'message' => 'Agendamento criado com sucesso.'];
+        return ['id' => $id, 'message' => 'Schedule created successfully.'];
     }
 
+    private function validateType($type){
+        $allowedSortFields = ['consultation', 'anamnesis', 'return'];
+        return in_array($type, $allowedSortFields) ? $type : 'consultation';
+    }
 
     /**
      * Obtém o usuário autenticado.
@@ -67,8 +73,8 @@ class CreateAppointments extends AppointmentsModel
         $currentUser = $userModel->me();
 
         if (!isset($currentUser['id'])) {
-            log_message('info', __LINE__ . ' Usuário não autenticado.');
-            throw new \RuntimeException('Usuário não autenticado.');
+            log_message('info', __LINE__ . ' Unauthenticated user.');
+            throw new \RuntimeException('Unauthenticated user.');
         }
 
         return $currentUser;
@@ -94,8 +100,8 @@ class CreateAppointments extends AppointmentsModel
         )->findAll();
 
         if (!$customer) {
-            log_message('info', __LINE__ . ' O cliente não é do usuário atual.');
-            throw new \RuntimeException('Usuário sem permissão para cadastrar o agendamento para o cliente atual.');
+            log_message('info', __LINE__ . "The client is not the current user's.");
+            throw new \RuntimeException('User without permission to register the appointment for the current customer.');
         }
 
         return $customer;
