@@ -2,6 +2,8 @@
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\Appointments\V1\CreateAppointments;
+use App\Models\Appointments\V1\listAppointments;
 use App\Models\AppointmentsModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -24,7 +26,7 @@ class AppointmentsController extends BaseController
     }
 
 
-    #[OA\Get(
+    /*#[OA\Get(
         path: "/api/v1/appointments",
         summary: "Lista de agendamentos - última atualização 13/09/2024",
         description: "Retorna todos os agendamentos do usuário logado",
@@ -162,7 +164,7 @@ class AppointmentsController extends BaseController
             new OA\Response(response: 401, description: 'Token inválido ou ausente'),
             new OA\Response(response: 403, description: 'Usuário sem permissão'),
         ]
-    )]
+    )]*/
 
 
     public function index()
@@ -170,7 +172,8 @@ class AppointmentsController extends BaseController
         //
         try {
             $input = $this->request->getVar();
-            $data = $this->modelAppointments->listAppointments($input);
+            $listAppointments = new listAppointments();
+            $data = $listAppointments->listAppointments($input);
             return $this->respond($data);
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
@@ -207,7 +210,22 @@ class AppointmentsController extends BaseController
     public function create()
     {
         //
-
+        try {
+            $createAppointments = new CreateAppointments();
+            $input = $this->request->getJSON(true);
+            $create = $createAppointments->create($input);
+            return $this->respondCreated($create); // 201 Created
+        } catch (\RuntimeException $e) {
+            // Erros específicos capturados na lógica de negócios
+            return $this->failValidationErrors($e->getMessage()); // 422 Unprocessable Entity
+        } catch (\DomainException $e) {
+            // Erro de conflito, por exemplo, agendamento duplicado
+            return $this->failResourceExists($e->getMessage()); // 409 Conflict
+        } catch (\Exception $e) {
+            // Erros genéricos ou inesperados
+            log_message('error', $e->getMessage()); // Log para monitoramento
+            return $this->failServerError('Erro inesperado, por favor tente novamente mais tarde.'); // 500 Internal Server Error
+        }
     }
 
     /**

@@ -32,11 +32,23 @@ class JwtAuth implements FilterInterface
             // Decodifica o token JWT e valida a assinatura
             $decoded = JWT::decode($token, new Key($this->jwtConfig->jwtSecret, 'HS256'));
 
+            // Verificação do conteúdo decodificado
+            log_message('debug', 'Payload decodificado: ' . print_r($decoded, true));
+
             // Verifica se a role do usuário está dentro das permitidas
             $role = $decoded->role ?? null;
 
             if (!$role || !in_array($role, $arguments)) {
                 return $this->forbiddenResponse('Access denied for your role');
+            }
+
+            // Acessa o ID do usuário dentro de 'data'
+            $uid = $decoded->data->id ?? null;
+
+            // Verifica se o UID (ID do usuário) está presente no token decodificado
+            if (!$uid) {
+                log_message('error', 'UID não encontrado no token decodificado.');
+                return $this->unauthorizedResponse('Token inválido: UID não encontrado');
             }
 
             // Calcula o tempo restante para expiração do token
@@ -72,7 +84,11 @@ class JwtAuth implements FilterInterface
             'iat' => time(),
             'exp' => time() + $this->jwtConfig->tokenExpiration, // Novo tempo de expiração
             'role' => $decoded->role,
-            'uid' => $decoded->uid // Outros dados que você pode precisar
+            'data' => [
+                'id' => $decoded->data->id, // Acessa o ID dentro de 'data'
+                'email' => $decoded->data->email,
+                'name' => $decoded->data->name
+            ]
         ];
 
         // Gera o novo token com o payload atualizado
