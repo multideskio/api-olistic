@@ -139,7 +139,7 @@ class listAppointments extends AppointmentsModel
             $this->where('appointments.id_user', $currentUser['id']);
         }
 
-        $this->select("appointments.id As id_appointment, appointments.date As appointment, appointments.status As status")
+        $this->select("appointments.id As id_appointment, appointments.date As date, appointments.status As status")
             ->select("customers.id As id_customer, customers.name As name_customer")
             ->select("users.id As id_user, users.name As name_user")
             ->join("users", "appointments.id_user = users.id")
