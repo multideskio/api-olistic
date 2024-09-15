@@ -10,7 +10,7 @@ use App\Models\UsersModel;
  *
  * Extende AppointmentsModel para listar compromissos com base nos parâmetros fornecidos.
  */
-class listAppointments extends AppointmentsModel
+class SearchAppointments extends AppointmentsModel
 {
     /**
      * Lista compromissos com base nos parâmetros fornecidos.
@@ -36,24 +36,6 @@ class listAppointments extends AppointmentsModel
 
         // Pagina os resultados e formata a resposta
         return $this->paginateResults($itemsPerPage, $currentPage, $params, $dateRange);
-    }
-
-    /**
-     * Obtém o usuário autenticado.
-     *
-     * @return array Dados do usuário autenticado.
-     * @throws \RuntimeException Se o usuário não estiver autenticado.
-     */
-    private function getAuthenticatedUser(): array
-    {
-        $userModel = new UsersModel();
-        $currentUser = $userModel->me();
-
-        if (!isset($currentUser['id'])) {
-            throw new \RuntimeException('Usuário não autenticado.');
-        }
-
-        return $currentUser;
     }
 
     /**
@@ -157,6 +139,7 @@ class listAppointments extends AppointmentsModel
         if ($searchTerm) {
             $this->groupStart()
                 ->like('customers.name', $searchTerm)
+                ->orLike('appointments.id', $searchTerm)
                 ->orLike('customers.email', $searchTerm)
                 ->orLike('customers.phone', $searchTerm)
                 ->groupEnd();

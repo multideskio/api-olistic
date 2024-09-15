@@ -3,7 +3,10 @@
 namespace App\Controllers\Api\V1;
 
 use App\Models\Appointments\V1\CreateAppointments;
-use App\Models\Appointments\V1\listAppointments;
+use App\Models\Appointments\V1\DeleteAppointments;
+use App\Models\Appointments\V1\GetAppointments;
+use App\Models\Appointments\V1\SearchAppointments;
+use App\Models\Appointments\V1\UpdateAppointments;
 use App\Models\AppointmentsModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -26,171 +29,242 @@ class AppointmentsController extends BaseController
     }
 
 
-    /*#[OA\Get(
-        path: "/api/v1/appointments",
-        summary: "Lista de agendamentos - última atualização 13/09/2024",
-        description: "Retorna todos os agendamentos do usuário logado",
-        tags: ["Agendamentos"],
-        security: [["bearerAuth" => []]],
+
+    #[OA\Get(
+        path: '/api/v1/appointments',
+        summary: 'Search appointments',
+        description: 'Retrieves a list of appointments based on various filters.',
+        tags: ['Agendamentos'],
+        security: [['bearerAuth' => []]],
         parameters: [
             new OA\Parameter(
-                name: 'sort_by',
+                name: 's',
                 in: 'query',
                 required: false,
-                description: 'Campo para ordenação dos resultados',
-                schema: new OA\Schema(type: 'string', enum: ['id', 'date', 'status'], default: 'id')
+                description: 'Search term for filtering appointments by customer name, email, or phone',
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'order',
                 in: 'query',
                 required: false,
-                description: 'Ordem de ordenação (ASC ou DESC)',
+                description: 'Order of the results. Possible values: ASC, DESC.',
                 schema: new OA\Schema(type: 'string', enum: ['ASC', 'DESC'], default: 'ASC')
             ),
             new OA\Parameter(
-                name: 's',
+                name: 'sort_by',
                 in: 'query',
                 required: false,
-                description: 'Termo de busca para filtrar os agendamentos',
-                schema: new OA\Schema(type: 'string')
+                description: 'Field to sort the results by. Possible values: id, date, name, status.',
+                schema: new OA\Schema(type: 'string', enum: ['id', 'date', 'name', 'status'], default: 'id')
             ),
             new OA\Parameter(
                 name: 'limite',
                 in: 'query',
                 required: false,
-                description: 'Número de itens por página',
-                schema: new OA\Schema(type: 'integer', default: 15, maximum: 100)
+                description: 'Limit the number of results per page',
+                schema: new OA\Schema(type: 'integer', default: 10)
             ),
             new OA\Parameter(
                 name: 'page',
                 in: 'query',
                 required: false,
-                description: 'Número da página para paginação',
+                description: 'Page number for pagination',
                 schema: new OA\Schema(type: 'integer', default: 1)
             ),
             new OA\Parameter(
                 name: 'start',
                 in: 'query',
                 required: false,
-                description: 'Data inicial para filtro de período (inclusive)',
-                schema: new OA\Schema(type: 'string', format: 'date-time', example: '2024-09-01 00:00:00')
+                description: 'Start date for filtering appointments in format Y-m-d H:i',
+                schema: new OA\Schema(type: 'string', format: 'datetime', example: '2024-09-01 00:00')
             ),
             new OA\Parameter(
                 name: 'end',
                 in: 'query',
                 required: false,
-                description: 'Data final para filtro de período (inclusive)',
-                schema: new OA\Schema(type: 'string', format: 'date-time', example: '2024-09-01 23:59:59')
+                description: 'End date for filtering appointments in format Y-m-d H:i',
+                schema: new OA\Schema(type: 'string', format: 'datetime', example: '2024-09-30 23:59')
             ),
             new OA\Parameter(
                 name: 'status',
                 in: 'query',
                 required: false,
-                description: 'Filtro de status dos agendamentos',
-                schema: new OA\Schema(type: 'string', enum: ['pending', 'completed', 'cancelled'], example: 'pending')
-            )
+                description: 'Status of the appointments to filter. Possible values: pending, completed, cancelled.',
+                schema: new OA\Schema(type: 'string', enum: ['pending', 'completed', 'cancelled'])
+            ),
+            new OA\Parameter(
+                name: 'type',
+                in: 'query',
+                required: false,
+                description: 'Type of the appointment. Possible values: consultation, anamnesis, return.',
+                schema: new OA\Schema(type: 'string', enum: ['consultation', 'anamnesis', 'return'])
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Lista de agendamentos",
+                description: 'List of appointments retrieved successfully',
                 content: new OA\JsonContent(
+                    type: 'object',
                     properties: [
-                        new OA\Property(property: "rows", type: "array", items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: "id", type: "string", example: "1"),
-                                new OA\Property(property: "id_user", type: "string", example: "1"),
-                                new OA\Property(property: "id_customer", type: "string", example: "1"),
-                                new OA\Property(property: "date", type: "string", format: "date-time", example: "2024-09-13 19:57:06"),
-                                new OA\Property(
-                                    property: "status",
-                                    type: "string",
-                                    enum: ['pending', 'completed', 'cancelled'],
-                                    example: "pending"
-                                ),
-                                new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-09-13 12:28:01"),
-                                new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-09-13 12:28:01"),
-                                new OA\Property(property: "deleted_at", type: "string", format: "date-time", example: null, nullable: true),
-                                new OA\Property(property: "idUser", type: "string", example: "1"),
-                                new OA\Property(property: "name", type: "string", example: "ADMIN"),
-                                new OA\Property(property: "photo", type: "string", example: null, nullable: true),
-                                new OA\Property(property: "email", type: "string", example: "adm@conect.app"),
-                                new OA\Property(property: "phone", type: "string", example: "+55 (62) 9 8115-4120"),
-                                new OA\Property(property: "doc", type: "string", example: null, nullable: true),
-                                new OA\Property(
-                                    property: "generous",
-                                    type: "string",
-                                    enum: ["male", "female", "unspecified", "non-binary", "gender fluid", "agender", "other"],
-                                    example: "unspecified"
-                                ),
-                                new OA\Property(property: "birthDate", type: "string", format: "date", example: null, nullable: true)
-                            ]
-                        )),
                         new OA\Property(
-                            property: "params",
-                            type: "object",
+                            property: 'rows',
+                            type: 'array',
+                            description: 'List of appointments',
+                            items: new OA\Items(
+                                type: 'object',
+                                properties: [
+                                    new OA\Property(property: 'id_appointment', type: 'integer', description: 'ID of the appointment'),
+                                    new OA\Property(property: 'appointment', type: 'string', format: 'datetime', description: 'Date and time of the appointment'),
+                                    new OA\Property(property: 'status', type: 'string', description: 'Status of the appointment'),
+                                    new OA\Property(property: 'id_customer', type: 'integer', description: 'ID of the customer'),
+                                    new OA\Property(property: 'name_customer', type: 'string', description: 'Name of the customer'),
+                                    new OA\Property(property: 'id_user', type: 'integer', description: 'ID of the user who created the appointment'),
+                                    new OA\Property(property: 'name_user', type: 'string', description: 'Name of the user who created the appointment')
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'params',
+                            type: 'object',
+                            description: 'Parameters used for filtering',
                             properties: [
-                                new OA\Property(property: "s", type: "string", example: ""),
-                                new OA\Property(property: "order", type: "string", example: ""),
-                                new OA\Property(property: "limite", type: "string", example: ""),
-                                new OA\Property(property: "page", type: "string", example: ""),
-                                new OA\Property(property: "start", type: "string", format: "date", example: "2024-09-10"),
-                                new OA\Property(property: "end", type: "string", format: "date", example: "2024-09-14")
+                                new OA\Property(property: 's', type: 'string', description: 'Search term used'),
+                                new OA\Property(property: 'order', type: 'string', description: 'Order of results'),
+                                new OA\Property(property: 'sort_by', type: 'string', description: 'Field used for sorting'),
+                                new OA\Property(property: 'limite', type: 'integer', description: 'Number of results per page'),
+                                new OA\Property(property: 'page', type: 'integer', description: 'Current page number'),
+                                new OA\Property(property: 'start', type: 'string', format: 'datetime', description: 'Start date for filtering'),
+                                new OA\Property(property: 'end', type: 'string', format: 'datetime', description: 'End date for filtering'),
+                                new OA\Property(property: 'status', type: 'string', description: 'Status filter used'),
                             ]
                         ),
                         new OA\Property(
-                            property: "dateRange",
-                            type: "object",
+                            property: 'dateRange',
+                            type: 'object',
+                            description: 'Date range applied in filtering',
                             properties: [
-                                new OA\Property(property: "start", type: "string", format: "date-time", example: "2024-09-10 00:00:00"),
-                                new OA\Property(property: "end", type: "string", format: "date-time", example: "2024-09-14 00:00:00")
+                                new OA\Property(property: 'start', type: 'string', format: 'datetime', description: 'Start date of the range'),
+                                new OA\Property(property: 'end', type: 'string', format: 'datetime', description: 'End date of the range')
                             ]
                         ),
                         new OA\Property(
-                            property: "pagination",
-                            type: "object",
+                            property: 'pagination',
+                            type: 'object',
+                            description: 'Pagination details',
                             properties: [
-                                new OA\Property(property: "current_page", type: "integer", example: 1),
-                                new OA\Property(property: "total_pages", type: "integer", example: 1),
-                                new OA\Property(property: "total_items", type: "integer", example: 1),
-                                new OA\Property(property: "items_per_page", type: "integer", example: 15),
-                                new OA\Property(property: "prev_page", type: "integer", example: null, nullable: true),
-                                new OA\Property(property: "next_page", type: "integer", example: null, nullable: true)
+                                new OA\Property(property: 'current_page', type: 'integer', description: 'Current page number'),
+                                new OA\Property(property: 'total_pages', type: 'integer', description: 'Total number of pages'),
+                                new OA\Property(property: 'total_items', type: 'integer', description: 'Total number of items'),
+                                new OA\Property(property: 'items_per_page', type: 'integer', description: 'Number of items per page'),
+                                new OA\Property(property: 'prev_page', type: 'integer', nullable: true, description: 'Previous page number if applicable'),
+                                new OA\Property(property: 'next_page', type: 'integer', nullable: true, description: 'Next page number if applicable')
                             ]
                         )
                     ]
                 )
             ),
-            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
-            new OA\Response(response: 403, description: 'Usuário sem permissão'),
+            new OA\Response(
+                response: 401,
+                description: 'Invalid or missing token'
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error: Check the query parameters'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Internal server error'
+            )
         ]
-    )]*/
-
-
+    )]
     public function index()
     {
-        //
         try {
             $input = $this->request->getVar();
-            $listAppointments = new listAppointments();
+            $listAppointments = new SearchAppointments();
             $data = $listAppointments->listAppointments($input);
             return $this->respond($data);
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
         }
     }
+    
 
-    /**
-     * Return the properties of a resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
+    
+    #[OA\Get(
+        path: '/api/v1/appointments/{id}',
+        summary: 'Get an appointment',
+        description: 'Retrieves details of an appointment by its ID.',
+        tags: ['Agendamentos'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Appointment ID',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Appointment details retrieved successfully',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'id_appointment', type: 'integer', description: 'ID of the appointment'),
+                        new OA\Property(property: 'date', type: 'string', format: 'datetime', description: 'Date and time of the appointment'),
+                        new OA\Property(property: 'status', type: 'string', description: 'Status of the appointment'),
+                        new OA\Property(property: 'id_customer', type: 'integer', description: 'ID of the customer'),
+                        new OA\Property(property: 'name_customer', type: 'string', description: 'Name of the customer'),
+                        new OA\Property(property: 'id_user', type: 'integer', description: 'ID of the user'),
+                        new OA\Property(property: 'name_user', type: 'string', description: 'Name of the user who created the appointment')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Invalid or missing token'
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Appointment not found'
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error: ID is required'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Internal server error'
+            )
+        ]
+    )]
     public function show($id = null)
     {
-        //
+        try {
+            // Check if the ID was provided
+            if (is_null($id)) {
+                return $this->failValidationErrors('Appointment ID is required.');
+            }
+    
+            $getApp = new GetAppointments();
+    
+            $data = $getApp->id($id);
+    
+            return $this->respond($data); // Returns 200 OK with appointment details
+        } catch (\CodeIgniter\Exceptions\PageNotFoundException $e) {
+            // Respond with 404 Not Found if the appointment does not exist
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Respond with generic error for other exceptions
+            return $this->fail($e->getMessage());
+        }
     }
+    
 
     /**
      * Return a new resource object, with default properties.
@@ -202,65 +276,239 @@ class AppointmentsController extends BaseController
         //
     }
 
-    /**
-     * Create a new resource object, from "posted" parameters.
-     *
-     * @return ResponseInterface
-     */
+    #[OA\Post(
+        path: '/api/v1/appointments',
+        summary: 'Create a new appointment',
+        description: 'Creates a new appointment with the provided data.',
+        tags: ['Agendamentos'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(
+                        property: 'id_customer',
+                        type: 'integer',
+                        description: 'ID of the customer'
+                    ),
+                    new OA\Property(
+                        property: 'date',
+                        type: 'string',
+                        format: 'datetime',
+                        description: 'Date and time of the appointment in format Y-m-d H:i',
+                        example: '2024-09-15 09:30'
+                    ),
+                    new OA\Property(
+                        property: 'type',
+                        type: 'string',
+                        description: 'Type of the appointment. Possible values: consultation, anamnesis, return.',
+                        enum: ['consultation', 'anamnesis', 'return']
+                    ),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Appointment created successfully',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer', description: 'ID of the created appointment'),
+                        new OA\Property(property: 'message', type: 'string', example: 'Schedule created successfully.')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 409,
+                description: 'Conflict: Appointment already exists'
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Internal server error'
+            )
+        ]
+    )]
     public function create()
     {
-        //
         try {
             $createAppointments = new CreateAppointments();
             $input = $this->request->getJSON(true);
             $create = $createAppointments->create($input);
             return $this->respondCreated($create); // 201 Created
         } catch (\RuntimeException $e) {
-            // Erros específicos capturados na lógica de negócios
+            // Specific business logic errors captured
             return $this->failValidationErrors($e->getMessage()); // 422 Unprocessable Entity
         } catch (\DomainException $e) {
-            // Erro de conflito, por exemplo, agendamento duplicado
+            // Conflict error, e.g., duplicate appointment
             return $this->failResourceExists($e->getMessage()); // 409 Conflict
         } catch (\Exception $e) {
-            // Erros genéricos ou inesperados
-            log_message('error', $e->getMessage()); // Log para monitoramento
-            return $this->failServerError('Erro inesperado, por favor tente novamente mais tarde.'); // 500 Internal Server Error
+            // Generic or unexpected errors
+            log_message('error', $e->getMessage()); // Log for monitoring
+            return $this->failServerError('Internal Server Error: Please try again later.'); // 500 Internal Server Error
         }
     }
 
-    /**
-     * Return the editable properties of a resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
     public function edit($id = null)
     {
         //
+
     }
 
-    /**
-     * Add or update a model resource, from "posted" properties.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
+
+    #[OA\Put(
+        path: '/api/v1/appointments/{id}',
+        summary: 'Update an appointment',
+        description: 'Updates an existing appointment based on the provided ID.',
+        tags: ['Agendamentos'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Appointment ID',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(
+                        property: 'status',
+                        type: 'string',
+                        description: 'Status of the appointment. Possible values: pending, completed, cancelled.',
+                        enum: ['pending', 'completed', 'cancelled']
+                    ),
+                    new OA\Property(
+                        property: 'type',
+                        type: 'string',
+                        description: 'Type of the appointment. Possible values: consultation, anamnesis, return.',
+                        enum: ['consultation', 'anamnesis', 'return']
+                    ),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Appointment updated successfully'
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Invalid or missing token'
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Appointment not found'
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Internal server error'
+            )
+        ]
+    )]
+
     public function update($id = null)
     {
-        //
+        try {
+            // Check if the ID was provided
+            if (is_null($id)) {
+                return $this->failValidationErrors('Appointment ID is required.');
+            }
+
+            $appUpdate = new UpdateAppointments();
+
+            $input = $this->request->getJSON(TRUE);
+
+            // Calls the updateRow method of the model
+            $appUpdate->updateRow((int) $id, $input);
+
+            // Returns the success response with status 200 OK
+            return $this->respond(['message' => 'Appointment updated successfully.']);
+        } catch (\InvalidArgumentException $e) {
+            // Respond with validation error (422 Unprocessable Entity)
+            return $this->failValidationErrors($e->getMessage());
+        } catch (\RuntimeException $e) {
+            // Respond with execution error (404 Not Found or 403 Forbidden)
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Respond with internal error (500 Internal Server Error)
+            return $this->failServerError('Internal Server Error: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Delete the designated resource object from the model.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
+
+
+    #[OA\Delete(
+        path: '/api/v1/appointments/{id}',
+        summary: 'Delete an appointment',
+        description: 'Deletes an existing appointment based on the provided ID.',
+        tags: ['Agendamentos'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Appointment ID',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Appointment deleted successfully'
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Invalid or missing token'
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Appointment not found'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Internal server error'
+            )
+        ]
+    )]
+
     public function delete($id = null)
     {
-        //
+        try {
+            // Check if the ID was provided
+            if (is_null($id)) {
+                return $this->failValidationErrors('Appointment ID is required.');
+            }
+
+            $appDelete = new DeleteAppointments();
+            // Call the delete method of the model
+            $appDelete->del((int) $id);
+
+            // Return the success response with status 200 OK
+            return $this->respondDeleted(['message' => 'Appointment deleted successfully.']);
+        } catch (\InvalidArgumentException $e) {
+            // Respond with validation error (422 Unprocessable Entity)
+            return $this->failValidationErrors($e->getMessage());
+        } catch (\RuntimeException $e) {
+            // Respond with execution error (404 Not Found or 403 Forbidden)
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Respond with internal error (500 Internal Server Error)
+            return $this->failServerError('Internal Server Error: ' . $e->getMessage());
+        }
     }
 }

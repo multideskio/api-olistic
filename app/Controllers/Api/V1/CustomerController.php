@@ -2,6 +2,8 @@
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\Customers\V1\CreateCustomer;
+use App\Models\Customers\V1\SearchCustomer;
 use App\Models\CustomersModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use OpenApi\Attributes as OA;
@@ -83,10 +85,10 @@ class CustomerController extends BaseController
     public function index()
     {
         //
-
         try {
             $input = $this->request->getVar();
-            $data = $this->modelCustomer->search($input);
+            $cusSearch = new SearchCustomer();
+            $data = $cusSearch->search($input);
             return $this->respond($data);
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
@@ -218,26 +220,27 @@ class CustomerController extends BaseController
     {
         try {
             // Obtém os dados de entrada usando getVar para capturar o JSON do corpo da requisição
-            $input = $this->request->getVar();
+            $input = $this->request->getJSON(true);
 
             // Validação básica de campos obrigatórios
-            if (empty($input->name) || empty($input->email) || empty($input->phone)) {
-                return $this->failValidationErrors('Os campos nome, email e telefone são obrigatórios.');
+            if (empty($input['name']) || empty($input['email'])) {
+                return $this->failValidationErrors('The name and email fields are required.');
             }
 
             // Converte o objeto de entrada para array para passar para o model
             $inputArray = [
-                'name' => $input->name,
-                'email' => $input->email,
-                'phone' => $input->phone,
-                'photo' => $input->photo ?? null,
-                'date' => $input->birthDate ?? null,  // Adicionando campos opcionais
-                'doc' => $input->doc ?? null,
-                'genero' => $input->generous ?? null
+                'name' => $input['name'],
+                'email' => $input['email'],
+                'phone' => $input['phone'] ?? null,
+                'photo' => $input['photo'] ?? null,
+                'date' => $input['birthDate'] ?? null,  // Adicionando campos opcionais
+                'doc' => $input['doc'] ?? null,
+                'genero' => $input['generous'] ?? null
             ];
 
+            $cusCreate = new CreateCustomer();
             // Chama o método create do model com os dados de entrada
-            $create = $this->modelCustomer->createCustomer($inputArray);
+            $create = $cusCreate->createCustomer($inputArray);
 
             // Retorna a resposta de sucesso com o status 201 Created
             return $this->respondCreated($create);
@@ -249,7 +252,7 @@ class CustomerController extends BaseController
             return $this->fail($e->getMessage(), 400);
         } catch (\Exception $e) {
             // Responde com erro interno (500 Internal Server Error)
-            return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
+            return $this->failServerError('Internal Server Error: ' . $e->getMessage());
         }
     }
 

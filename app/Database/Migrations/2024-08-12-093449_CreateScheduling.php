@@ -39,6 +39,11 @@ class CreateScheduling extends Migration
                 'constraint' => ['consultation', 'anamnesis', 'return'],
                 'default'    => 'consultation',
             ],
+
+            'id_deleted' => [
+                'type'       => 'BIGINT',
+                'unsigned'   => true
+            ],
             
             'created_at' => [
                 'type' => 'DATETIME',

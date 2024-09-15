@@ -583,6 +583,276 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/appointments:
+    get:
+      tags:
+        - Agendamentos
+      summary: 'Search appointments'
+      description: 'Retrieves a list of appointments based on various filters.'
+      operationId: d3f60f51ec83391eda9230754668aff5
+      parameters:
+        -
+          name: s
+          in: query
+          description: 'Search term for filtering appointments by customer name, email, or phone'
+          required: false
+          schema:
+            type: string
+        -
+          name: order
+          in: query
+          description: 'Order of the results. Possible values: ASC, DESC.'
+          required: false
+          schema:
+            type: string
+            default: ASC
+            enum:
+              - ASC
+              - DESC
+        -
+          name: sort_by
+          in: query
+          description: 'Field to sort the results by. Possible values: id, date, name, status.'
+          required: false
+          schema:
+            type: string
+            default: id
+            enum:
+              - id
+              - date
+              - name
+              - status
+        -
+          name: limite
+          in: query
+          description: 'Limit the number of results per page'
+          required: false
+          schema:
+            type: integer
+            default: 10
+        -
+          name: page
+          in: query
+          description: 'Page number for pagination'
+          required: false
+          schema:
+            type: integer
+            default: 1
+        -
+          name: start
+          in: query
+          description: 'Start date for filtering appointments in format Y-m-d H:i'
+          required: false
+          schema:
+            type: string
+            format: datetime
+            example: '2024-09-01 00:00'
+        -
+          name: end
+          in: query
+          description: 'End date for filtering appointments in format Y-m-d H:i'
+          required: false
+          schema:
+            type: string
+            format: datetime
+            example: '2024-09-30 23:59'
+        -
+          name: status
+          in: query
+          description: 'Status of the appointments to filter. Possible values: pending, completed, cancelled.'
+          required: false
+          schema:
+            type: string
+            enum:
+              - pending
+              - completed
+              - cancelled
+        -
+          name: type
+          in: query
+          description: 'Type of the appointment. Possible values: consultation, anamnesis, return.'
+          required: false
+          schema:
+            type: string
+            enum:
+              - consultation
+              - anamnesis
+              - return
+      responses:
+        '200':
+          description: 'List of appointments retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  rows: { description: 'List of appointments', type: array, items: { properties: { id_appointment: { description: 'ID of the appointment', type: integer }, appointment: { description: 'Date and time of the appointment', type: string, format: datetime }, status: { description: 'Status of the appointment', type: string }, id_customer: { description: 'ID of the customer', type: integer }, name_customer: { description: 'Name of the customer', type: string }, id_user: { description: 'ID of the user who created the appointment', type: integer }, name_user: { description: 'Name of the user who created the appointment', type: string } }, type: object } }
+                  params: { description: 'Parameters used for filtering', properties: { s: { description: 'Search term used', type: string }, order: { description: 'Order of results', type: string }, sort_by: { description: 'Field used for sorting', type: string }, limite: { description: 'Number of results per page', type: integer }, page: { description: 'Current page number', type: integer }, start: { description: 'Start date for filtering', type: string, format: datetime }, end: { description: 'End date for filtering', type: string, format: datetime }, status: { description: 'Status filter used', type: string } }, type: object }
+                  dateRange: { description: 'Date range applied in filtering', properties: { start: { description: 'Start date of the range', type: string, format: datetime }, end: { description: 'End date of the range', type: string, format: datetime } }, type: object }
+                  pagination: { description: 'Pagination details', properties: { current_page: { description: 'Current page number', type: integer }, total_pages: { description: 'Total number of pages', type: integer }, total_items: { description: 'Total number of items', type: integer }, items_per_page: { description: 'Number of items per page', type: integer }, prev_page: { description: 'Previous page number if applicable', type: integer, nullable: true }, next_page: { description: 'Next page number if applicable', type: integer, nullable: true } }, type: object }
+                type: object
+        '401':
+          description: 'Invalid or missing token'
+        '422':
+          description: 'Validation error: Check the query parameters'
+        '500':
+          description: 'Internal server error'
+      security:
+        -
+          bearerAuth: []
+    post:
+      tags:
+        - Agendamentos
+      summary: 'Create a new appointment'
+      description: 'Creates a new appointment with the provided data.'
+      operationId: 1a35fb2088463cbe79946aa79af97c7c
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                id_customer:
+                  description: 'ID of the customer'
+                  type: integer
+                date:
+                  description: 'Date and time of the appointment in format Y-m-d H:i'
+                  type: string
+                  format: datetime
+                  example: '2024-09-15 09:30'
+                type:
+                  description: 'Type of the appointment. Possible values: consultation, anamnesis, return.'
+                  type: string
+                  enum: [consultation, anamnesis, return]
+              type: object
+      responses:
+        '201':
+          description: 'Appointment created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { description: 'ID of the created appointment', type: integer }
+                  message: { type: string, example: 'Schedule created successfully.' }
+                type: object
+        '409':
+          description: 'Conflict: Appointment already exists'
+        '422':
+          description: 'Validation error'
+        '500':
+          description: 'Internal server error'
+      security:
+        -
+          bearerAuth: []
+  '/api/v1/appointments/{id}':
+    get:
+      tags:
+        - Agendamentos
+      summary: 'Get an appointment'
+      description: 'Retrieves details of an appointment by its ID.'
+      operationId: 4ba1f1715606a9f485ada4e80dd8e96b
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Appointment ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Appointment details retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id_appointment: { description: 'ID of the appointment', type: integer }
+                  date: { description: 'Date and time of the appointment', type: string, format: datetime }
+                  status: { description: 'Status of the appointment', type: string }
+                  id_customer: { description: 'ID of the customer', type: integer }
+                  name_customer: { description: 'Name of the customer', type: string }
+                  id_user: { description: 'ID of the user', type: integer }
+                  name_user: { description: 'Name of the user who created the appointment', type: string }
+                type: object
+        '401':
+          description: 'Invalid or missing token'
+        '404':
+          description: 'Appointment not found'
+        '422':
+          description: 'Validation error: ID is required'
+        '500':
+          description: 'Internal server error'
+      security:
+        -
+          bearerAuth: []
+    put:
+      tags:
+        - Agendamentos
+      summary: 'Update an appointment'
+      description: 'Updates an existing appointment based on the provided ID.'
+      operationId: 0c138293790c47419a2851fea09663aa
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Appointment ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                status:
+                  description: 'Status of the appointment. Possible values: pending, completed, cancelled.'
+                  type: string
+                  enum: [pending, completed, cancelled]
+                type:
+                  description: 'Type of the appointment. Possible values: consultation, anamnesis, return.'
+                  type: string
+                  enum: [consultation, anamnesis, return]
+              type: object
+      responses:
+        '200':
+          description: 'Appointment updated successfully'
+        '401':
+          description: 'Invalid or missing token'
+        '404':
+          description: 'Appointment not found'
+        '422':
+          description: 'Validation error'
+        '500':
+          description: 'Internal server error'
+      security:
+        -
+          bearerAuth: []
+    delete:
+      tags:
+        - Agendamentos
+      summary: 'Delete an appointment'
+      description: 'Deletes an existing appointment based on the provided ID.'
+      operationId: 4a7411fb90b1548afb7eb856334fd7e1
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Appointment ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Appointment deleted successfully'
+        '401':
+          description: 'Invalid or missing token'
+        '404':
+          description: 'Appointment not found'
+        '500':
+          description: 'Internal server error'
+      security:
+        -
+          bearerAuth: []
   /api/v1/login:
     post:
       tags:
@@ -1051,6 +1321,9 @@ tags:
   -
     name: Usuários
     description: 'Gerenciamento de usuários - última atualização 13/09'
+  -
+    name: Agendamentos
+    description: 'Agendamento de atendimento - Em desenvolvimento'
   -
     name: Clientes
     description: 'Gerenciamento de clientes'

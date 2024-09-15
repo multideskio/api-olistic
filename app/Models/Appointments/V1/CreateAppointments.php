@@ -62,25 +62,6 @@ class CreateAppointments extends AppointmentsModel
     }
 
     /**
-     * Obtém o usuário autenticado.
-     *
-     * @return array Dados do usuário autenticado.
-     * @throws \RuntimeException Se o usuário não estiver autenticado.
-     */
-    private function getAuthenticatedUser(): array
-    {
-        $userModel = new UsersModel();
-        $currentUser = $userModel->me();
-
-        if (!isset($currentUser['id'])) {
-            log_message('info', __LINE__ . ' Unauthenticated user.');
-            throw new \RuntimeException('Unauthenticated user.');
-        }
-
-        return $currentUser;
-    }
-
-    /**
      * Obtém o cliente associado ao usuário autenticado.
      *
      * @param int $currentUser ID do usuário atual.

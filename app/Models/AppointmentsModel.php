@@ -12,7 +12,7 @@ class AppointmentsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_user', 'id_customer', 'date', 'status', 'type'];
+    protected $allowedFields    = ['id_user', 'id_customer', 'date', 'status', 'type', 'id_deleted'];
 
     protected bool $allowEmptyInserts = true;
     protected bool $updateOnlyChanged = true;
@@ -43,5 +43,24 @@ class AppointmentsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+
+    /**
+     * Obtém o usuário autenticado.
+     *
+     * @return array Dados do usuário autenticado.
+     * @throws \RuntimeException Se o usuário não estiver autenticado.
+     */
+    protected function getAuthenticatedUser(): array
+    {
+        $userModel = new UsersModel();
+        $currentUser = $userModel->me();
+
+        if (!isset($currentUser['id'])) {
+            throw new \RuntimeException('Usuário não autenticado.');
+        }
+
+        return $currentUser;
+    }
     
 }

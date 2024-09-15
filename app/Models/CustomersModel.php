@@ -44,80 +44,7 @@ class CustomersModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function search(array $params): array
-    {
-        $response = [];
 
-        $userModel = new UsersModel();
-        $currentUser = $userModel->me();
-
-        if (!isset($currentUser['id'])) {
-            throw new \RuntimeException('Usuário não autenticado.');
-        }
-
-        $currentUserId = $currentUser['id'];
-
-        // Parâmetros de entrada
-        $searchTerm = $params['s'] ?? false;
-        $currentPage = (isset($params['page']) && intval($params['page']) > 0) ? intval($params['page']) : 1;
-        $sortBy = $params['sort_by'] ?? 'id';
-        $sortOrder = strtoupper($params['order'] ?? 'ASC');
-        $itemsPerPage = $this->validateItemsPerPage($params['limite'] ?? null);
-
-        // Construir a query principal
-        $this->select('customers.*, COUNT(anamneses.id) as anamneses_count')
-            ->join('anamneses', 'anamneses.id_customer = customers.id', 'left')
-            ->where('customers.idUser', $currentUserId)
-            ->groupBy('customers.id')
-            ->orderBy('customers.' . $sortBy, $sortOrder);
-
-        // Aplicar filtro de busca se o termo for fornecido
-        if ($searchTerm) {
-            $this->groupStart()
-                ->like('customers.name', $searchTerm)
-                ->orLike('customers.id', $searchTerm)
-                ->orLike('customers.email', $searchTerm)
-                ->orLike('customers.birthDate', $searchTerm)
-                ->groupEnd();
-        }
-
-        // Contar resultados totais para a paginação
-        $totalItems = $this->countAllResults(false); // 'false' mantém a query para a paginação
-
-        // Paginação dos resultados
-        $customers = $this->paginate($itemsPerPage, '', $currentPage);
-
-        // Preparar mensagem de contagem de resultados
-        /*$itemsOnPage = count($customers);
-        if ($searchTerm) {
-            $resultMessage = $itemsOnPage === 1 ? "1 resultado encontrado." : "{$itemsOnPage} resultados encontrados.";
-        } else {
-            $startItem = ($currentPage - 1) * $itemsPerPage + 1;
-            $endItem = min($currentPage * $itemsPerPage, $totalItems);
-            $resultMessage = "Exibindo resultados {$startItem} a {$endItem} de {$totalItems}.";
-        }*/
-
-        // Calcular links de navegação para paginação
-        $totalPages = ceil($totalItems / $itemsPerPage);
-        $prevPage = ($currentPage > 1) ? $currentPage - 1 : null;
-        $nextPage = ($currentPage < $totalPages) ? $currentPage + 1 : null;
-
-        // Montar o array de dados a ser retornado
-        $response = [
-            'rows'  => $customers, // Resultados paginados com contagem de anamneses
-            'pagination' => [
-                'current_page' => $currentPage,
-                'total_pages' => $totalPages,
-                'total_items' => $totalItems,
-                'items_per_page' => $itemsPerPage,
-                'prev_page' => $prevPage,
-                'next_page' => $nextPage,
-            ],
-            //'num'   => $resultMessage
-        ];
-
-        return $response;
-    }
 
 
     private function validateItemsPerPage($value)
@@ -139,56 +66,7 @@ class CustomersModel extends Model
     }
 
 
-    public function createCustomer(array $params): array
-    {
-        // Obter o usuário atual usando o UsersModel ou passando como parâmetro
-        $userModel = new UsersModel();
-        $currentUser = $userModel->me();
 
-        if (!isset($currentUser['id'])) {
-            throw new \RuntimeException('Usuário não autenticado.');
-        }
-
-        $currentUserId = $currentUser['id'];
-
-        // Validação básica dos parâmetros
-        if (empty($params['email']) || empty($params['name']) || empty($params['phone'])) {
-            throw new \InvalidArgumentException('Campos obrigatórios não preenchidos.');
-        }
-
-        // Verifica se endereço de e-mail está no banco de dados relacionado ao usuário atual
-        $row = $this->where([
-            'email'  => $params['email'],
-            'idUser' => $currentUserId,
-        ])->countAllResults();
-
-        if ($row > 0) {
-            throw new \RuntimeException('Esse e-mail já está cadastrado. Verifique na sua tabela de clientes.');
-        }
-
-        // Dados para cadastro
-        $data = [
-            'idUser' => $currentUserId,
-            'name' => $params['name'],
-            'email' => $params['email'],
-            'phone' => $params['phone'],
-            'photo' => $params['photo'] ?? null,
-            'birthDate' => $params['date'] ?? null, // Adicionando fallback para campos opcionais
-            'doc' => $params['doc'] ?? null,
-            'generous' => $params['genero'] ?? null
-        ];
-
-        // Inserção no banco de dados
-        if (!$this->insert($data)) {
-            // Captura erros da instância correta do Model
-            $errors = $this->errors();
-            throw new \RuntimeException('Erro ao cadastrar o cliente: ' . implode(', ', $errors));
-        }
-
-        $id = $this->getInsertID(); // Usar getInsertID para obter o ID inserido
-
-        return ['id' => $id, 'message' => 'Customer created'];
-    }
 
     public function updateCustomer(array $params, $id): array
     {
@@ -283,6 +161,12 @@ class CustomersModel extends Model
             ->get()
             ->getResultArray();
 
+        $appointments = $this->db->table('appointments')
+            ->where('id_customer', $id)
+            ->limit(15)
+            ->get()
+            ->getResultArray();
+
         // Retornar os dados do customer com as anamneses
         return [
             'id' => $customer['id'],
@@ -294,6 +178,7 @@ class CustomersModel extends Model
             'generous' => $customer['generous'],
             'birthDate' => $customer['birthDate'],
             'anamneses_count' => $customer['anamneses_count'],
+            'appointments' => $appointments,
             'anamneses' => $anamneses, // Lista de anamneses associadas
             'timelines' => $timeline
         ];
