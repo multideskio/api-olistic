@@ -8,15 +8,18 @@ use CodeIgniter\Filters\FilterInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\Config\JwtConfig;
+use App\Models\BlacklistModel; // Adiciona o modelo BlacklistModel
 
 class JwtAuth implements FilterInterface
 {
     protected $jwtConfig;
     protected $newToken = null; // Para armazenar o novo token, se renovado
+    protected $blacklistModel; // Adiciona a propriedade do modelo BlacklistModel
 
     public function __construct()
     {
         $this->jwtConfig = new JwtConfig();
+        $this->blacklistModel = new BlacklistModel(); // Instancia o modelo BlacklistModel
     }
 
     public function before(RequestInterface $request, $arguments = null)
@@ -28,12 +31,14 @@ class JwtAuth implements FilterInterface
 
         $token = $matches[1];
 
+        // Verifica se o token está na blacklist
+        if ($this->isTokenBlacklisted($token)) {
+            return $this->unauthorizedResponse('Token is blacklisted');
+        }
+
         try {
             // Decodifica o token JWT e valida a assinatura
             $decoded = JWT::decode($token, new Key($this->jwtConfig->jwtSecret, 'HS256'));
-
-            // Verificação do conteúdo decodificado
-            log_message('debug', 'Payload decodificado: ' . print_r($decoded, true));
 
             // Verifica se a role do usuário está dentro das permitidas
             $role = $decoded->role ?? null;
@@ -107,5 +112,16 @@ class JwtAuth implements FilterInterface
         return \Config\Services::response()
             ->setStatusCode(403)
             ->setJSON(['message' => $message]);
+    }
+
+    private function isTokenBlacklisted($token)
+    {
+        log_message('info', 'Verificando token.');
+
+        // Consulta o modelo BlacklistModel para verificar se o token está na blacklist
+        $blacklistedToken = $this->blacklistModel->where('token', $token)->first();
+
+        // Se encontrar o token na blacklist, retorna true
+        return $blacklistedToken !== null;
     }
 }

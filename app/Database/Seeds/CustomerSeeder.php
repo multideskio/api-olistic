@@ -32,6 +32,7 @@ class CustomerSeeder extends Seeder
         // Insere os dados no banco de dados
         $customerModel->insertBatch($data);
         
-        echo "100 cadastros de clientes foram inseridos com sucesso. \n\n\n";
+        echo "100 cadastros de clientes foram inseridos com sucesso. \n";
+        
     }
 }

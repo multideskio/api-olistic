@@ -244,6 +244,9 @@ class CustomerController extends BaseController
 
             // Retorna a resposta de sucesso com o status 201 Created
             return $this->respondCreated($create);
+        } catch (\DomainException $e) {
+            // Conflict error, e.g., duplicate appointment
+            return $this->failResourceExists($e->getMessage()); // 409 Conflict
         } catch (\InvalidArgumentException $e) {
             // Responde com erro de validação (422 Unprocessable Entity)
             return $this->failValidationErrors($e->getMessage());

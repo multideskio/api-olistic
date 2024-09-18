@@ -16,8 +16,7 @@ class Blacklist extends Migration
                 'auto_increment' => true,
             ],
             'token' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255
+                'type' => 'TEXT',
             ],
             'expires_at' => [
                 'type' => 'DATETIME',

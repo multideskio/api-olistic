@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models\Customers\V1;
 
@@ -22,7 +23,7 @@ class CreateCustomer extends CustomersModel
         ])->countAllResults();
 
         if ($row > 0) {
-            throw new \RuntimeException('This email is already registered. Check your customer table.');
+            throw new \DomainException('This email is already registered. Check your customer table.');
         }
 
         // Dados para cadastro

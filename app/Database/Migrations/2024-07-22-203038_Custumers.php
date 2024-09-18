@@ -55,8 +55,8 @@ class Custumers extends Migration
             ],
             'type' => [
                 'type'       => 'ENUM',
-                'constraint' => ["family", "friend", "professional"],
-                'default'    => 'professional',
+                'constraint' => ["myself", "family", "friend", "professional"],
+                'default'    => 'myself',
             ],
             'birthDate' => [
                 'type' => 'date',

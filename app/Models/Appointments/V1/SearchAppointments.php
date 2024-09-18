@@ -6,7 +6,7 @@ use App\Models\AppointmentsModel;
 use App\Models\UsersModel;
 
 /**
- * Classe listAppointments
+ * Classe SearchAppointments
  *
  * Extende AppointmentsModel para listar compromissos com base nos parâmetros fornecidos.
  */
@@ -16,6 +16,17 @@ class SearchAppointments extends AppointmentsModel
      * Lista compromissos com base nos parâmetros fornecidos.
      *
      * @param array $params Parâmetros para filtrar, ordenar e paginar os compromissos.
+     *                      Inclui:
+     *                      - 's': Termo de busca opcional.
+     *                      - 'page': Número da página.
+     *                      - 'sort_by': Campo para ordenação.
+     *                      - 'order': Ordem de ordenação (ASC ou DESC).
+     *                      - 'status': Status do compromisso.
+     *                      - 'limite': Número de itens por página.
+     *                      - 'start': Data de início do intervalo.
+     *                      - 'end': Data de fim do intervalo.
+     *                      - 'id_customer': ID do cliente.
+     *                      - 'type': Tipo de cliente.
      * @return array Resultados paginados dos compromissos.
      */
     public function listAppointments(array $params): array
@@ -23,16 +34,21 @@ class SearchAppointments extends AppointmentsModel
         $currentUser = $this->getAuthenticatedUser();
 
         // Extrai e valida parâmetros
-        $searchTerm   = $params['s'] ?? null;
-        $currentPage  = $this->validatePageNumber($params['page'] ?? 1);
-        $sortBy       = $this->validateSortBy($params['sort_by'] ?? 'id');
-        $sortOrder    = $this->validateSortOrder($params['order'] ?? 'ASC');
-        $status       = $this->validateStatus($params['status'] ?? null);
-        $itemsPerPage = $this->validateItemsPerPage($params['limite'] ?? null);
-        $dateRange    = $this->getDateRange($params);
+        $searchTerm   = $params['s'] ?? null; // Termo de busca opcional
+        $currentPage  = $this->validatePageNumber($params['page'] ?? 1); // Número da página atual
+        $sortBy       = $this->validateSortBy($params['sort_by'] ?? 'id'); // Campo para ordenação
+        $sortOrder    = $this->validateSortOrder($params['order'] ?? 'ASC'); // Ordem de ordenação
+        $status       = $this->validateStatus($params['status'] ?? null); // Status do compromisso
+        $itemsPerPage = $this->validateItemsPerPage($params['limite'] ?? null); // Itens por página
+        $dateRange    = $this->getDateRange($params); // Intervalo de datas para o filtro
+
+        // Valida e captura o ID do cliente
+        $idCustomer   = $this->validateIdCustomer($params['id_customer'] ?? null);
+        // Valida e captura o tipo de cliente
+        $typeCustomer = $this->validateTypeCustomer($params['type'] ?? null);
 
         // Constrói a consulta dos compromissos
-        $this->buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status);
+        $this->buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status, $idCustomer, $typeCustomer);
 
         // Pagina os resultados e formata a resposta
         return $this->paginateResults($itemsPerPage, $currentPage, $params, $dateRange);
@@ -42,11 +58,22 @@ class SearchAppointments extends AppointmentsModel
      * Valida o número da página.
      *
      * @param mixed $page Número da página.
-     * @return int Número da página validado.
+     * @return int Número da página validado, com um valor mínimo de 1.
      */
     private function validatePageNumber($page): int
     {
         return (intval($page) > 0) ? intval($page) : 1;
+    }
+
+    /**
+     * Valida o ID do cliente.
+     *
+     * @param mixed $id ID do cliente.
+     * @return int|null Retorna o ID do cliente validado ou null se inválido.
+     */
+    private function validateIdCustomer($id)
+    {
+        return (intval($id) > 0) ? intval($id) : null;
     }
 
     /**
@@ -59,6 +86,18 @@ class SearchAppointments extends AppointmentsModel
     {
         $allowedSortFields = ['id', 'date', 'name', 'status'];
         return in_array($sortBy, $allowedSortFields) ? $sortBy : 'id';
+    }
+
+    /**
+     * Valida o tipo de cliente.
+     *
+     * @param mixed $typeCustomer Tipo de cliente.
+     * @return string|null Tipo de cliente validado ou null se inválido.
+     */
+    private function validateTypeCustomer($typeCustomer)
+    {
+        $allowedTypes = ["myself", "family", "friend", "professional"];
+        return in_array($typeCustomer, $allowedTypes) ? $typeCustomer : null;
     }
 
     /**
@@ -80,8 +119,8 @@ class SearchAppointments extends AppointmentsModel
      */
     private function validateStatus($status)
     {
-        $allowedSortFields = ['pending', 'completed', 'cancelled'];
-        return in_array($status, $allowedSortFields) ? $status : null;
+        $allowedStatuses = ['pending', 'completed', 'cancelled'];
+        return in_array($status, $allowedStatuses) ? $status : null;
     }
 
     /**
@@ -108,21 +147,31 @@ class SearchAppointments extends AppointmentsModel
      * Constrói a consulta para listar compromissos.
      *
      * @param array $currentUser Usuário atual autenticado.
-     * @param string|null $searchTerm Termo de busca.
+     *        Inclui informações sobre o usuário logado.
+     * @param string|null $searchTerm Termo de busca opcional.
+     *        Usado para pesquisar compromissos por nome, ID, e-mail ou telefone.
      * @param string $sortBy Campo de ordenação.
+     *        Campo usado para ordenar os resultados (ex: 'id', 'date').
      * @param string $sortOrder Ordem de ordenação.
+     *        Direção da ordenação ('ASC' ou 'DESC').
      * @param array $dateRange Intervalo de datas.
+     *        Inclui as chaves 'start' e 'end' para o filtro de datas.
      * @param string|null $status Status do compromisso.
+     *        Filtra compromissos pelo status especificado (ex: 'pending').
+     * @param int|null $idCustomer ID do cliente.
+     *        Filtra compromissos pelo ID do cliente, se especificado.
+     * @param string|null $typeCustomer Tipo de cliente.
+     *        Filtra compromissos pelo tipo de cliente (ex: 'myself', 'family').
      */
-    private function buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status): void
+    private function buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status, $idCustomer, $typeCustomer): void
     {
         // Filtra compromissos por usuário, se não for SUPERADMIN
         if ($currentUser['role'] !== 'SUPERADMIN') {
             $this->where('appointments.id_user', $currentUser['id']);
         }
 
-        $this->select("appointments.id As id_appointment, appointments.date As date, appointments.status As status")
-            ->select("customers.id As id_customer, customers.name As name_customer")
+        $this->select("appointments.id As id_appointment, appointments.date As date_appointment, appointments.status As status_appointment, appointments.type As type_appointment")
+            ->select("customers.id As id_customer, customers.name As name_customer, customers.type As type_customer, customers.email AS email_customer")
             ->select("users.id As id_user, users.name As name_user")
             ->join("users", "appointments.id_user = users.id")
             ->join("customers", "appointments.id_customer = customers.id", "left")
@@ -132,7 +181,17 @@ class SearchAppointments extends AppointmentsModel
 
         // Filtra por status, se especificado
         if ($status) {
-            $this->where('status', $status);
+            $this->where('appointments.status', $status);
+        }
+
+        // Filtra pelo id de cliente
+        if ($idCustomer) {
+            $this->where('customers.id', $idCustomer);
+        }
+
+        // Filtra pelo tipo de cliente
+        if ($typeCustomer) {
+            $this->where('customers.type', $typeCustomer);
         }
 
         // Adiciona termos de busca
@@ -149,16 +208,16 @@ class SearchAppointments extends AppointmentsModel
     /**
      * Pagina os resultados dos compromissos.
      *
-     * @param int $itemsPerPage Itens por página.
+     * @param int $itemsPerPage Número de itens por página.
      * @param int $currentPage Página atual.
-     * @param array $params Parâmetros adicionais.
-     * @param array $dateRange Intervalo de datas.
+     * @param array $params Parâmetros adicionais para a paginação.
+     * @param array $dateRange Intervalo de datas para filtro.
      * @return array Resultados paginados com informações de paginação.
      */
     private function paginateResults($itemsPerPage, $currentPage, array $params, array $dateRange): array
     {
-        $totalItems = $this->countAllResults(false);
-        $data = $this->paginate($itemsPerPage, '', $currentPage);
+        $totalItems = $this->countAllResults(false); // Conta o total de itens sem resetar a consulta
+        $data = $this->paginate($itemsPerPage, '', $currentPage); // Pagina os resultados
 
         return [
             'rows'  => $data,
@@ -179,7 +238,7 @@ class SearchAppointments extends AppointmentsModel
      * Valida o número de itens por página.
      *
      * @param mixed $value Número de itens por página.
-     * @return int Número validado de itens por página, entre 1 e 500.
+     * @return int Número validado de itens por página, limitado entre 1 e 500.
      */
     private function validateItemsPerPage($value)
     {

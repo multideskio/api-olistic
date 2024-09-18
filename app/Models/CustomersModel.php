@@ -134,13 +134,16 @@ class CustomersModel extends Model
             throw new \RuntimeException('Usuário não autenticado.');
         }
 
+        if($currentUser['role'] !== 'SUPERADMIN'){
+            $this->where('customers.idUser', $currentUser['id']);
+        }
+
         $currentUserId = $currentUser['id'];
 
         // Realizar a busca do customer com JOIN para incluir anamneses
         $this->select('customers.*, COUNT(anamneses.id) as anamneses_count')
             ->join('anamneses', 'anamneses.id_customer = customers.id', 'left')
             ->where('customers.id', $id)
-            ->where('customers.idUser', $currentUserId)
             ->groupBy('customers.id');
 
         $customer = $this->first();
@@ -151,21 +154,21 @@ class CustomersModel extends Model
         }
 
         // Buscar detalhes das anamneses associadas ao customer
-        $anamneses = $this->db->table('anamneses')
+        $modelAnamnese = new AnamnesesModel();
+        $anamneses = $modelAnamnese
             ->where('id_customer', $id)
-            ->get()
-            ->getResultArray();
+            ->findAll();
 
-        $timeline = $this->db->table('timelines')
+        $modelTimeLine = new TimeLinesModel();
+        $timeline = $modelTimeLine
             ->where('idCustomer', $id)
-            ->get()
-            ->getResultArray();
+            ->findAll();
 
-        $appointments = $this->db->table('appointments')
+        $modelApp = new AppointmentsModel();
+
+        $appointments = $modelApp
             ->where('id_customer', $id)
-            ->limit(15)
-            ->get()
-            ->getResultArray();
+            ->findAll();
 
         // Retornar os dados do customer com as anamneses
         return [

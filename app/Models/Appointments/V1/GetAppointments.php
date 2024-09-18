@@ -28,7 +28,7 @@ class  GetAppointments extends AppointmentsModel
         }
 
         $this->select("appointments.id As id_appointment, appointments.date As date, appointments.status As status")
-            ->select("customers.id As id_customer, customers.name As name_customer")
+            ->select("customers.id As id_customer, customers.name As name_customer, customers.type As type_customer, customers.email AS email_customer")
             ->select("users.id As id_user, users.name As name_user")
             ->join("users", "appointments.id_user = users.id")
             ->join("customers", "appointments.id_customer = customers.id", "left")

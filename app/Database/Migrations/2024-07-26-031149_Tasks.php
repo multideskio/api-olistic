@@ -30,6 +30,10 @@ class Tasks extends Migration
                 'type'       => 'TEXT',
                 'null'       => true,
             ],
+            'order' => [
+                'type' => 'int',
+                'contraint' => 2
+            ],
             'status' => [
                 'type'       => 'ENUM',
                 'constraint' => ['pending', 'completed'],
