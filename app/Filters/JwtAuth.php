@@ -8,7 +8,7 @@ use CodeIgniter\Filters\FilterInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\Config\JwtConfig;
-use App\Models\BlacklistModel; // Adiciona o modelo BlacklistModel
+use App\Models\BlacklistModel;
 
 class JwtAuth implements FilterInterface
 {
@@ -76,9 +76,19 @@ class JwtAuth implements FilterInterface
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Adiciona o novo token no cabeçalho da resposta, se houver
+        // Calcula o tempo restante do token se o token foi renovado
+        $timeRemaining = $this->newToken ? (JWT::decode($this->newToken, new Key($this->jwtConfig->jwtSecret, 'HS256'))->exp - time()) : null;
+
+        // Define o cabeçalho com o novo token ou indica que não foi renovado
         if ($this->newToken) {
             $response->setHeader('X-Renewed-Token', $this->newToken);
+        } else {
+            $response->setHeader('X-Renewed-Token', 'not-renewed');
+        }
+
+        // Adiciona o tempo restante, se disponível
+        if ($timeRemaining !== null) {
+            $response->setHeader('X-Token-Time-Remaining', $timeRemaining);
         }
     }
 
@@ -86,11 +96,11 @@ class JwtAuth implements FilterInterface
     {
         // Gera um novo payload com o tempo de expiração estendido
         $newPayload = [
-            'iat' => time(),
+            'iat' => $decoded->iat, // Mantém o "issued at" original
             'exp' => time() + $this->jwtConfig->tokenExpiration, // Novo tempo de expiração
             'role' => $decoded->role,
             'data' => [
-                'id' => $decoded->data->id, // Acessa o ID dentro de 'data'
+                'id' => $decoded->data->id,
                 'email' => $decoded->data->email,
                 'name' => $decoded->data->name
             ]
