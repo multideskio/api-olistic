@@ -57,11 +57,22 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function (
     $routes->resource('appointments', ['controller' => 'Api\V1\AppointmentsController']);
 });
 
+
+$routes->post('api/v1/login', 'Api\V1\AuthController::login', ['filter' => 'throttle:10,hour']);
+$routes->post('api/v1/magiclink', 'Api\V1\AuthController::magiclink', ['filter' => 'throttle:5,hour']);
+
 // Rota de login sem filtro JWT
-$routes->match(['POST', 'OPTIONS'],'api/v1/login', 'Api\V1\AuthController::login');
-$routes->post('api/v1/login', 'Api\V1\AuthController::login');
-$routes->get('api/v1/login', 'Api\V1\AuthController::aviso');
+$routes->options('api/v1/login', 'Api\V1\AuthController::login');
+
+//$routes->post('api/v1/login', 'Api\V1\AuthController::login', ['filter' => 'throttle:1,hour']);
+$routes->get('api/v1/login', 'Api\V1\AuthController::aviso', ['filter' => 'throttle:100,hour']);
+
+//recupera senha
+$routes->post('api/v1/recover', 'Api\V1\AuthController::recover');
+
 $routes->get('api/v1/logout', 'Api\V1\AuthController::logout');
 $routes->get('api/v1/google', 'Api\V1\AuthController::googleLogin');
 $routes->get('api/v1/auth/google/callback', 'Api\V1\AuthController::googleCallback');
+
+//webhook greem
 $routes->post('api/v1/webhook/greem', 'Api\V1\WebhookController::greem');

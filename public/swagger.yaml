@@ -891,6 +891,38 @@ paths:
           description: 'Credenciais inválidas'
         '400':
           description: 'Dados de entrada inválidos'
+  /api/v1/magiclink:
+    post:
+      tags:
+        - Autenticação
+      summary: 'Autenticação com Link Mágico'
+      description: 'Autentica o usuário utilizando um token de link mágico e retorna um token JWT.'
+      operationId: cb7d7f1d97cbed904cb95ea42ba6d90a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - magiclink
+              properties:
+                magiclink:
+                  type: string
+                  example: token_de_link_magico_gerado
+              type: object
+      responses:
+        '200':
+          description: 'Token JWT gerado com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  token: { type: string, example: eyJhbGciOiJIUzI1NiIsInR... }
+                type: object
+        '400':
+          description: 'Token de link mágico não fornecido ou inválido'
+        '500':
+          description: 'Erro inesperado no servidor'
   /api/v1/logout:
     get:
       tags:

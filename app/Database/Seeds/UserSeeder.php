@@ -15,9 +15,14 @@ class UserSeeder extends Seeder
         //$encrypter = service('encrypter');
         $modelPlatform = new PlatformModel();
 
+        /* The code snippet ` = ->insert([...]);` is inserting a new record
+        into the `PlatformModel` database table. The data being inserted includes information such
+        as the company name, sender email, base URL, sender name, SMTP host, SMTP user, and SMTP
+        port for a platform. */
         $idPlatform = $modelPlatform->insert([
             'company'     => 'Plataforma',
             'senderEmail' => 'multidesk.io@gmail.com',
+            'urlBase'     => 'https://comurt-frontend.vercel.app',
             'senderName'  => 'Terapeuta Teste',
             'smtpHost'    => 'smtp.gmail.com',
             'smtpUser'    => 'multidesk.io@gmail.com',
@@ -28,16 +33,16 @@ class UserSeeder extends Seeder
 
         $dataPlan[1] = [
             'platformId'       => $idPlatform,
-            'namePlan'         => 'TP',
-            'idPlan'           => 'sz2x8n53rpuherq6hx3ow3fcsc57dd',
+            'namePlan'         => 'TERAPEUTA PROFISSIONAL',
+            'idPlan'           => 'tp',
             'permissionUser'   => 1,
             'timeSubscription' => 0
         ];
 
         $dataPlan[2] = [
             'platformId'       => $idPlatform,
-            'namePlan'         => 'TS',
-            'idPlan'           => 'daoq4ookxf98xz2y6yq6vnj083yfs6',
+            'namePlan'         => 'TERAPEUTA DE SI',
+            'idPlan'           => 'ts',
             'permissionUser'   => 2,
             'timeSubscription' => 0
         ];
@@ -45,6 +50,7 @@ class UserSeeder extends Seeder
         $idPlan = $modePlan->insertBatch($dataPlan);
 
         $modelUser = new UsersModel();
+        helper('auxiliar');
 
         $dataUser = [
             [
@@ -55,7 +61,8 @@ class UserSeeder extends Seeder
                 'phone'      => '+55 (62) 9 8115-4120',
                 'checked'    => 1,
                 'admin'      => true,
-                'token'      => time()
+                'token'      => gera_token(),
+                'magic_link' => generateMagicLink('adm@conect.app', 60*30)
             ],
             [
                 'platformId' => $idPlatform,
@@ -65,7 +72,8 @@ class UserSeeder extends Seeder
                 'phone'      => '+55 (62) 9 8115-4120',
                 'checked'    => 1,
                 'admin'      => false,
-                'token'      => time()
+                'token'      => gera_token(),
+                'magic_link' => generateMagicLink('tp@conect.app', 60*30)
             ],
             [
                 'platformId' => $idPlatform,
@@ -75,7 +83,8 @@ class UserSeeder extends Seeder
                 'phone'      => '+55 (62) 9 8115-4120',
                 'checked'    => 1,
                 'admin'      => false,
-                'token'      => time() * 10
+                'token'      => gera_token(),
+                'magic_link' => generateMagicLink('ts@conect.app', 60*30)
             ]
         ];
 

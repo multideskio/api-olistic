@@ -66,6 +66,12 @@ class Users extends Migration
                 'null'       => true,
                 'comment'    => 'Authentication token for the user',
             ],
+            'magic_link' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '255',
+                'null'       => true,
+                'comment'    => 'Magic link for the user',
+            ],
             'checked' => [
                 'type'       => 'BOOLEAN',
                 'default'    => false,

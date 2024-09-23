@@ -16,7 +16,7 @@ class UsersModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['platformId', 'name', 'photo', 'email', 'phone', 'password', 'token', 'checked', 'admin'];
+    protected $allowedFields    = ['platformId', 'name', 'email', 'phone', 'password', 'photo', 'description', 'token', 'magic_link', 'checked', 'admin', 'education', 'languages', 'department', 'social_networks', 'company', 'birthdate', 'show_personal_chart_dashboard', 'show_family_chart_dashboard', 'show_friends_chart_dashboard', 'show_appointments_chart_dashboard', 'show_basic_info_dashboard', 'receive_updates_email', 'receive_updates_sms', 'receive_updates_whatsapp', 'receive_scheduling_reminders', 'receive_cancellation_reminders'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -59,9 +59,13 @@ class UsersModel extends Model
     protected function beforeData(array $data): array
     {
 
+        helper('auxiliar');
         if (array_key_exists("password", $data["data"])) {
-            $data["data"]["password"] = password_hash($data["data"]["password"], PASSWORD_BCRYPT);
+            $data["data"]["password"]   = password_hash($data["data"]["password"], PASSWORD_BCRYPT);
         }
+
+        $data["data"]['magic_link'] = generateMagicLink($data["data"]["email"], 60 * 30);
+        $data["data"]['token']      = gera_token();
 
         return $data;
     }
@@ -327,7 +331,7 @@ class UsersModel extends Model
                 'name'   => $rowLogin['name'],
                 'email'  => $rowLogin['email'],
                 'photo'  => $rowLogin['photo'],
-                'phone'  => $rowLogin['phone'],
+                'phone'  => $rowLogin['phone'] ?? '',
             ];
             $idCustomers = $modelCustomers->insert($dataCustomers);
             $modelTime = new TimeLinesModel();
@@ -367,7 +371,7 @@ class UsersModel extends Model
 
             // Usa o sistema de cache do CI4 com a chave baseada no ID do usuário
             $cacheKey = 'user_' . $userId;
-            $user     = cache()->get($cacheKey);
+            $user     = null; //cache()->get($cacheKey);
 
             // Acessa a role diretamente de $decoded
             $role = $decoded->role ?? 'Role not specified';
@@ -379,7 +383,8 @@ class UsersModel extends Model
                     'email' => $user['email'],
                     'photo' => $user['photo'],
                     'role'  => $role,
-                    'type'  => 'cache'
+                    //'data'  => $user,
+                    'type'  => 'cache',
                 ];
             } else {
                 // Busca no banco de dados se não estiver no cache
@@ -395,6 +400,7 @@ class UsersModel extends Model
                     'email' => $user['email'],
                     'photo' => $user['photo'],
                     'role'  => $role,
+                    //'data'  => $user,
                     'type'  => 'update'
                 ];
             }
@@ -438,5 +444,73 @@ class UsersModel extends Model
         }
 
         return $itemsPerPage;
+    }
+
+
+    private function validateMagicLinkToken($token)
+    {
+        $rowLogin = $this->where('magic_link', $token)->first();
+
+        if (!$rowLogin) {
+            log_message('info', 'Token de link mágico não encontrado: ' . $token);
+            throw new \RuntimeException('Invalid or non-existent magic link.', 404);
+        }
+
+        /*if (isset($rowLogin['magic_link_expiration']) && strtotime($rowLogin['magic_link_expiration']) < time()) {
+            log_message('info', 'Token de link mágico expirado para o usuário ID: ' . $rowLogin['id']);
+            throw new \RuntimeException('Magic link has expired.', 410);
+        }*/
+
+        log_message('info', 'Link mágico validado com sucesso para o usuário ID: ' . $rowLogin['id']);
+
+        return $rowLogin;
+    }
+
+    public function loginWithMagicLink($token)
+    {
+        try {
+            log_message('info', 'Tentativa de login com link mágico usando o token: ' . $token);
+
+            $user = $this->validateMagicLinkToken($token);
+
+            if (!$user) {
+                throw new \RuntimeException('Invalid or expired magic link.', 404);
+            }
+
+            if ($user['admin'] == 0) {
+                log_message('info', 'Verificando inscrição ativa para o usuário ID: ' . $user['id']);
+                $subscription = $this->verifySubscription($user['id']);
+                if (!$subscription) {
+                    throw new \RuntimeException('User has no active subscription.', 403);
+                }
+
+                log_message('info', 'Verificando plano ativo para o plano ID: ' . $subscription['idPlan']);
+                $plan = $this->verifyPlan($subscription['idPlan']);
+                if (!$plan) {
+                    throw new \RuntimeException('User plan not found.', 404);
+                }
+
+                $permission = $this->determinePermission($plan['permissionUser']);
+                if (!$permission) {
+                    throw new \RuntimeException('User does not have access permission.', 403);
+                }
+            } else {
+                $permission = 'SUPERADMIN';
+            }
+
+            $payload = $this->generateJwtPayload($user, $permission);
+
+            log_message('info', 'Gerando token JWT para o usuário ID: ' . $user['id']);
+            $tokenJwt = JWT::encode($payload, $this->jwtConfig->jwtSecret, 'HS256');
+
+            log_message('info', 'Autenticação bem-sucedida para o usuário ID: ' . $user['id']);
+
+            $this->manageCustomer($user);
+
+            return $tokenJwt;
+        } catch (\Exception $e) {
+            log_message('error', 'Erro durante o login com link mágico: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

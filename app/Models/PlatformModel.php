@@ -12,7 +12,7 @@ class PlatformModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['company', 'logo', 'senderEmail', 'senderName', 'smtpHost', 'smtpUser', 'smtpPass', 'smtpPort', 'smtpCrypto'];
+    protected $allowedFields    = ['company', 'logo', 'urlBase', 'senderEmail', 'senderName', 'smtpHost', 'smtpUser', 'smtpPass', 'smtpPort', 'smtpCrypto'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

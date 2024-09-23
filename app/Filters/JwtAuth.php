@@ -13,17 +13,17 @@ use App\Models\BlacklistModel;
 class JwtAuth implements FilterInterface
 {
     protected $jwtConfig;
-    protected $newToken = null; // Para armazenar o novo token, se renovado
-    protected $blacklistModel; // Adiciona a propriedade do modelo BlacklistModel
+    protected $blacklistModel;
 
     public function __construct()
     {
         $this->jwtConfig = new JwtConfig();
-        $this->blacklistModel = new BlacklistModel(); // Instancia o modelo BlacklistModel
+        $this->blacklistModel = new BlacklistModel();
     }
 
     public function before(RequestInterface $request, $arguments = null)
     {
+        $session = session(); // Inicia a sessão para armazenar dados
         $header = $request->getServer('HTTP_AUTHORIZATION');
         if (!$header || !preg_match('/Bearer\s(\S+)/', $header, $matches)) {
             return $this->unauthorizedResponse('Authorization header not found or malformed');
@@ -31,38 +31,34 @@ class JwtAuth implements FilterInterface
 
         $token = $matches[1];
 
-        // Verifica se o token está na blacklist
         if ($this->isTokenBlacklisted($token)) {
             return $this->unauthorizedResponse('Token is blacklisted');
         }
 
         try {
-            // Decodifica o token JWT e valida a assinatura
             $decoded = JWT::decode($token, new Key($this->jwtConfig->jwtSecret, 'HS256'));
 
-            // Verifica se a role do usuário está dentro das permitidas
             $role = $decoded->role ?? null;
-
             if (!$role || !in_array($role, $arguments)) {
                 return $this->forbiddenResponse('Access denied for your role');
             }
 
-            // Acessa o ID do usuário dentro de 'data'
             $uid = $decoded->data->id ?? null;
-
-            // Verifica se o UID (ID do usuário) está presente no token decodificado
             if (!$uid) {
                 log_message('error', 'UID não encontrado no token decodificado.');
                 return $this->unauthorizedResponse('Token inválido: UID não encontrado');
             }
 
-            // Calcula o tempo restante para expiração do token
             $currentTime = time();
             $timeRemaining = $decoded->exp - $currentTime;
 
-            // Se o tempo restante for menor que o limite (ex: 600 segundos), renova o token
-            if ($timeRemaining < 600) { // 10 minutos
-                $this->newToken = $this->renewToken($decoded);
+            // Armazena o tempo restante do token original na sessão
+            $session->set('token_time_remaining', $timeRemaining);
+
+            // Renova o token se estiver próximo de expirar
+            if ($timeRemaining < 600) {
+                $newToken = $this->renewToken($decoded);
+                $session->set('new_token', $newToken); // Armazena o novo token na sessão
             }
 
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
@@ -72,29 +68,41 @@ class JwtAuth implements FilterInterface
         } catch (\Exception $e) {
             return $this->unauthorizedResponse('Invalid token: ' . $e->getMessage());
         }
+
+        // Permite que o fluxo continue
+        return;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Calcula o tempo restante do token se o token foi renovado
-        $timeRemaining = $this->newToken ? (JWT::decode($this->newToken, new Key($this->jwtConfig->jwtSecret, 'HS256'))->exp - time()) : null;
+        $session = session(); // Acessa a sessão
 
-        // Define o cabeçalho com o novo token ou indica que não foi renovado
-        if ($this->newToken) {
-            $response->setHeader('X-Renewed-Token', $this->newToken);
+        // Verifica se o token original ainda tem tempo restante armazenado
+        if ($session->has('token_time_remaining')) {
+            $timeRemaining = $session->get('token_time_remaining');
+            // Define o cabeçalho com o tempo restante do token original
+            $response->setHeader('X-Token-Time-Remaining', $timeRemaining);
+        }
+
+        // Verifica se o token foi renovado na sessão
+        if ($session->has('new_token')) {
+            $newToken = $session->get('new_token');
+            // Define o cabeçalho com o novo token renovado
+            $response->setHeader('X-Renewed-Token', $newToken);
+
+            // Limpa o token da sessão para evitar reuso desnecessário
+            $session->remove('new_token');
         } else {
+            // Indica que o token não foi renovado
             $response->setHeader('X-Renewed-Token', 'not-renewed');
         }
 
-        // Adiciona o tempo restante, se disponível
-        if ($timeRemaining !== null) {
-            $response->setHeader('X-Token-Time-Remaining', $timeRemaining);
-        }
+        return $response;
     }
 
     private function renewToken($decoded)
     {
-        // Gera um novo payload com o tempo de expiração estendido
+        // Gera um novo payload com um novo tempo de expiração
         $newPayload = [
             'iat' => $decoded->iat, // Mantém o "issued at" original
             'exp' => time() + $this->jwtConfig->tokenExpiration, // Novo tempo de expiração
@@ -106,7 +114,7 @@ class JwtAuth implements FilterInterface
             ]
         ];
 
-        // Gera o novo token com o payload atualizado
+        // Retorna o novo token com o payload atualizado
         return JWT::encode($newPayload, $this->jwtConfig->jwtSecret, 'HS256');
     }
 
@@ -128,10 +136,9 @@ class JwtAuth implements FilterInterface
     {
         log_message('info', 'Verificando token.');
 
-        // Consulta o modelo BlacklistModel para verificar se o token está na blacklist
+        // Verifica se o token está na blacklist
         $blacklistedToken = $this->blacklistModel->where('token', $token)->first();
 
-        // Se encontrar o token na blacklist, retorna true
         return $blacklistedToken !== null;
     }
 }

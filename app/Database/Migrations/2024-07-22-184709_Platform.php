@@ -20,49 +20,54 @@ class Platform extends Migration
             ],
             'company' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60',
+                'constraint' => 60,
                 'null' => true
             ],
             'logo' => [
                 'type' => 'VARCHAR',
-                'constraint' => '255',
+                'constraint' => 255,
                 'null' => true
+            ],
+
+            'urlBase' => [
+                'type' => 'VARCHAR',
+                'constraint' => 80
             ],
 
             /** SMTP */
             'senderEmail' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60',
+                'constraint' => 60,
                 'null' => true
             ],
             'senderName' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60',
+                'constraint' => 60,
                 'null' => true
             ],
             'smtpHost' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60',
+                'constraint' => 60,
                 'null' => true
             ],
             'smtpUser' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60',
+                'constraint' => 60,
                 'null' => true
             ],
             'smtpPass' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60',
+                'constraint' => 60,
                 'null' => true
             ],
             'smtpPort' => [
                 'type' => 'SMALLINT',
-                'constraint' => '5',
+                'constraint' => 5,
                 'null' => true
             ],
             'smtpCrypto' => [
                 'type' => 'VARCHAR',
-                'constraint' => '5',
+                'constraint' => 5,
                 'default' => 'tls'
             ],
             'activeSmtp' => [

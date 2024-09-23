@@ -35,8 +35,8 @@ class Filters extends BaseFilters
         'cors'          => \App\Filters\CorsFilter::class, // Registro do filtro CORS
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-
-        'jwt'           => \App\Filters\JwtAuth::class
+        'jwt'           => \App\Filters\JwtAuth::class,
+        'throttle'      => \App\Filters\Throttle::class
     ];
 
     /**

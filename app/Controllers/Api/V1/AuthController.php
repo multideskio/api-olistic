@@ -8,6 +8,9 @@ use App\Config\JwtConfig;
 use App\Models\BlacklistModel;
 use CodeIgniter\API\ResponseTrait;
 use OpenApi\Attributes as OA;
+use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Models\Users\V1;
+use App\Models\Users\V1\RecoverUsers;
 
 class AuthController extends BaseController
 {
@@ -22,7 +25,7 @@ class AuthController extends BaseController
         $this->userModel = new \App\Models\UsersModel();
     }
 
-    
+
     #[OA\Post(
         path: "/api/v1/login",
         summary: "Login",
@@ -55,7 +58,6 @@ class AuthController extends BaseController
     public function login()
     {
         try {
-
             $rules = [
                 'email'    => 'required|valid_email',
                 'password' => 'required|min_length[6]'
@@ -79,7 +81,7 @@ class AuthController extends BaseController
                 $token = $this->userModel->login($email, $password);
                 // Retorna o token como resposta
                 $elapsedTime = microtime(true) - APP_START;
-                return $this->respond(['token' => $token, 'load' => number_format($elapsedTime, 4) . ' seconds'], 200);
+                return $this->respond(['token' => $token, /*'load' => number_format($elapsedTime, 4) . ' seconds'*/]);
             } catch (\Exception $e) {
                 // Loga o erro de autenticação
                 log_message('error', 'Erro na autenticação: ' . $e->getMessage());
@@ -90,6 +92,67 @@ class AuthController extends BaseController
             return $this->fail($e->getMessage());
         }
     }
+
+
+    #[OA\Post(
+        path: "/api/v1/magiclink",
+        summary: "Autenticação com Link Mágico",
+        description: "Autentica o usuário utilizando um token de link mágico e retorna um token JWT.",
+        tags: ["Autenticação"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["magiclink"],
+                properties: [
+                    new OA\Property(property: "magiclink", type: "string", example: "token_de_link_magico_gerado")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Token JWT gerado com sucesso",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "token", type: "string", example: "eyJhbGciOiJIUzI1NiIsInR...")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Token de link mágico não fornecido ou inválido"),
+            new OA\Response(response: 500, description: "Erro inesperado no servidor")
+        ]
+    )]
+    public function magiclink()
+    {
+        $input = $this->request->getJSON(TRUE);
+
+        if (!isset($input['magiclink']) || empty($input['magiclink'])) {
+            return $this->fail('Magic link token not provided', 400);
+        }
+
+        $token = $input['magiclink'];
+
+        try {
+            $token = $this->userModel->loginWithMagicLink($token);
+
+            return $this->respond(
+                [
+                    'token' => $token,
+                ],
+                200
+            );
+        } catch (\InvalidArgumentException $e) {
+            log_message('error', 'Erro no login com link mágico: ' . $e->getMessage());
+            return $this->fail($e->getMessage(), 400);
+        } catch (\RuntimeException $e) {
+            log_message('error', 'Erro no login com link mágico: ' . $e->getMessage());
+            return $this->fail($e->getMessage(), $e->getCode() ?? 500);
+        } catch (\Exception $e) {
+            log_message('error', 'Erro inesperado no login com link mágico: ' . $e->getMessage());
+            return $this->fail('Unexpected server error.', 500);
+        }
+    }
+
 
 
     #[OA\Get(
@@ -131,7 +194,47 @@ class AuthController extends BaseController
     }
 
 
-    public function aviso(){
-        return $this->fail(['message' => 'Função não disponivel no momento'], 404);
+    public function aviso()
+    {
+        return $this->fail(['message' => 'Not found!'], 404);
+    }
+
+    //recuperação de senha
+    public function recover()
+    {
+        // Regras de validação
+        $rules = [
+            'email' => 'required|valid_email',
+        ];
+
+        // Verifica se as regras de validação falharam
+        if (!$this->validate($rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        // Obtém os parâmetros do JSON da requisição
+        $params = $this->request->getJSON(true);
+        $email = $params['email'] ?? null;
+
+        // Verifica se o email está vazio
+        if (empty($email)) {
+            log_message('warning', 'Tentativa de recuperação sem email.');
+            return $this->fail('Email is required', 400);
+        }
+
+        try {
+            // Tenta recuperar o usuário com base no email
+            $recoverModel = new RecoverUsers();
+            $result = $recoverModel->recover($email);
+
+            // Retorna uma resposta de sucesso
+            return $this->respond(['message' => 'Recovery successfully completed', 'data' => $result], 200);
+        } catch (PageNotFoundException $e) {
+            // Se o usuário não for encontrado, retorna um erro 404
+            return $this->failNotFound($e->getMessage());
+        } catch (\Exception $e) {
+            // Qualquer outra exceção retornará um erro genérico com código 500
+            return $this->fail($e->getMessage(), 500);
+        }
     }
 }

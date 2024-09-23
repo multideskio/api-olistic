@@ -45,3 +45,26 @@ if (!function_exists('generateSlug')) {
         return substr(str_shuffle($characters), 0, $length);
     }
 }
+
+if (!function_exists('generateMagicLink')) {
+    /**
+     * Gera uma hash única para um link mágico.
+     * 
+     * @param string $userEmail O email do cliente para associar a hash.
+     * @param int $expiryInMinutes Tempo de expiração do link, em minutos. Padrão é 60 minutos.
+     * @return string Hash única gerada.
+     */
+    function generateMagicLink($userEmail, $expiryInMinutes = 60)
+    {
+        // Cria uma string única baseada no email do cliente e no tempo de expiração
+        $uniqueData = $userEmail . time() . bin2hex(random_bytes(16));
+
+        // Gera uma hash criptograficamente segura
+        $hash = hash('sha256', $uniqueData);
+
+        // Opcional: você pode armazenar essa hash com um tempo de expiração no banco de dados
+        // Para que o link só seja válido por um determinado tempo
+
+        return $hash;
+    }
+}

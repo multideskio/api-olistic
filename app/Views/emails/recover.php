@@ -1,39 +1,69 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperação de conta</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #fff; color: #FFFFFF; margin: 0; padding-top: 30px; padding-bottom: 30px;">
-    <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #444444; border-radius: 8px; padding: 20px;">
-        <tr>
-            <td style="text-align: center; padding-bottom: 20px; padding-top: 30px;">
-                <h1 style="margin: 0; color: #FFFFFF; font-size: 22px; font-weight: 900;">Recuperação de conta!</h1>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 20px; font-size: 14px;">
-                <p style="margin: 0 0 10px;">Olá <?= $name ?>,</p>
-                <p style="margin: 0 0 10px;">Para alterar sua senha, clique no botão a baixo, caso você não tenha solicitado, desconsidere esse e-mail.</p>
-                <p style="margin: 0;">
-                    <a href="<?= site_url('auth/createpass/'.$token) ?>" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #FFFFFF; background-color: #1E90FF; text-decoration: none; border-radius: 5px; text-align: center;">Criar senha</a>
-                </p>
-                <a href="<?= site_url('auth/createpass/'.$token) ?>" style="color: #888888 !important; font-size: 12px;">
-                    <?= site_url('auth/createpass/'.$token) ?>
-                </a>
-                <p style="margin: 20px 0 10px;">Caso tenha qualquer dúvida ou precise de ajuda, nossa equipe de suporte está sempre disponível para assisti-lo. Basta responder a este e-mail ou visitar nossa <a href="[URL da Central de Ajuda]" style="color: #1E90FF; text-decoration: none;">Central de Ajuda</a>.</p>
-                <p style="margin: 0;">Agradecemos por se juntar a nós!</p>
-                <p style="margin: 20px 0 0;">Atenciosamente, <br>Equipe [Nome da Empresa]</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: center; padding-top: 20px; color: #888888;">
-                <p style="margin: 0;">Detalhes do Contato:</p>
-                <p style="margin: 0;">[Nome da Empresa] <br> [Endereço da Empresa] <br> E-mail de Suporte: [E-mail de Suporte] <br> Telefone: [Telefone]</p>
-                <p style="margin: 0; font-size: 12px;"><small>Este é um e-mail automático, por favor não responda a esta mensagem.</small></p>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+<div style="border: 1px solid #e7e9eb; border-radius: 5px; padding: 20px; font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto;">
+    <h1 style="font-size: 22px; color: #520172; text-align: center; margin-bottom: 20px;">
+        Solicitação de Alteração de Senha
+    </h1>
+
+    <p style="margin: 0 0 10px; font-size: 16px; line-height: 1.5;">
+        Olá <?= htmlspecialchars($name) ?>,
+    </p>
+
+    <p style="margin: 0 0 15px; font-size: 16px; line-height: 1.5;">
+        Recebemos uma solicitação para alterar a sua senha. Clique no botão abaixo para criar uma nova senha.
+        Se você não fez essa solicitação, por favor, ignore este e-mail.
+    </p>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <a href="<?= $basUrl.'/auth/createpass/' . $token ?>"
+            style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #520172; 
+           text-decoration: none; border-radius: 8px; text-align: center; border: 2px solid #520172; 
+           box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease;"
+            aria-label="Botão para criar nova senha">
+            Criar nova senha
+        </a>
+    </div>
+
+    <p style="margin: 15px 0 10px; font-size: 14px; color: #888;">
+        Se o botão acima não funcionar, copie e cole o link abaixo em seu navegador:
+    </p>
+
+    <p style="margin: 0 0 20px; font-size: 14px;">
+        <a href="<?= $basUrl.'auth/createpass/' . $token ?>" style="color: #520172; text-decoration: none;">
+            <?= $basUrl.'auth/createpass/' . $token ?>
+        </a>
+    </p>
+
+    <p style="margin: 20px 0 10px; font-size: 14px;">
+        Caso precise de ajuda, entre em contato com nossa <a href="[URL da Central de Ajuda]" style="color: #520172; text-decoration: none; font-weight: bold;">Central de Ajuda</a>.
+    </p>
+
+    <p style="margin: 0 0 10px; font-size: 14px;">
+        Obrigado por usar nossos serviços!
+    </p>
+
+    <p style="margin: 20px 0 0; font-size: 14px;">
+        Atenciosamente,<br>
+        Equipe [Nome da Empresa]
+    </p>
+</div>
+
+<!-- Styles for responsiveness -->
+<style>
+    @media only screen and (max-width: 600px) {
+        div {
+            padding: 15px;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        p,
+        a {
+            font-size: 14px;
+        }
+
+        a {
+            padding: 10px 20px;
+        }
+    }
+</style>
