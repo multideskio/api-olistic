@@ -56,7 +56,6 @@ class UsersController extends BaseController
         }
     }
 
-
     #[OA\Get(
         path: "/api/v1/users",
         summary: "Lista de usuários - Acesso admin - última atualização 13/09/2024 04:57",
@@ -229,5 +228,18 @@ class UsersController extends BaseController
     {
         //
         return $this->respondNoContent();
+    }
+
+
+    public function updateMe(){
+        try{
+            $input = $this->request->getJSON(true);
+
+            
+
+
+        }catch(\Exception $e){
+            return $this->respond($e->getMessage());
+        }
     }
 }

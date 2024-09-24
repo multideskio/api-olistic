@@ -41,9 +41,11 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
 
     $routes->get('anamneses/comparation', 'Api\V1\AnamnesesController::comparation');
     $routes->resource('anamneses', ['controller' => 'Api\V1\AnamnesesController']);
+    
+    $routes->resource('plans', ['controller' => 'Api\V1\PlansController']);
 
 
-    $routes->put('tasks/order', 'Api\V1\TasksController::order');
+    $routes->patch('tasks/order', 'Api\V1\TasksController::order');
     $routes->resource('tasks',  ['controller' => 'Api\V1\TasksController']);
     
 
@@ -52,6 +54,7 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     $routes->get('customers', 'Api\V1\CustomerController::index');
     //dados do usuário
     $routes->get('user/me', 'Api\V1\UsersController::me');
+    $routes->put('user/me', 'Api\V1\UsersController::updateMe');
 });
 
 // Rotas acessíveis para múltiplas roles

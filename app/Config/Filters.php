@@ -36,7 +36,9 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'jwt'           => \App\Filters\JwtAuth::class,
-        'throttle'      => \App\Filters\Throttle::class
+        'throttle'      => \App\Filters\Throttle::class,
+
+        'setLocale'     => \App\Filters\SetLocale::class
     ];
 
     /**
@@ -72,6 +74,7 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
+            'setLocale',
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',

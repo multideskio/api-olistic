@@ -173,7 +173,7 @@ class AuthController extends BaseController
         $authHeader = $this->request->getServer('HTTP_AUTHORIZATION');
 
         if (!$authHeader) {
-            return $this->fail('Authorization header not found', 401);
+            return $this->fail(lang('Errors.authorizationHeaderNotFound'), 401);
         }
 
         try {
@@ -187,11 +187,12 @@ class AuthController extends BaseController
                 'expires_at' => date('Y-m-d H:i:s', $decoded->exp),
             ]);
 
-            return $this->respond(['message' => 'Logout successful, token invalidated']);
+            return $this->respond(['message' => lang('Errors.logoutSuccessful')]);
         } catch (\Exception $e) {
-            return $this->fail('Invalid token: ' . $e->getMessage(), 401);
+            return $this->fail(lang('Errors.invalidToken') . ': ' . $e->getMessage(), 401);
         }
     }
+
 
 
     public function aviso()

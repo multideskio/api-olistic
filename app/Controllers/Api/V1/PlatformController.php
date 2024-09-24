@@ -2,28 +2,20 @@
 
 namespace App\Controllers\Api\V1;
 
-use App\Models\PlansModel;
+use App\Models\PlatformModel;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\RESTful\ResourceController;
 
-class PlansController extends BaseController
+class PlatformController extends ResourceController
 {
-
-    protected $modelPlans;
-    public function __construct()
-    {
-        $this->modelPlans = new PlansModel();
-    }
-
+    /**
+     * Return an array of resource objects, themselves in array format.
+     *
+     * @return ResponseInterface
+     */
     public function index()
     {
-        $input = $this->request->getVar('link');
-
-        if($input == "true"){
-            $this->modelPlans->where('link !=', null);
-        }
-        
-        $data = $this->modelPlans->findAll();
-        return $this->respond($data);
+        //
     }
 
     /**
@@ -92,5 +84,11 @@ class PlansController extends BaseController
     public function delete($id = null)
     {
         //
+    }
+
+    public function listPlans()
+    {
+        $modelPlatfom = new PlatformModel();
+        return $this->respond($modelPlatfom->select('links_plans')->findAll());
     }
 }

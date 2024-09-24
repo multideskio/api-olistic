@@ -54,7 +54,7 @@ class TasksModel extends Model
         $currentUser = $userModel->me();
 
         if (!isset($currentUser['id'])) {
-            throw new \RuntimeException('Usuário não autenticado.');
+            throw new \RuntimeException('');
         }
 
         return $currentUser;

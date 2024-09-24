@@ -12,7 +12,7 @@ class PlansModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['platformId', 'namePlan', 'idPlan', 'tokenWebhook', 'permissionUser', 'timeSubscription'];
+    protected $allowedFields    = ['platformId', 'namePlan', 'idPlan', 'tokenWebhook', 'permissionUser', 'timeSubscription', 'link'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

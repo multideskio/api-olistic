@@ -23,7 +23,7 @@ class Plans extends Migration
             ],
             'namePlan' => [
                 'type' => 'VARCHAR',
-                'constraint' => 100
+                'constraint' => 55
             ],
             'idPlan' => [
                 'type' => 'VARCHAR',

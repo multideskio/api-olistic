@@ -26,13 +26,13 @@ class JwtAuth implements FilterInterface
         $session = session(); // Inicia a sessão para armazenar dados
         $header = $request->getServer('HTTP_AUTHORIZATION');
         if (!$header || !preg_match('/Bearer\s(\S+)/', $header, $matches)) {
-            return $this->unauthorizedResponse('Authorization header not found or malformed');
+            return $this->unauthorizedResponse(lang('Errors.tokenInvalid')); // Mensagem traduzida
         }
 
         $token = $matches[1];
 
         if ($this->isTokenBlacklisted($token)) {
-            return $this->unauthorizedResponse('Token is blacklisted');
+            return $this->unauthorizedResponse(lang('Errors.tokenInvalid')); // Token na blacklist
         }
 
         try {
@@ -40,13 +40,13 @@ class JwtAuth implements FilterInterface
 
             $role = $decoded->role ?? null;
             if (!$role || !in_array($role, $arguments)) {
-                return $this->forbiddenResponse('Access denied for your role');
+                return $this->forbiddenResponse(lang('Errors.forbidden')); // Acesso negado
             }
 
             $uid = $decoded->data->id ?? null;
             if (!$uid) {
                 log_message('error', 'UID não encontrado no token decodificado.');
-                return $this->unauthorizedResponse('Token inválido: UID não encontrado');
+                return $this->unauthorizedResponse(lang('Errors.tokenInvalid')); // UID não encontrado
             }
 
             $currentTime = time();
@@ -61,11 +61,11 @@ class JwtAuth implements FilterInterface
                 $session->set('new_token', $newToken); // Armazena o novo token na sessão
             }
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
-            return $this->unauthorizedResponse('Invalid token signature');
+            return $this->unauthorizedResponse(lang('Errors.tokenInvalid')); // Assinatura inválida
         } catch (\Firebase\JWT\ExpiredException $e) {
-            return $this->unauthorizedResponse('Token has expired');
+            return $this->unauthorizedResponse(lang('Errors.tokenExpired')); // Token expirado
         } catch (\Exception $e) {
-            return $this->unauthorizedResponse('Invalid token: ' . $e->getMessage());
+            return $this->unauthorizedResponse(lang('Errors.tokenInvalid') . ': ' . $e->getMessage()); // Token inválido
         }
 
         // Permite que o fluxo continue
