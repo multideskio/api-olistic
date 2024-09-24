@@ -38,6 +38,7 @@ use OpenApi\Attributes as OA;
         new OA\Tag(name: "Usuários", description: "Gerenciamento de usuários - última atualização 13/09"),
         new OA\Tag(name: "Agendamentos", description: "Agendamento de atendimento - Atualizado em 15/09/2024"),
         new OA\Tag(name: "Clientes", description: "Gerenciamento de clientes"),
+        new OA\Tag(name: "Tasks", description: "Tarefas para serem realizadas cadastradas pelo proprio usuário do sistema"),
         new OA\Tag(name: "Anamneses", description: "Gerenciamento de Anamneses"),
         new OA\Tag(name: "Webhooks", description: "Gerenciamento de Webhooks"),
         // Outras tags podem ser adicionadas aqui

@@ -404,4 +404,33 @@ class CustomerController extends BaseController
             return $this->failServerError('Erro interno do servidor: ' . $e->getMessage());
         }
     }
+
+
+    #[OA\Schema(
+        schema: 'Customer',
+        type: 'object',
+        properties: [
+            new OA\Property(property: 'id', type: 'integer', description: 'ID do cliente', example: 1),
+            new OA\Property(property: 'name', type: 'string', description: 'Nome do cliente', example: 'John Doe'),
+            new OA\Property(property: 'photo', type: 'string', description: 'URL da foto do cliente', nullable: true, example: null),
+            new OA\Property(property: 'email', type: 'string', description: 'E-mail do cliente', example: 'johndoe@example.com'),
+            new OA\Property(property: 'phone', type: 'string', description: 'Telefone do cliente', example: '+1234567890'),
+            new OA\Property(property: 'doc', type: 'string', description: 'Documento de identificação', example: '123456789'),
+            new OA\Property(property: 'generous', type: 'string', description: 'Gênero do cliente', example: 'M'),
+            new OA\Property(property: 'birthDate', type: 'string', format: 'date', description: 'Data de nascimento', example: '1990-01-01'),
+            new OA\Property(property: 'anamneses_count', type: 'integer', description: 'Número de anamneses associadas', example: 0),
+            new OA\Property(property: 'anamneses', type: 'array', items: new OA\Items(type: 'object', properties: [
+                new OA\Property(property: 'id', type: 'integer', description: 'ID da anamnese'),
+                new OA\Property(property: 'description', type: 'string', description: 'Descrição da anamnese')
+            ])),
+            new OA\Property(property: 'timelines', type: 'array', items: new OA\Items(type: 'object', properties: [
+                new OA\Property(property: 'id', type: 'integer', description: 'ID da timeline'),
+                new OA\Property(property: 'event', type: 'string', description: 'Descrição do evento da timeline')
+            ]))
+        ]
+    )]
+    
+    public function shema(){
+
+    }
 }
