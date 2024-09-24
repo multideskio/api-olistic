@@ -44,6 +44,7 @@ class SearchAppointments extends AppointmentsModel
 
         // Valida e captura o ID do cliente
         $idCustomer   = $this->validateIdCustomer($params['id_customer'] ?? null);
+        
         // Valida e captura o tipo de cliente
         $typeCustomer = $this->validateTypeCustomer($params['type'] ?? null);
 

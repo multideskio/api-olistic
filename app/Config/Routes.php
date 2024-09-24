@@ -39,6 +39,13 @@ $routes->get('teste', function () {
 // Rotas acessíveis para múltiplas roles
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'], function ($routes) {
     $routes->resource('anamneses', ['controller' => 'Api\V1\AnamnesesController']);
+
+
+    $routes->put('tasks/order', 'Api\V1\TasksController::order');
+    $routes->resource('tasks',  ['controller' => 'Api\V1\TasksController']);
+    
+
+    
     //A busca pelo cliente está aberta para todos os usuários buscarem de acordo com seu próprio ID
     $routes->get('customers', 'Api\V1\CustomerController::index');
     //dados do usuário

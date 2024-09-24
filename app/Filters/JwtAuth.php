@@ -60,7 +60,6 @@ class JwtAuth implements FilterInterface
                 $newToken = $this->renewToken($decoded);
                 $session->set('new_token', $newToken); // Armazena o novo token na sessão
             }
-
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
             return $this->unauthorizedResponse('Invalid token signature');
         } catch (\Firebase\JWT\ExpiredException $e) {
@@ -104,13 +103,16 @@ class JwtAuth implements FilterInterface
     {
         // Gera um novo payload com um novo tempo de expiração
         $newPayload = [
-            'iat' => $decoded->iat, // Mantém o "issued at" original
+            'iss' => $this->jwtConfig->issuer, // Emissor do token
+            'aud' => $this->jwtConfig->audience, // Destinatário do token
+            'iat' => time(), // Tempo atual (issued at)
+            'nbf' => time(), // O token é válido a partir deste momento (not before)
             'exp' => time() + $this->jwtConfig->tokenExpiration, // Novo tempo de expiração
-            'role' => $decoded->role,
+            'role' => $decoded->role, // Mantém o papel/role do usuário
             'data' => [
-                'id' => $decoded->data->id,
-                'email' => $decoded->data->email,
-                'name' => $decoded->data->name
+                'id' => $decoded->data->id, // ID do usuário do token original
+                'email' => $decoded->data->email, // Email do usuário do token original
+                'name' => $decoded->data->name // Nome do usuário do token original
             ]
         ];
 

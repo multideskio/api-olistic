@@ -81,7 +81,7 @@ class UsersModel extends Model
 
         //não está logado gera erro.
         if (!isset($currentUser['id'])) {
-            throw new \RuntimeException('Usuário não autenticado.');
+            throw new \RuntimeException('Unauthenticated user.');
         }
 
         //id do usuário logado
@@ -175,7 +175,7 @@ class UsersModel extends Model
             $user = $this->verifyLogin($email, $password);
 
             if (!$user) {
-                throw new \RuntimeException('Credenciais inválidas');
+                throw new \RuntimeException('Invalid credentials');
             }
 
             if ($user['admin'] == 0) {
@@ -183,20 +183,20 @@ class UsersModel extends Model
                 log_message('info', 'Verificando inscrição ativa para o usuário ID: ' . $user['id']);
                 $subscription = $this->verifySubscription($user['id']);
                 if (!$subscription) {
-                    throw new \RuntimeException('Usuário sem inscrição ativa');
+                    throw new \RuntimeException('User without active registration');
                 }
 
                 // Verifica se o usuário possui um plano ativo
                 log_message('info', 'Verificando plano ativo para o plano ID: ' . $subscription['idPlan']);
                 $plan = $this->verifyPlan($subscription['idPlan']);
                 if (!$plan) {
-                    throw new \RuntimeException('Plano do usuário não encontrado');
+                    throw new \RuntimeException('User plan not found');
                 }
 
                 // Determina permissão com base no plano
                 $permission = $this->determinePermission($plan['permissionUser']);
                 if (!$permission) {
-                    throw new \RuntimeException('Usuário sem permissão de acesso');
+                    throw new \RuntimeException('User without access permission');
                 }
             } else {
                 $permission = 'SUPERADMIN';
@@ -254,7 +254,7 @@ class UsersModel extends Model
                 'email' => $user['email'],
                 'name' => $user['name']
             ]
-        ];
+        ]; 
     }
 
 
@@ -294,7 +294,7 @@ class UsersModel extends Model
         $rowSubscription = $modelSubscription->where('idUser', $userId)->first();
         if (!$rowSubscription) {
             log_message('info', 'Você não tem uma inscrição ativa.');
-            throw new Exception('Você não tem uma inscrição ativa.');
+            throw new Exception('You do not have an active subscription.');
         }
         log_message('info', 'Inscrição ativa : ' . json_encode($rowSubscription));
         return $rowSubscription;
@@ -313,7 +313,7 @@ class UsersModel extends Model
         $rowPlan           = $modelPlan->where('id', $userId)->first();
         if (!$rowPlan) {
             log_message('info', 'O plano não está ativo.');
-            throw new Exception('O plano não está ativo.');
+            throw new Exception('The plan is not active.');
         }
         log_message('info', 'Inscrição ativa : ' . json_encode($rowPlan));
         return $rowPlan;
