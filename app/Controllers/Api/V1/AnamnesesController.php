@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\Anamneses\V1\ComparationAnamneses;
 use App\Models\AnamnesesModel;
 use App\Models\CustomersModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -592,6 +593,127 @@ class AnamnesesController extends BaseController
         } catch (\RuntimeException $e) {
             // Responde com erro de execução (400 Bad Request)
             return $this->fail($e->getMessage(), 400);
+        }
+    }
+
+
+
+
+
+
+    #[OA\Post(
+        path: '/api/v1/anamneses/comparation',
+        tags: ['Anamneses'],
+        summary: 'Compara anamneses de um cliente com base em IDs fornecidos',
+        description: 'Realiza a comparação entre anamneses com base nos IDs fornecidos. A primeira anamnese é utilizada como base e as demais são comparadas com ela.',
+        operationId: 'compareAnamneses',
+        parameters: [
+            new OA\Parameter(
+                name: 'ids',
+                in: 'query',
+                required: true,
+                description: 'IDs das anamneses separadas por vírgula para comparação. Exemplo: 1,2,3',
+                example: '1,2,3',
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Comparação realizada com sucesso',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'comparisons',
+                            description: 'Array de resultados de comparação',
+                            type: 'array',
+                            items: new OA\Items(
+                                type: 'object',
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', description: 'ID da anamnese comparada'),
+                                    new OA\Property(property: 'id_customer', type: 'integer', description: 'ID do cliente associado'),
+                                    new OA\Property(
+                                        property: 'differences',
+                                        type: 'object',
+                                        description: 'Diferenças comparadas com a anamnese base',
+                                        properties: [ // Removi additionalProperties, use diretamente properties
+                                            new OA\Property(property: 'base_value', type: 'number', description: 'Valor na anamnese base'),
+                                            new OA\Property(property: 'current_value', type: 'number', description: 'Valor atual comparado'),
+                                            new OA\Property(property: 'difference', type: 'number', description: 'Diferença calculada'),
+                                        ]
+                                    ),
+                                    new OA\Property(property: 'base_id', type: 'integer', description: 'ID da anamnese base para comparação')
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Parâmetros inválidos ou erro na requisição',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', description: 'Mensagem de erro detalhada')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Nenhuma anamnese encontrada para os IDs fornecidos',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', description: 'Mensagem de erro detalhada')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Erro interno do servidor',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', description: 'Mensagem de erro interna')
+                    ]
+                )
+            )
+        ]
+    )]
+
+
+
+    public function comparation()
+    {
+        try {
+            // Receber os dados via GET ou POST com getVar()
+            $input = $this->request->getVar('ids');  // Capturar os IDs de qualquer requisição (GET ou POST)
+
+            // Verificar se os IDs foram passados
+            if (empty($input)) {
+                return $this->fail('No IDs provided');
+            }
+
+            // Instanciar o modelo para realizar a comparação
+            $anamnesesModel = new ComparationAnamneses();
+
+            // Realizar a comparação (passando a string de IDs)
+            $comparisonResults = $anamnesesModel->compare($input);
+
+            // Retornar os resultados
+            return $this->respond([
+                'comparisons' => $comparisonResults
+            ]);
+        } catch (\RuntimeException $e) {
+            // Tratar exceções do tipo RuntimeException e retornar erro com status 400 (Bad Request)
+            return $this->fail($e->getMessage(), 400);
+        } catch (\DomainException $e) {
+            // Tratar exceções do tipo DomainException e retornar erro com status 404 (Not Found)
+            return $this->fail($e->getMessage(), 404);
+        } catch (\Exception $e) {
+            // Tratar qualquer outra exceção genérica e retornar erro com status 500 (Internal Server Error)
+            return $this->fail($e->getMessage(), 500);
         }
     }
 }

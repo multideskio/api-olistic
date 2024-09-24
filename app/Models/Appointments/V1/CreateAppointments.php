@@ -4,7 +4,6 @@ namespace App\Models\Appointments\V1;
 
 use App\Models\AppointmentsModel;
 use App\Models\CustomersModel;
-use App\Models\UsersModel;
 
 /**
  * Classe CreateAppointments

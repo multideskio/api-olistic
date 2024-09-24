@@ -226,7 +226,7 @@ class AnamnesesModel extends Model
         ];
 
         // Aqui você pode inserir os dados no banco de dados
-        $this->insert($data);
+        $id =  $this->insert($data);
 
         $modelTime = new TimeLinesModel();
 
@@ -239,7 +239,7 @@ class AnamnesesModel extends Model
             ]
         );
 
-        return ['url' => site_url("anamnese/{$slug}")];
+        return ['id' => $id, 'url' => site_url("anamnese/{$slug}")];
     }
 
     public function updateAnamnese(array $params, int $id): array
@@ -398,5 +398,19 @@ class AnamnesesModel extends Model
             $errors = $this->errors();
             throw new Exception('Erro ao excluir o cliente: ' . implode(', ', $errors));
         }
+    }
+
+
+
+    protected function getAuthenticatedUser(): array
+    {
+        $userModel = new UsersModel();
+        $currentUser = $userModel->me();
+
+        if (!isset($currentUser['id'])) {
+            throw new \RuntimeException('Usuário não autenticado.');
+        }
+
+        return $currentUser;
     }
 }

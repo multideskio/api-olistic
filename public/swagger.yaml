@@ -583,6 +583,55 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/anamneses/comparation:
+    post:
+      tags:
+        - Anamneses
+      summary: 'Compara anamneses de um cliente com base em IDs fornecidos'
+      description: 'Realiza a comparação entre anamneses com base nos IDs fornecidos. A primeira anamnese é utilizada como base e as demais são comparadas com ela.'
+      operationId: compareAnamneses
+      parameters:
+        -
+          name: ids
+          in: query
+          description: 'IDs das anamneses separadas por vírgula para comparação. Exemplo: 1,2,3'
+          required: true
+          schema:
+            type: string
+          example: '1,2,3'
+      responses:
+        '200':
+          description: 'Comparação realizada com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  comparisons: { description: 'Array de resultados de comparação', type: array, items: { properties: { id: { description: 'ID da anamnese comparada', type: integer }, id_customer: { description: 'ID do cliente associado', type: integer }, differences: { description: 'Diferenças comparadas com a anamnese base', properties: { base_value: { description: 'Valor na anamnese base', type: number }, current_value: { description: 'Valor atual comparado', type: number }, difference: { description: 'Diferença calculada', type: number } }, type: object }, base_id: { description: 'ID da anamnese base para comparação', type: integer } }, type: object } }
+                type: object
+        '400':
+          description: 'Parâmetros inválidos ou erro na requisição'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { description: 'Mensagem de erro detalhada', type: string }
+                type: object
+        '404':
+          description: 'Nenhuma anamnese encontrada para os IDs fornecidos'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { description: 'Mensagem de erro detalhada', type: string }
+                type: object
+        '500':
+          description: 'Erro interno do servidor'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { description: 'Mensagem de erro interna', type: string }
+                type: object
   /api/v1/appointments:
     get:
       tags:

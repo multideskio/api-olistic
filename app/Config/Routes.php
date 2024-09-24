@@ -38,6 +38,8 @@ $routes->get('teste', function () {
 
 // Rotas acessíveis para múltiplas roles
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'], function ($routes) {
+
+    $routes->get('anamneses/comparation', 'Api\V1\AnamnesesController::comparation');
     $routes->resource('anamneses', ['controller' => 'Api\V1\AnamnesesController']);
 
 
