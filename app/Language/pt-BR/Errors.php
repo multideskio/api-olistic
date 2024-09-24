@@ -28,10 +28,14 @@ return [
     'missingRequiredFields' => 'Campos obrigatórios estão faltando.',
     'invalidData' => 'Dados inválidos fornecidos.',
     'invalidFormat' => 'Formato inválido fornecido.',
-    
 
     'authorizationHeaderNotFound' => 'Cabeçalho de autorização não encontrado',
     'logoutSuccessful' => 'Logout realizado com sucesso, token invalidado',
     'invalidToken' => 'Token inválido',
+
+    'Errors.userNotAuthenticated' => 'Usuário não autenticado ou dados inválidos.',
+    'Errors.twoIdsRequired' => 'Você precisa fornecer pelo menos dois IDs para a comparação.',
+    'Errors.anamnesesNotFound' => 'Nenhuma anamnese encontrada para os IDs fornecidos.',
+
 
 ];

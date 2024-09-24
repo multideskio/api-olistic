@@ -86,6 +86,7 @@ class Platform extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ]
+            
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->createTable('platform', true);

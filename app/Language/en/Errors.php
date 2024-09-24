@@ -33,4 +33,7 @@ return [
     'logoutSuccessful' => 'Logout successful, token invalidated',
     'invalidToken' => 'Invalid token',
 
+    'Errors.userNotAuthenticated' => 'User not authenticated or invalid user data.',
+    'Errors.twoIdsRequired' => 'You need at least two IDs for comparison.',
+    'Errors.anamnesesNotFound' => 'No anamneses found for the provided IDs.',
 ];

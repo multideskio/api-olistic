@@ -20,7 +20,7 @@ class ComparationAnamneses extends AnamnesesModel
 
         // Verificar se o usuário está autenticado
         if (empty($currentUser) || !isset($currentUser['id'])) {
-            throw new \RuntimeException('[0004] User not authenticated or invalid user data.');
+            throw new \RuntimeException(lang('Errors.userNotAuthenticated') ?: 'User not authenticated or invalid user data.');
         }
 
         // Dividir a string de IDs em um array
@@ -28,7 +28,7 @@ class ComparationAnamneses extends AnamnesesModel
 
         // Garantir que ao menos dois IDs foram fornecidos
         if (count($idsArray) < 2) {
-            throw new \RuntimeException('[0001] You need at least two IDs for comparison.');
+            throw new \RuntimeException(lang('Errors.twoIdsRequired') ?: 'You need at least two IDs for comparison.');
         }
 
         // Consultar o banco de dados para os IDs fornecidos
@@ -37,7 +37,7 @@ class ComparationAnamneses extends AnamnesesModel
 
         // Verificar se foram encontrados registros no banco
         if (empty($anamneses) || count($anamneses) < 2) {
-            throw new \DomainException('[0002] No anamneses found for the provided IDs', 404);
+            throw new \DomainException(lang('Errors.anamnesesNotFound') ?: 'No anamneses found for the provided IDs.', 404);
         }
 
         // Primeira anamnese é a base para comparação
