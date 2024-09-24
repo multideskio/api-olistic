@@ -584,7 +584,7 @@ paths:
         -
           bearerAuth: []
   /api/v1/anamneses/comparation:
-    post:
+    get:
       tags:
         - Anamneses
       summary: 'Compara anamneses de um cliente com base em IDs fornecidos'

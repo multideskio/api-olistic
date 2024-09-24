@@ -601,7 +601,7 @@ class AnamnesesController extends BaseController
 
 
 
-    #[OA\Post(
+    #[OA\Get(
         path: '/api/v1/anamneses/comparation',
         tags: ['Anamneses'],
         summary: 'Compara anamneses de um cliente com base em IDs fornecidos',
