@@ -404,6 +404,7 @@ class UsersModel extends Model
                     'photo' => $user['photo'],
                     'role'  => $role,
                     'lang'  => $user['default_lang'],
+                    'languages'  => $user['languages'],
                     'description'=> $user['description'],
                     'education'=> $user['education'],
                     'department'=> $user['department'],
