@@ -96,13 +96,15 @@ class ComparationAnamneses extends AnamnesesModel
             'affective_area',
             'professional_area',
             'financial_area',
-            'mission_area'
+            'mission_area',
+            'created_at'
         ];
 
         foreach ($anamneses as $anamnese) {
             $comparison = [
                 'id' => $anamnese['id'],
                 'id_customer' => $anamnese['id_customer'],
+                'create' => $anamnese['created_at'],
                 'differences' => [],
                 'base_id' => $base['id']  // Adiciona o ID da anamnese base para referência
             ];

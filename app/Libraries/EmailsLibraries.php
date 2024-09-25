@@ -64,7 +64,7 @@ class EmailsLibraries
         log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::initializeSMTP] SMTP configuration initialized.');
     }
 
-    public function send(string $email, string $assunto, string $message)
+    public function send(string $email, string $assunto, string $message): bool
     {
         try {
             log_message('info', '[LINE ' . __LINE__ . '] [EmailsLibraries::send] Preparing to send email.');
@@ -76,14 +76,17 @@ class EmailsLibraries
 
             if ($this->email->send()) {
                 log_message('info', "[LINE " . __LINE__ . "] [EmailsLibraries::send] Email sent successfully to {$email}.");
+                return true;
             } else {
                 $error = $this->email->printDebugger(['headers']);
                 log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::send] Email sending failed: ' . $error);
-                throw new Exception('[LINE ' . __LINE__ . '] [EmailsLibraries::send] Falha ao enviar o email. Detalhes: ' . $error);
+                // Continua o processamento sem interromper
+                return false;
             }
         } catch (Exception $e) {
             log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::send] ' . $e->getMessage());
-            throw $e;
+            // Continua o processamento sem lançar exceção
+            return false;
         }
     }
 
@@ -103,7 +106,7 @@ class EmailsLibraries
             } else {
                 $error = $this->email->printDebugger(['headers']);
                 log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] Test email sending failed: ' . $error);
-                throw new Exception('[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] Falha ao enviar o email de teste. Detalhes: ' . $error);
+                return false;
             }
         } catch (Exception $e) {
             log_message('error', '[LINE ' . __LINE__ . '] [EmailsLibraries::testarEnvioEmail] ' . $e->getMessage());

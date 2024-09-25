@@ -48,7 +48,7 @@
 
     <p style="margin: 20px 0 0; font-size: 14px;">
         Atenciosamente,<br>
-        Equipe [Nome da Empresa]
+        Equipe <?= $company ?>
     </p>
 </div>
 

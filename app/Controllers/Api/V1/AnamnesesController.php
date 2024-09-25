@@ -316,6 +316,7 @@ class AnamnesesController extends BaseController
             // Defina as regras de validação
             $rules = [
                 'idCustomer' => 'required|integer',
+                'idAppointment' => 'required|integer',
                 'mentalDesequilibrio' => 'required|in_list[sim,não]',
                 'mentalPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
                 'emocionalDesequilibrio' => 'required|in_list[sim,não]',
