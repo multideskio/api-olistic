@@ -52,7 +52,7 @@ class SearchTasks extends TasksModel
     private function buildTasksQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $status){
         
         $this->orderBy($sortBy, $sortOrder);
-        $this->select('title, description, order, status, datetime, order');
+        $this->select('id', 'title, description, order, status, datetime, order');
 
         // Filtra compromissos por usuário, se não for SUPERADMIN
         if ($currentUser['role'] !== 'SUPERADMIN') {
