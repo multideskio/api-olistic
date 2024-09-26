@@ -69,9 +69,10 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function (
     $routes->resource('appointments', ['controller' => 'Api\V1\AppointmentsController']);
 });
 
-
-$routes->post('api/v1/login', 'Api\V1\AuthController::login', ['filter' => 'throttle:10,hour']);
-$routes->post('api/v1/magiclink', 'Api\V1\AuthController::magiclink', ['filter' => 'throttle:5,hour']);
+//, ['filter' => 'throttle:10,hour']
+$routes->post('api/v1/login', 'Api\V1\AuthController::login');
+//, ['filter' => 'throttle:5,hour']
+$routes->post('api/v1/magiclink', 'Api\V1\AuthController::magiclink');
 
 // Rota de login sem filtro JWT
 $routes->options('api/v1/login', 'Api\V1\AuthController::login');
