@@ -19,6 +19,7 @@ $routes->options('(:any)', function() {
 $routes->get('/', 'Home::index');
 $routes->get('teste', 'Home::teste');
 $routes->get('docs', 'DocsController::index');
+$routes->get('suporte', '');
 
 
 
@@ -71,14 +72,15 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function (
 
 //, ['filter' => 'throttle:10,hour']
 $routes->post('api/v1/login', 'Api\V1\AuthController::login');
+
 //, ['filter' => 'throttle:5,hour']
 $routes->post('api/v1/magiclink', 'Api\V1\AuthController::magiclink');
 
 // Rota de login sem filtro JWT
 $routes->options('api/v1/login', 'Api\V1\AuthController::login');
 
-//$routes->post('api/v1/login', 'Api\V1\AuthController::login', ['filter' => 'throttle:1,hour']);
-$routes->get('api/v1/login', 'Api\V1\AuthController::aviso', ['filter' => 'throttle:100,hour']);
+//$routes->post('api/v1/login', 'Api\V1\AuthController::login', ['filter' => 'throttle:1,hour']);, ['filter' => 'throttle:100,hour']
+$routes->get('api/v1/login', 'Api\V1\AuthController::aviso');
 
 //recupera senha
 $routes->post('api/v1/recover', 'Api\V1\AuthController::recover');

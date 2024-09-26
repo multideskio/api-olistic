@@ -12,7 +12,7 @@ class DeleteTasks extends TasksModel{
         $currentUser = $this->getAuthenticatedUser();
 
         if ($currentUser['role'] !== 'SUPERADMIN') {
-            $this->where('id_user', $currentUser['id']);
+            $this->where('idUser', $currentUser['id']);
         }
 
         $num = $this->where('id', $id)->countAllResults();

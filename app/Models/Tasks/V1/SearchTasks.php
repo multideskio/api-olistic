@@ -102,6 +102,4 @@ class SearchTasks extends TasksModel
     {
         return (intval($page) > 0) ? intval($page) : 1;
     }
-
-
 }
