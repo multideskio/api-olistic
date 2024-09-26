@@ -36,10 +36,8 @@ class Home extends ResourceController
     {
 
         $elapsedTime = microtime(true) - APP_START;
-
         // Calcula o uso de memória em MB
         $memoryUsage = memory_get_usage() / (1024 * 1024);
-
         return $this->respond([
             'status' => getenv("CI_ENVIRONMENT"),
             "version" => "1.0.0",
@@ -53,5 +51,9 @@ class Home extends ResourceController
     public function teste()
     {
         echo "teste";
+    }
+
+    public function sendSuporte(){
+        
     }
 }

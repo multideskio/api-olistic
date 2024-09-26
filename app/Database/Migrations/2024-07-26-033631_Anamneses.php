@@ -223,12 +223,12 @@ class Anamneses extends Migration
                 'constraint' => ['sim', 'não'],
                 'default' => NULL,
             ],
-
+            
             'aura_size' => [
                 'type' => 'INT',
                 'constraint' => 3
             ],
-
+            
             'aura_size_comments' => [
                 'type' => 'TEXT',
                 'null' => true
