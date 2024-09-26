@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Config\JwtConfig;
+use App\Models\Appointments\V1\GetAppointments;
 use CodeIgniter\Model;
 use Exception;
 use Firebase\JWT\JWT;
@@ -378,16 +379,36 @@ class UsersModel extends Model
             // Acessa a role diretamente de $decoded
             $role = $decoded->role ?? 'Role not specified';
 
+            $getApp = new GetAppointments();
+
             if ($user) {
                 return [
-                    'id'    => $user['id'],
-                    'name'  => $user['name'],
-                    'email' => $user['email'],
-                    'photo' => $user['photo'],
-                    'lang'  => $user['default_lang'],
-                    'role'  => $role,
+                    'id'             => $user['id'],
+                    'name'           => $user['name'],
+                    'email'          => $user['email'],
+                    'photo'          => $user['photo'],
+                    'statiscs'       => $getApp->statistics(),
+                    'role'           => $role,
+                    'lang'           => $user['default_lang'],
+                    'languages'      => $user['languages'],
+                    'description'    => $user['description'],
+                    'education'      => $user['education'],
+                    'department'     => $user['department'],
+                    'social_networks'=> $user['social_networks'],
+                    'company'        => $user['company'],
+                    'birthdate'      => $user['birthdate'],
+                    'show_personal_chart_dashboard'=> $user['show_personal_chart_dashboard'], 
+                    'show_family_chart_dashboard'=> $user['show_family_chart_dashboard'], 
+                    'show_friends_chart_dashboard'=> $user['show_friends_chart_dashboard'], 
+                    'show_appointments_chart_dashboard'=> $user['show_appointments_chart_dashboard'], 
+                    'show_basic_info_dashboard'=> $user['show_basic_info_dashboard'], 
+                    'receive_updates_email'=> $user['receive_updates_email'], 
+                    'receive_updates_sms'=> $user['receive_updates_sms'], 
+                    'receive_updates_whatsapp'=> $user['receive_updates_whatsapp'], 
+                    'receive_scheduling_reminders'=> $user['receive_scheduling_reminders'], 
+                    'receive_cancellation_reminders'=> $user['receive_cancellation_reminders'],
                     //'data'  => $user,
-                    'type'  => 'cache',
+                    'type'  => 'update'
                 ];
             } else {
                 // Busca no banco de dados se não estiver no cache
@@ -403,6 +424,7 @@ class UsersModel extends Model
                     'email' => $user['email'],
                     'photo' => $user['photo'],
                     'role'  => $role,
+                    //'statiscs' => $getApp->statistics(),
                     'lang'  => $user['default_lang'],
                     'languages'  => $user['languages'],
                     'description'=> $user['description'],

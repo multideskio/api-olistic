@@ -45,7 +45,7 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     $routes->resource('plans', ['controller' => 'Api\V1\PlansController']);
 
 
-    $routes->patch('tasks/order', 'Api\V1\TasksController::order');
+    $routes->put('tasks/order', 'Api\V1\TasksController::order');
     $routes->resource('tasks',  ['controller' => 'Api\V1\TasksController']);
     
 
