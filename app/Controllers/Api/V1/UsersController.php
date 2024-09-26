@@ -4,6 +4,7 @@ namespace App\Controllers\Api\V1;
 
 use App\Config\JwtConfig;
 use App\Models\Users\V1\MeUsers;
+use App\Models\Users\V1\ProfileUpdate;
 use App\Models\UsersModel;
 use OpenApi\Attributes as OA;
 
@@ -233,11 +234,29 @@ class UsersController extends BaseController
     }
 
 
-    public function updateMe(){
-        try{
-            $input = $this->request->getJSON(true);
+    public function updateMe()
+    {
+        try {
 
-        }catch(\Exception $e){
+            try {
+                
+                $input = $this->request->getJSON(true);
+                
+                $updateMe = new ProfileUpdate;
+                
+                $data = $updateMe->updateProfile($input);
+                
+                return $this->respond($data);
+
+            } catch (\Exception $e) {
+
+                return $this->fail($e->getMessage());
+            }
+
+
+
+            
+        } catch (\Exception $e) {
             return $this->respond($e->getMessage());
         }
     }

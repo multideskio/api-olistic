@@ -64,7 +64,7 @@ class AnamnesesModel extends Model
 
 
         // Construir a query principal
-        $this->select('customers.name, customers.photo, customers.email, customers.phone, customers.doc, customers.generous, customers.birthDate')
+        $this->select('customers.name, customers.photo, customers.email, customers.phone, customers.doc, customers.generous, customers.birthDate, customers.type')
             ->select('anamneses.*')
             ->join('customers', 'anamneses.id_customer = customers.id', 'left')
             ->where('customers.idUser', $currentUserId)
@@ -381,7 +381,7 @@ class AnamnesesModel extends Model
             throw new \RuntimeException('Usuário não autenticado.');
         }
         $currentUserId = $currentUser->id;
-        
+
         // Verificar se o customer pertence ao usuário atual
         $anamneses = $this->where('id', $id)
             ->where('id_user', $currentUserId)
