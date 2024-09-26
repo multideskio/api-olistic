@@ -3,6 +3,7 @@
 namespace App\Controllers\Api\V1;
 
 use App\Models\Anamneses\V1\ComparationAnamneses;
+use App\Models\Anamneses\V1\DeleteAnamneses;
 use App\Models\AnamnesesModel;
 use App\Models\CustomersModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -52,12 +53,13 @@ class AnamnesesController extends BaseController
         try {
             // Verifica se o ID foi fornecido
             if (is_null($id)) {
-                return $this->failValidationErrors('O ID da anamnese é obrigatório.');
+                return $this->failValidationErrors(lang('errors.idIsRequired'));
             }
             // Chama o método deleteCustomer do model
-            $data = $this->modelAnamnese->deleteAnamnese((int) $id);
+            $delAnamnese = new DeleteAnamneses();
+            $delAnamnese->deleteId((int) $id);
             // Retorna a resposta de sucesso com o status 200 OK
-            return $this->respondDeleted(['message' => 'Anamnenese deletada com sucesso.', 'data' => $data]);
+            return $this->respondDeleted(['message' => lang('Errors.resourceDeleted')]);
         } catch (\InvalidArgumentException $e) {
             // Responde com erro de validação (422 Unprocessable Entity)
             return $this->failValidationErrors($e->getMessage());
@@ -690,6 +692,7 @@ class AnamnesesController extends BaseController
         try {
             // Receber os dados via GET ou POST com getVar()
             $input = $this->request->getVar('ids');  // Capturar os IDs de qualquer requisição (GET ou POST)
+            $customer = $this->request->getVar('customer') ?? null;
 
             // Verificar se os IDs foram passados
             if (empty($input)) {
@@ -700,7 +703,7 @@ class AnamnesesController extends BaseController
             $anamnesesModel = new ComparationAnamneses();
 
             // Realizar a comparação (passando a string de IDs)
-            $comparisonResults = $anamnesesModel->compare($input);
+            $comparisonResults = $anamnesesModel->compare($input, $customer);
 
             // Retornar os resultados
             return $this->respond([

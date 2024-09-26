@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * CONFIG PT BR
+ */
 return [
     // Generic Error Messages
     'badRequest' => 'Invalid request.',
@@ -33,7 +37,14 @@ return [
     'logoutSuccessful' => 'Logout successful, token invalidated',
     'invalidToken' => 'Invalid token',
 
-    'Errors.userNotAuthenticated' => 'User not authenticated or invalid user data.',
-    'Errors.twoIdsRequired' => 'You need at least two IDs for comparison.',
-    'Errors.anamnesesNotFound' => 'No anamneses found for the provided IDs.',
+    'userNotAuthenticated' => 'User not authenticated or invalid user data.',
+    'twoIdsRequired' => 'You need at least two IDs for comparison.',
+    'anamnesesNotFound' => 'No anamneses found for the provided IDs.',
+
+    'roleNotSpecified' => 'Role not specified.',
+
+    'anamneseNotFound' => 'Anamnesis not found or you do not have permission to delete it.',
+    'anamneseDeleteError' => 'Error deleting the anamnesis: {errors}.',
+
+    'idIsRequired' => 'ID is required.'
 ];

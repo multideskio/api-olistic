@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * CONFIG PT BR
+ */
 return [
     // Mensagens de Erro Genéricas
     'badRequest' => 'Requisição inválida.',
@@ -33,9 +37,14 @@ return [
     'logoutSuccessful' => 'Logout realizado com sucesso, token invalidado',
     'invalidToken' => 'Token inválido',
 
-    'Errors.userNotAuthenticated' => 'Usuário não autenticado ou dados inválidos.',
-    'Errors.twoIdsRequired' => 'Você precisa fornecer pelo menos dois IDs para a comparação.',
-    'Errors.anamnesesNotFound' => 'Nenhuma anamnese encontrada para os IDs fornecidos.',
+    'userNotAuthenticated' => 'Usuário não autenticado ou dados inválidos.',
+    'twoIdsRequired' => 'Você precisa fornecer pelo menos dois IDs para a comparação.',
+    'anamnesesNotFound' => 'Nenhuma anamnese encontrada para os IDs fornecidos.',
 
+    'roleNotSpecified' => 'Função não especificada.',
 
+    'anamneseNotFound' => 'Anamnese não encontrada ou você não tem permissão para excluí-la.',
+    'anamneseDeleteError' => 'Erro ao excluir a anamnese: {errors}.',
+
+    'idIsRequired' => 'O ID é obrigatório.'
 ];

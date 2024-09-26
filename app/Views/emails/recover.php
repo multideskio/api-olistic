@@ -13,7 +13,7 @@
     </p>
 
     <div style="text-align: center; margin: 20px 0;">
-        <a href="<?= $basUrl.'/auth/createpass/' . $token ?>"
+        <a href="<?= "{$baseUrl}/novasenha/?token=" . $token ?>"
             style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #520172; 
            text-decoration: none; border-radius: 8px; text-align: center; border: 2px solid #520172; 
            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease;"
@@ -27,8 +27,8 @@
     </p>
 
     <p style="margin: 0 0 20px; font-size: 14px;">
-        <a href="<?= $basUrl.'auth/createpass/' . $token ?>" style="color: #520172; text-decoration: none;">
-            <?= $basUrl.'auth/createpass/' . $token ?>
+        <a href="<?= "{$baseUrl}/novasenha/?token=" . $token ?>" style="color: #520172; text-decoration: none;">
+            <?= "{$baseUrl}/novasenha/?token=" . $token ?>
         </a>
     </p>
 
@@ -42,7 +42,7 @@
 
     <p style="margin: 20px 0 0; font-size: 14px;">
         Atenciosamente,<br>
-        Equipe [Nome da Empresa]
+        Equipe <?= $company ?>
     </p>
 </div>
 

@@ -10,7 +10,7 @@ class JwtConfig extends BaseConfig
     public string $issuer;
     public string $audience;
     public string $jwtSecret;
-    public int $tokenExpiration = 600; // Expiração padrão de 1 hora
+    public int $tokenExpiration = 7200; // Expiração padrão de 1 hora
 
     public function __construct()
     {

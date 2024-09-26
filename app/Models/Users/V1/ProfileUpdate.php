@@ -7,4 +7,9 @@ use App\Models\UsersModel;
 class ProfileUpdate extends UsersModel
 {
     
+
+    public function updateProfile(array $params){
+
+        
+    }
 }

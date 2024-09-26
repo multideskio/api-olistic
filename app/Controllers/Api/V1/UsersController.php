@@ -3,6 +3,7 @@
 namespace App\Controllers\Api\V1;
 
 use App\Config\JwtConfig;
+use App\Models\Users\V1\MeUsers;
 use App\Models\UsersModel;
 use OpenApi\Attributes as OA;
 
@@ -50,7 +51,8 @@ class UsersController extends BaseController
     public function me()
     {
         try {
-            return $this->respond($this->userModel->me());
+            $me = new MeUsers;
+            return $this->respond($me->me());
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
         }
@@ -234,9 +236,6 @@ class UsersController extends BaseController
     public function updateMe(){
         try{
             $input = $this->request->getJSON(true);
-
-            
-
 
         }catch(\Exception $e){
             return $this->respond($e->getMessage());

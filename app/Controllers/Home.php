@@ -50,10 +50,16 @@ class Home extends ResourceController
 
     public function teste()
     {
-        echo "teste";
+        
     }
 
     public function sendSuporte(){
+        $input = $this->request->getJSON(true);
+
+        $nome = $input['nome'];
+        $nome = $input['nome'];
+        $nome = $input['nome'];
+        $nome = $input['nome'];
         
     }
 }

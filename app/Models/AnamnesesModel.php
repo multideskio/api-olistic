@@ -49,14 +49,11 @@ class AnamnesesModel extends Model
     {
         $response = [];
 
-        $userModel   = new UsersModel();
-        $currentUser = $userModel->me();
-
-        if (!isset($currentUser['id'])) {
+        $currentUser = $this->getAuthenticatedUser();
+        if (!isset($currentUser->id)) {
             throw new \RuntimeException('Usuário não autenticado.');
         }
-
-        $currentUserId = $currentUser['id'];
+        $currentUserId = $currentUser->id;
 
         // Parâmetros de entrada
         $searchTerm   = $params['s'] ?? false;
@@ -144,17 +141,14 @@ class AnamnesesModel extends Model
     public function createAnamnese(array $params): array
     {
         // Obter o usuário atual
-        $userModel   = new UsersModel();
         $userCutomer = new CustomersModel();
         $userAppointment = new AppointmentsModel();
 
-        $currentUser = $userModel->me();
-
-        if (!isset($currentUser['id'])) {
+        $currentUser = $this->getAuthenticatedUser();
+        if (!isset($currentUser->id)) {
             throw new \RuntimeException('Usuário não autenticado.');
         }
-
-        $currentUserId = $currentUser['id'];
+        $currentUserId = $currentUser->id;
 
         // Verifica se o customer pertence ao usuário atual
         $customer = $userCutomer->where('id', $params['idCustomer'])->where('idUser', $currentUserId)->first();
@@ -189,7 +183,7 @@ class AnamnesesModel extends Model
             'spiritual_percentage' => $params['espiritualPercentual'],
             'physical_imbalance' => $params['fisicoDesequilibrio'],
             'physical_percentage' => $params['fisicoPercentual'],
-            
+
             'coronary_chakra_imbalance' => $params['chakraCoronarioDesequilibrio'],
             'coronary_chakra_percentage' => $params['chakraCoronarioPercentual'],
             'coronary_chakra_activity' => $params['chakraCoronarioAtividade'],
@@ -338,15 +332,11 @@ class AnamnesesModel extends Model
     public function showAnamnese(int $id): array
     {
         // Obter o usuário atual
-        $userModel = new UsersModel();
-        $currentUser = $userModel->me();
-
-        // Verificar se o usuário está autenticado
-        if (!isset($currentUser['id'])) {
+        $currentUser = $this->getAuthenticatedUser();
+        if (!isset($currentUser->id)) {
             throw new \RuntimeException('Usuário não autenticado.');
         }
-
-        $currentUserId = $currentUser['id'];
+        $currentUserId = $currentUser->id;
 
         // Realizar a busca do customer com JOIN para incluir anamneses
         $this->select('customers.name, customers.photo, customers.email, customers.phone, customers.doc, customers.generous, customers.birthDate')
@@ -386,13 +376,12 @@ class AnamnesesModel extends Model
     public function deleteAnamnese(int $id): void
     {
         // Obter o usuário atual
-        $userModel   = new UsersModel();
-        $currentUser = $userModel->me();
-        // Verificar se o usuário está autenticado
-        if (!isset($currentUser['id'])) {
+        $currentUser = $this->getAuthenticatedUser();
+        if (!isset($currentUser->id)) {
             throw new \RuntimeException('Usuário não autenticado.');
         }
-        $currentUserId = $currentUser['id'];
+        $currentUserId = $currentUser->id;
+        
         // Verificar se o customer pertence ao usuário atual
         $anamneses = $this->where('id', $id)
             ->where('id_user', $currentUserId)
@@ -411,16 +400,13 @@ class AnamnesesModel extends Model
     }
 
 
-
-    protected function getAuthenticatedUser(): array
+    protected function getAuthenticatedUser()
     {
         $userModel = new UsersModel();
-        $currentUser = $userModel->me();
-
-        if (!isset($currentUser['id'])) {
+        $currentUser = $userModel->decodeDataTokenUser()->data;
+        if (!isset($currentUser->id)) {
             throw new \RuntimeException('Usuário não autenticado.');
         }
-
         return $currentUser;
     }
 }

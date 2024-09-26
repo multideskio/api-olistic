@@ -2,8 +2,11 @@
 
 namespace App\Models\Appointments\V1;
 
+use App\Models\AnamnesesModel;
 use App\Models\AppointmentsModel;
 use App\Models\UsersModel;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 /**
  * Classe SearchAppointments
@@ -12,23 +15,7 @@ use App\Models\UsersModel;
  */
 class SearchAppointments extends AppointmentsModel
 {
-    /**
-     * Lista compromissos com base nos parâmetros fornecidos.
-     *
-     * @param array $params Parâmetros para filtrar, ordenar e paginar os compromissos.
-     *                      Inclui:
-     *                      - 's': Termo de busca opcional.
-     *                      - 'page': Número da página.
-     *                      - 'sort_by': Campo para ordenação.
-     *                      - 'order': Ordem de ordenação (ASC ou DESC).
-     *                      - 'status': Status do compromisso.
-     *                      - 'limite': Número de itens por página.
-     *                      - 'start': Data de início do intervalo.
-     *                      - 'end': Data de fim do intervalo.
-     *                      - 'id_customer': ID do cliente.
-     *                      - 'type': Tipo de cliente.
-     * @return array Resultados paginados dos compromissos.
-     */
+    
     public function listAppointments(array $params): array
     {
         $currentUser = $this->getAuthenticatedUser();
@@ -44,7 +31,7 @@ class SearchAppointments extends AppointmentsModel
 
         // Valida e captura o ID do cliente
         $idCustomer   = $this->validateIdCustomer($params['id_customer'] ?? null);
-        
+
         // Valida e captura o tipo de cliente
         $typeCustomer = $this->validateTypeCustomer($params['type'] ?? null);
 
@@ -262,5 +249,22 @@ class SearchAppointments extends AppointmentsModel
             }
         }
         return null;
+    }
+
+    public function statistics($userId): array
+    {
+        $data = [];
+
+        // Acessa a role diretamente de $decoded
+        $role = $decoded->role ?? lang('Config.roleNotSpecified');
+        
+        $modelAnamneses = new AnamnesesModel();
+        
+        $data['appointments'] = $this->where('id_user', $userId)->countAllResults();
+        $data['anamneses'] = $modelAnamneses->where('id_user', $userId)->countAllResults();
+        $data['cancelled'] = $this->where('id_user', $userId)->where('status', 'cancelled')->countAllResults();
+
+
+        return $data;
     }
 }

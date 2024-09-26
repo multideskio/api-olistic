@@ -15,7 +15,7 @@ class GetTasks extends TasksModel{
             $this->where('idUser', $currentUser['id']);
         }
 
-        $this->select('title, description, order, status, datetime');
+        $this->select('id, title, description, order, status, datetime');
         $this->where('id', $id);
         $data = $this->first();
 

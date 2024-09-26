@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Config\JwtConfig;
-use App\Models\Appointments\V1\GetAppointments;
+use App\Models\Appointments\V1\SearchAppointments;
 use CodeIgniter\Model;
 use Exception;
 use Firebase\JWT\JWT;
@@ -257,7 +257,7 @@ class UsersModel extends Model
                 'email' => $user['email'],
                 'name' => $user['name']
             ]
-        ]; 
+        ];
     }
 
 
@@ -349,118 +349,68 @@ class UsersModel extends Model
         }
     }
 
+    // Retorna dados do usuário logado
     public function me()
     {
         try {
-            $request    = service('request');
-            $authHeader = $request->getServer('HTTP_AUTHORIZATION');
-
-            // Obtém o token JWT do cabeçalho da requisição
-            if (!$authHeader || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-                throw new \RuntimeException('Token not provided or invalid');
-            }
-
-            $token = $matches[1];
-
-            // Decodifica o token JWT usando a chave secreta configurada
-            $decoded = $this->decodeToken($token);
-            $userData = $decoded->data ?? null; // Extrai o campo 'data' que contém as informações do usuário
-
-            if (!$userData || !isset($userData->id)) {
-                throw new \RuntimeException('User data not found in token');
-            }
-
-            $userId = $userData->id;
-
-            // Usa o sistema de cache do CI4 com a chave baseada no ID do usuário
-            $cacheKey = 'user_' . $userId;
-            $user     = null; //cache()->get($cacheKey);
-
+            $decoded = $this->decodeDataTokenUser();
+            
+            $userId  = $decoded->data->id;
+            
             // Acessa a role diretamente de $decoded
-            $role = $decoded->role ?? 'Role not specified';
+            $role = $decoded->role ?? lang('Errors.roleNotSpecified');
 
-            $getApp = new GetAppointments();
-
-            if ($user) {
-                return [
-                    'id'             => $user['id'],
-                    'name'           => $user['name'],
-                    'email'          => $user['email'],
-                    'photo'          => $user['photo'],
-                    'statiscs'       => $getApp->statistics(),
-                    'role'           => $role,
-                    'lang'           => $user['default_lang'],
-                    'languages'      => $user['languages'],
-                    'description'    => $user['description'],
-                    'education'      => $user['education'],
-                    'department'     => $user['department'],
-                    'social_networks'=> $user['social_networks'],
-                    'company'        => $user['company'],
-                    'birthdate'      => $user['birthdate'],
-                    'show_personal_chart_dashboard'=> $user['show_personal_chart_dashboard'], 
-                    'show_family_chart_dashboard'=> $user['show_family_chart_dashboard'], 
-                    'show_friends_chart_dashboard'=> $user['show_friends_chart_dashboard'], 
-                    'show_appointments_chart_dashboard'=> $user['show_appointments_chart_dashboard'], 
-                    'show_basic_info_dashboard'=> $user['show_basic_info_dashboard'], 
-                    'receive_updates_email'=> $user['receive_updates_email'], 
-                    'receive_updates_sms'=> $user['receive_updates_sms'], 
-                    'receive_updates_whatsapp'=> $user['receive_updates_whatsapp'], 
-                    'receive_scheduling_reminders'=> $user['receive_scheduling_reminders'], 
-                    'receive_cancellation_reminders'=> $user['receive_cancellation_reminders'],
-                    //'data'  => $user,
-                    'type'  => 'update'
-                ];
-            } else {
-                // Busca no banco de dados se não estiver no cache
-                $user = $this->find($userId);
-                if (!$user) {
-                    throw new \RuntimeException('User not found');
-                }
-                // Armazena os dados do usuário no cache com expiração de 5 minutos
-                cache()->save($cacheKey, $user, 600); // 300 segundos = 5 minutos
-                return [
-                    'id'    => $user['id'],
-                    'name'  => $user['name'],
-                    'email' => $user['email'],
-                    'photo' => $user['photo'],
-                    'role'  => $role,
-                    //'statiscs' => $getApp->statistics(),
-                    'lang'  => $user['default_lang'],
-                    'languages'  => $user['languages'],
-                    'description'=> $user['description'],
-                    'education'=> $user['education'],
-                    'department'=> $user['department'],
-                    'social_networks'=> $user['social_networks'],
-                    'company'=> $user['company'],
-                    'birthdate'=> $user['birthdate'],
-                    'show_personal_chart_dashboard'=> $user['show_personal_chart_dashboard'], 
-                    'show_family_chart_dashboard'=> $user['show_family_chart_dashboard'], 
-                    'show_friends_chart_dashboard'=> $user['show_friends_chart_dashboard'], 
-                    'show_appointments_chart_dashboard'=> $user['show_appointments_chart_dashboard'], 
-                    'show_basic_info_dashboard'=> $user['show_basic_info_dashboard'], 
-                    'receive_updates_email'=> $user['receive_updates_email'], 
-                    'receive_updates_sms'=> $user['receive_updates_sms'], 
-                    'receive_updates_whatsapp'=> $user['receive_updates_whatsapp'], 
-                    'receive_scheduling_reminders'=> $user['receive_scheduling_reminders'], 
-                    'receive_cancellation_reminders'=> $user['receive_cancellation_reminders'],
-                    //'data'  => $user,
-                    'type'  => 'update'
-                ];
+            // Busca no banco de dados se não estiver no cache
+            $user = $this->find($userId);
+            if (!$user) {
+                throw new \RuntimeException(lang('Errors.notFound'));
             }
-            // Retorna a resposta com os dados do usuário
+            
+            $serchApp = new SearchAppointments();
+            
+            $statistics = $serchApp->statistics($userId);
+
+            return [
+                'id'    => $user['id'],
+                'name'  => $user['name'],
+                'email' => $user['email'],
+                'photo' => $user['photo'],
+                'role'  => $role,
+                'lang'  => $user['default_lang'],
+                'languages'  => $user['languages'],
+                'description' => $user['description'],
+                'education' => $user['education'],
+                'department' => $user['department'],
+                'social_networks' => $user['social_networks'],
+                'company' => $user['company'],
+                'birthdate' => $user['birthdate'],
+                'show_personal_chart_dashboard' => $user['show_personal_chart_dashboard'],
+                'show_family_chart_dashboard' => $user['show_family_chart_dashboard'],
+                'show_friends_chart_dashboard' => $user['show_friends_chart_dashboard'],
+                'show_appointments_chart_dashboard' => $user['show_appointments_chart_dashboard'],
+                'show_basic_info_dashboard' => $user['show_basic_info_dashboard'],
+                'receive_updates_email' => $user['receive_updates_email'],
+                'receive_updates_sms' => $user['receive_updates_sms'],
+                'receive_updates_whatsapp' => $user['receive_updates_whatsapp'],
+                'receive_scheduling_reminders' => $user['receive_scheduling_reminders'],
+                'receive_cancellation_reminders' => $user['receive_cancellation_reminders'],
+                'statistics' => [
+                    'appointments' => $statistics['appointments'],
+                    'anamneses' => $statistics['anamneses'],
+                    'cancelled' => $statistics['cancelled']
+                ]
+            ];
         } catch (\RuntimeException $e) {
-            // Loga o erro para auditoria e retorna uma resposta amigável
             log_message('error', 'Erro ao obter dados do usuário: ' . $e->getMessage());
-            throw $e;
+            throw new \RuntimeException($e->getMessage(), 400);
         } catch (\Exception $e) {
-            // Tratamento genérico de erros inesperados
             log_message('error', 'Erro inesperado ao obter dados do usuário: ' . $e->getMessage());
-            throw new \RuntimeException('An unexpected error occurred', 500);
+            throw new \RuntimeException(lang('Errors.serverError'), 500);
         }
     }
 
     // Método separado para decodificação do JWT
-    protected function decodeToken($token)
+    public function decodeToken($token)
     {
         try {
             // Decodifica o token JWT usando a chave secreta e valida a assinatura
@@ -558,15 +508,45 @@ class UsersModel extends Model
     }
 
 
-    protected function getAuthenticatedUser(): array
+    protected function getAuthenticatedUser()
     {
-        
-        $currentUser = $this->me();
-
-        if (!isset($currentUser['id'])) {
+        $currentUser = $this->decodeDataTokenUser()->data;
+        if (!isset($currentUser->id)) {
             throw new \RuntimeException('Usuário não autenticado.');
         }
-
         return $currentUser;
+    }
+
+
+
+
+
+    public function decodeDataTokenUser(){
+        // Pega os dados de cabeçalho
+        $request = service('request');
+        $authHeader = $request->getServer('HTTP_AUTHORIZATION');
+
+        // Obtém o token JWT do cabeçalho da requisição
+        if (!$authHeader || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            throw new \RuntimeException(lang('Errors.tokenInvalid'));
+        }
+
+        $token = $matches[1];
+
+        // Decodifica o token JWT usando a chave secreta configurada
+        try {
+            // Decodifica o token JWT usando a chave secreta e valida a assinatura
+            $decoded = JWT::decode($token, new Key($this->jwtConfig->jwtSecret, 'HS256'));
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Invalid or expired token: ' . $e->getMessage(), 401);
+        }
+
+        $userData = $decoded->data ?? null; // Extrai o campo 'data' que contém as informações do usuário
+
+        if (!$userData || !isset($userData->id)) {
+            throw new \RuntimeException(lang('Errors.userNotAuthenticated'));
+        }
+
+        return $decoded;
     }
 }

@@ -44,35 +44,5 @@ class  GetAppointments extends AppointmentsModel
 
         return $data;
     }
-
-
-    public function statistics(){
-        $currentUser = $this->getAuthenticatedUser();
-        
-        // Realizar uma única consulta agrupando por status
-        $results = $this->select('status, COUNT(*) as total')
-                        ->where('id_user', $currentUser['id'])
-                        ->groupBy('status')
-                        ->findAll();
-    
-        // Inicializar os contadores com zero
-        $statistics = [
-            'pending'      => 0,
-            'complete'     => 0,
-            'canceled'     => 0,
-            'consultation' => 0,
-            'anamneses'    => 0,
-            'return'       => 0,
-        ];
-    
-        // Processar os resultados e atribuir os valores ao array
-        foreach ($results as $row) {
-            if (array_key_exists($row['status'], $statistics)) {
-                $statistics[$row['status']] = (int)$row['total'];
-            }
-        }
-    
-        return $statistics;
-    }
     
 }

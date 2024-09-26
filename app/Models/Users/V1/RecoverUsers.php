@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Users\V1;
 
+use App\Libraries\EmailsLibraries;
 use App\Models\PlatformModel;
 use App\Models\UsersModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -29,26 +30,26 @@ class RecoverUsers extends UsersModel
         }
 
         // Exemplo de chamada para enviar um email com as informações necessárias
-        $result = $this->sendEmail($data['name'], $data['email'], 'example_token', '');
+        $result = $this->sendEmail($data['name'], $data['email'], $data['token'], $data['magic_link']);
 
         return $result;
     }
 
     private function sendEmail($name, $email, $token, $magicLink)
     {
-        
-
-        $platForm = $this->platForm();
-
-        $data['name']  = $name;
-        $data['email'] = $email;
-        $data['token'] = $token;
+        $platForm          = $this->platForm();
+        $data['name']      = $name;
+        $data['email']     = $email;
+        $data['token']     = $token;
         $data['magicLink'] = $magicLink;
-        $data['baseUrl'] = $platForm['urlBase'];
-        $data['company'] = $platForm['company'];
+        $data['baseUrl']   = $platForm['urlBase'];
+        $data['company']   = $platForm['company'];
 
-        // Lógica para enviar o email
-        //$html = view('emails/recover', $data);
+        $liEmail = new EmailsLibraries;
+
+        $html = view('emails/recover', $data);
+        
+        $email = $liEmail->send($email, 'Recuperação de senha', $html);
 
         return $data;
     }
