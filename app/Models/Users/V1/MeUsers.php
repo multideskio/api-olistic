@@ -37,6 +37,7 @@ class MeUsers extends UsersModel
                 'email' => $user['email'],
                 'photo' => $user['photo'],
                 'role'  => $role,
+                'plan'  => '',
                 'lang'  => $user['default_lang'],
                 'languages'  => $user['languages'],
                 'description' => $user['description'],
@@ -69,4 +70,6 @@ class MeUsers extends UsersModel
             throw new \RuntimeException(lang('Errors.serverError'), 500);
         }
     }
+
+
 }
