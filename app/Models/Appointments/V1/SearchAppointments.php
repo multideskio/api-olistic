@@ -26,7 +26,7 @@ class SearchAppointments extends AppointmentsModel
         $sortBy       = $this->validateSortBy($params['sort_by'] ?? 'id'); // Campo para ordenação
         $sortOrder    = $this->validateSortOrder($params['order'] ?? 'ASC'); // Ordem de ordenação
         $status       = $this->validateStatus($params['status'] ?? null); // Status do compromisso
-        $itemsPerPage = $this->validateItemsPerPage($params['limite'] ?? null); // Itens por página
+        $itemsPerPage = $this->validateItemsPerPage($params['limit'] ?? null); // Itens por página
         $dateRange    = $this->getDateRange($params); // Intervalo de datas para o filtro
 
         // Valida e captura o ID do cliente
