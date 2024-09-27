@@ -31,7 +31,7 @@ class MeUsers extends UsersModel
             
             $serchApp = new SearchAppointments();
             
-            $statistics = $serchApp->statistics($userId);
+            $statistics = $serchApp->statisticsWithComparison($userId);
 
             return [
                 'id'    => $user['id'],
@@ -58,11 +58,7 @@ class MeUsers extends UsersModel
                 'receive_updates_whatsapp' => $user['receive_updates_whatsapp'],
                 'receive_scheduling_reminders' => $user['receive_scheduling_reminders'],
                 'receive_cancellation_reminders' => $user['receive_cancellation_reminders'],
-                'statistics' => [
-                    'appointments' => $statistics['appointments'],
-                    'anamneses' => $statistics['anamneses'],
-                    'cancelled' => $statistics['cancelled']
-                ]
+                'statistics' => $statistics
             ];
         } catch (\RuntimeException $e) {
             log_message('error', 'Erro ao obter dados do usuário: ' . $e->getMessage());

@@ -15,7 +15,7 @@ use Firebase\JWT\Key;
  */
 class SearchAppointments extends AppointmentsModel
 {
-    
+
     public function listAppointments(array $params): array
     {
         $currentUser = $this->getAuthenticatedUser();
@@ -254,17 +254,96 @@ class SearchAppointments extends AppointmentsModel
     public function statistics($userId): array
     {
         $data = [];
-
         // Acessa a role diretamente de $decoded
         $role = $decoded->role ?? lang('Config.roleNotSpecified');
-        
         $modelAnamneses = new AnamnesesModel();
-        
         $data['appointments'] = $this->where('id_user', $userId)->countAllResults();
         $data['anamneses'] = $modelAnamneses->where('id_user', $userId)->countAllResults();
         $data['cancelled'] = $this->where('id_user', $userId)->where('status', 'cancelled')->countAllResults();
-
-
         return $data;
+    }
+
+    public function statisticsWithComparison($userId, $startDate = null, $endDate = null): array
+    {
+        // Se não forem fornecidas as datas, usar os últimos 7 dias como padrão
+        $hoje = date('Y-m-d');
+        $umaSemanaAtras = date('Y-m-d', strtotime('-7 days'));
+
+        // Se o usuário não fornecer as datas, usar o padrão de últimos 7 dias
+        $startDate = $startDate ?? $umaSemanaAtras;
+        $endDate = $endDate ?? $hoje;
+
+        // Para comparação, pegar o mesmo intervalo de tempo anterior
+        $periodoAtualDias = (new \DateTime($endDate))->diff(new \DateTime($startDate))->days;
+        $previousStartDate = date('Y-m-d', strtotime("-{$periodoAtualDias} days", strtotime($startDate)));
+        $previousEndDate = date('Y-m-d', strtotime("-{$periodoAtualDias} days", strtotime($endDate)));
+
+        // Modelo de anamneses
+        $modelAnamneses = new AnamnesesModel();
+
+        // Consultas de "appointments" em uma única query
+        $appointments = $this->select('
+        COUNT(*) AS total_appointments,
+        SUM(CASE WHEN created_at >= "' . $startDate . '" AND created_at <= "' . $endDate . '" THEN 1 ELSE 0 END) AS current_period_appointments,
+        SUM(CASE WHEN created_at >= "' . $previousStartDate . '" AND created_at <= "' . $previousEndDate . '" THEN 1 ELSE 0 END) AS previous_period_appointments,
+        SUM(CASE WHEN status = "cancelled" THEN 1 ELSE 0 END) AS total_cancelled_appointments,
+        SUM(CASE WHEN created_at >= "' . $startDate . '" AND created_at <= "' . $endDate . '" AND status = "cancelled" THEN 1 ELSE 0 END) AS current_period_cancelled_appointments,
+        SUM(CASE WHEN created_at >= "' . $previousStartDate . '" AND created_at <= "' . $previousEndDate . '" AND status = "cancelled" THEN 1 ELSE 0 END) AS previous_period_cancelled_appointments
+    ')
+            ->where('id_user', $userId)
+            ->get()
+            ->getRowArray();
+
+        // Consultas de "anamneses" em uma única query
+        $anamneses = $modelAnamneses->select('
+        COUNT(*) AS total_anamneses,
+        SUM(CASE WHEN created_at >= "' . $startDate . '" AND created_at <= "' . $endDate . '" THEN 1 ELSE 0 END) AS current_period_anamneses,
+        SUM(CASE WHEN created_at >= "' . $previousStartDate . '" AND created_at <= "' . $previousEndDate . '" THEN 1 ELSE 0 END) AS previous_period_anamneses
+    ')
+            ->where('id_user', $userId)
+            ->get()
+            ->getRowArray();
+
+        // Calcular a diferença percentual de appointments e cancelled
+        $appointmentsPeriodComparison = $this->calculatePercentageDifference(
+            $appointments['previous_period_appointments'],
+            $appointments['current_period_appointments']
+        );
+
+        $cancelledPeriodComparison = $this->calculatePercentageDifference(
+            $appointments['previous_period_cancelled_appointments'],
+            $appointments['current_period_cancelled_appointments']
+        );
+
+        // Calcular a diferença percentual de anamneses
+        $anamnesesPeriodComparison = $this->calculatePercentageDifference(
+            $anamneses['previous_period_anamneses'],
+            $anamneses['current_period_anamneses']
+        );
+
+        // Dados finais a serem retornados
+        return [
+            'appointments' => $appointments['total_appointments'],
+            'anamneses' => $anamneses['total_anamneses'],
+            'cancelled' => $appointments['total_cancelled_appointments'],
+            'appointments_period_comparison' => $appointmentsPeriodComparison,
+            'anamneses_period_comparison' => $anamnesesPeriodComparison,
+            'cancelled_period_comparison' => $cancelledPeriodComparison
+        ];
+    }
+
+    /**
+     * Método para calcular a diferença percentual
+     * Agora, permite extrapolar 100% para métricas mais precisas.
+     */
+    private function calculatePercentageDifference($lastPeriod, $currentPeriod): float
+    {
+        // Se o período anterior não tiver dados, retorna o crescimento completo
+        if ($lastPeriod == 0) {
+            return $currentPeriod > 0 ? ($currentPeriod * 100) : 0;
+        }
+
+        // Calcula a diferença percentual normalmente
+        return (($currentPeriod - $lastPeriod) / $lastPeriod) * 100;
     }
 }
