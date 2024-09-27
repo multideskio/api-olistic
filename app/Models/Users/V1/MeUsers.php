@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models\Users\V1;
 
 use App\Models\Appointments\V1\SearchAppointments;
+use App\Models\PlansModel;
+use App\Models\SubscriptionsModel;
 use App\Models\UsersModel;
 
 class MeUsers extends UsersModel
@@ -37,7 +39,7 @@ class MeUsers extends UsersModel
                 'email' => $user['email'],
                 'photo' => $user['photo'],
                 'role'  => $role,
-                'plan'  => '',
+                'plan'  => $this->namePlanUser($userId)['namePlan'],
                 'lang'  => $user['default_lang'],
                 'languages'  => $user['languages'],
                 'description' => $user['description'],
@@ -71,5 +73,14 @@ class MeUsers extends UsersModel
         }
     }
 
-
+    private function namePlanUser($idUser){
+        $modelSubscription = new SubscriptionsModel();
+        $subscription = $modelSubscription->select('idPlan')->where('idUser', $idUser)->first();
+        if($subscription){
+            $modelPlano = new PlansModel();
+            return $modelPlano->find($subscription['idPlan']); 
+        }else{
+            return false;
+        }
+    }
 }

@@ -65,7 +65,10 @@ class UsersModel extends Model
             $data["data"]["password"]   = password_hash($data["data"]["password"], PASSWORD_BCRYPT);
         }
 
-        $data["data"]['magic_link'] = generateMagicLink($data["data"]["email"], 60 * 30);
+        if (array_key_exists("email", $data["data"])) {
+            $data["data"]['magic_link'] = generateMagicLink($data["data"]["email"], 60 * 30);
+        }
+
         $data["data"]['token']      = gera_token();
 
         return $data;
@@ -354,9 +357,9 @@ class UsersModel extends Model
     {
         try {
             $decoded = $this->decodeDataTokenUser();
-            
+
             $userId  = $decoded->data->id;
-            
+
             // Acessa a role diretamente de $decoded
             $role = $decoded->role ?? lang('Errors.roleNotSpecified');
 
@@ -365,9 +368,9 @@ class UsersModel extends Model
             if (!$user) {
                 throw new \RuntimeException(lang('Errors.notFound'));
             }
-            
+
             $serchApp = new SearchAppointments();
-            
+
             $statistics = $serchApp->statistics($userId);
 
             return [
@@ -521,7 +524,8 @@ class UsersModel extends Model
 
 
 
-    public function decodeDataTokenUser(){
+    public function decodeDataTokenUser()
+    {
         // Pega os dados de cabeçalho
         $request = service('request');
         $authHeader = $request->getServer('HTTP_AUTHORIZATION');

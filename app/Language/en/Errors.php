@@ -18,7 +18,7 @@ return [
 
     // Generic Success Messages
     'resourceCreated' => 'Resource successfully created.',
-    'resourceUpdated' => 'Resource successfully updated.',
+    'resourceUpdated' => 'Change made successfully.',
     'resourceDeleted' => 'Resource successfully deleted.',
 
     // Authentication-Related Messages
@@ -47,4 +47,5 @@ return [
     'anamneseDeleteError' => 'Error deleting the anamnesis: {errors}.',
 
     'idIsRequired' => 'ID is required.'
+
 ];

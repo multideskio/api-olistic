@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models\Users\V1;
@@ -48,22 +49,56 @@ class RecoverUsers extends UsersModel
         $liEmail = new EmailsLibraries;
 
         $html = view('emails/recover', $data);
-        
+
         $email = $liEmail->send($email, 'Recuperação de senha', $html);
 
         return $data;
     }
 
-
-
-    private function platForm(): array{
+    private function platForm(): array
+    {
         $modelPlatform = new PlatformModel();
         $data = $modelPlatform->first();
 
-        if(!$data){
+        if (!$data) {
             throw new Exception("Error fetching platform data");
         }
+        return $data;
+    }
 
-        return $data ;
+    public function updatePass(string $token, string $password)
+    {
+        // Busca o registro no banco de dados com base no token
+        $data = $this->where('token', $token)->first();
+
+        // Se o token não for encontrado, lança uma exceção com a mensagem traduzida
+        if (empty($data)) {
+            throw new \RuntimeException(lang('Errors.invalidToken')); // 'invalidToken' deve existir no arquivo de tradução
+        }
+
+        // Prepara os dados para atualizar a senha
+        $update = [
+            'id' => $data['id'],
+            'password' => password_hash($password, PASSWORD_BCRYPT) // Hash da nova senha
+        ];
+
+        // Tenta salvar os dados atualizados
+        if (!$this->save($update)) {
+            // Captura os erros do model
+            $errors = $this->errors();
+
+            // Traduz os erros capturados
+            $translatedErrors = [];
+            foreach ($errors as $field => $error) {
+                // Tenta buscar a tradução para cada erro específico
+                $translatedErrors[$field] = lang('Errors.' . $field, [$error]);
+            }
+
+            // Lança uma exceção com os erros traduzidos
+            throw new \RuntimeException(implode(', ', $translatedErrors)); // Concatena os erros em uma única string
+        }
+
+        // Retorna uma mensagem de sucesso
+        return lang('Errors.resourceUpdated'); // 'resourceUpdated' deve existir no arquivo de tradução
     }
 }

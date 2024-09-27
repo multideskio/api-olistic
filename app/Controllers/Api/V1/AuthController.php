@@ -9,7 +9,6 @@ use App\Models\BlacklistModel;
 use CodeIgniter\API\ResponseTrait;
 use OpenApi\Attributes as OA;
 use CodeIgniter\Exceptions\PageNotFoundException;
-use App\Models\Users\V1;
 use App\Models\Users\V1\RecoverUsers;
 
 class AuthController extends BaseController
@@ -236,6 +235,28 @@ class AuthController extends BaseController
         } catch (\Exception $e) {
             // Qualquer outra exceção retornará um erro genérico com código 500
             return $this->fail($e->getMessage(), 500);
+        }
+    }
+
+    public function newPass()
+    {
+        // Obtém os dados da requisição em formato JSON
+        $input = $this->request->getJSON(true);
+
+        // Pega o token e a senha do input
+        $token    = $input['token'] ?? null;
+        $password = $input['password'] ?? null;
+
+        // Verifica se o token ou a senha estão vazios
+        if (empty($token) || empty($password)) {
+            return $this->fail('Token and password required', 400);
+        }
+        try{
+            $recoverModel = new RecoverUsers;
+            $data = $recoverModel->updatePass($token, $password);
+            return $this->respondUpdated(['message' => $data]);
+        }catch(\Exception $e){
+            return $this->fail($e->getMessage());
         }
     }
 }

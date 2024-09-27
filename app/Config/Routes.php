@@ -84,10 +84,7 @@ $routes->get('api/v1/login', 'Api\V1\AuthController::aviso');
 
 //recupera senha
 $routes->post('api/v1/recover', 'Api\V1\AuthController::recover');
-$routes->put('api/v1/recover', function(){
-    echo "Em desenvolvimento";
-    exit;
-});
+$routes->put('api/v1/recover', 'Api\V1\AuthController::newPass');
 
 $routes->get('api/v1/logout', 'Api\V1\AuthController::logout');
 $routes->get('api/v1/google', 'Api\V1\AuthController::googleLogin');

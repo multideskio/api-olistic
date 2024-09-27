@@ -17,9 +17,9 @@ return [
     'serverError' => 'Erro interno do servidor. Por favor, tente novamente mais tarde.',
 
     // Mensagens de Sucesso Genéricas
-    'resourceCreated' => 'Recurso criado com sucesso.',
-    'resourceUpdated' => 'Recurso atualizado com sucesso.',
-    'resourceDeleted' => 'Recurso deletado com sucesso.',
+    'resourceCreated' => 'Cadastro realizado com sucesso.',
+    'resourceUpdated' => 'Alteração feita com sucesso.',
+    'resourceDeleted' => 'Deletado com sucesso.',
 
     // Mensagens Relacionadas à Autenticação
     'invalidCredentials' => 'Credenciais inválidas.',
@@ -35,7 +35,7 @@ return [
 
     'authorizationHeaderNotFound' => 'Cabeçalho de autorização não encontrado',
     'logoutSuccessful' => 'Logout realizado com sucesso, token invalidado',
-    'invalidToken' => 'Token inválido',
+    'invalidToken' => 'Token inválido.',
 
     'userNotAuthenticated' => 'Usuário não autenticado ou dados inválidos.',
     'twoIdsRequired' => 'Você precisa fornecer pelo menos dois IDs para a comparação.',
@@ -46,5 +46,8 @@ return [
     'anamneseNotFound' => 'Anamnese não encontrada ou você não tem permissão para excluí-la.',
     'anamneseDeleteError' => 'Erro ao excluir a anamnese: {errors}.',
 
-    'idIsRequired' => 'O ID é obrigatório.'
+    'idIsRequired' => 'O ID é obrigatório.',
+
+    // Mensagem de erro dinâmico com campo específico
+    '{field}' => 'Houve um problema com o campo {field}: {0}',
 ];
