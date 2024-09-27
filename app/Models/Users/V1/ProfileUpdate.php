@@ -1,18 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models\Users\V1;
+
 use App\Models\UsersModel;
 
 class ProfileUpdate extends UsersModel
 {
-    
 
-    public function updateProfile(array $params){
 
+    public function updateProfile(array $params)
+    {
+        $decoded = $this->decodeDataTokenUser();
+        $userId  = $decoded->data->id;
         $data = [
+            'id' => $userId,
             'name' => $params['name'],
-            //'email' => $params['email'],
             'phone' => $params['phone'],
             'photo' => $params['photo'],
             'description' => $params['description'],
@@ -34,7 +38,7 @@ class ProfileUpdate extends UsersModel
             'receive_scheduling_reminders' => $params['receive_scheduling_reminders'],
             'receive_cancellation_reminders' => $params['receive_cancellation_reminders']
         ];
-
-        return $data;
+        $this->save($data);
+        return ['id' => $userId, 'message' => lang("Errors.resourceUpdated")];
     }
 }

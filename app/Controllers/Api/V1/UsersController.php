@@ -232,32 +232,15 @@ class UsersController extends BaseController
         //
         return $this->respondNoContent();
     }
-
-
     public function updateMe()
     {
         try {
-
-            try {
-                
-                $input = $this->request->getJSON(true);
-                
-                $updateMe = new ProfileUpdate;
-                
-                $data = $updateMe->updateProfile($input);
-                
-                return $this->respond($data);
-
-            } catch (\Exception $e) {
-
-                return $this->fail($e->getMessage());
-            }
-
-
-
-            
+            $input = $this->request->getJSON(true);
+            $updateMe = new ProfileUpdate;
+            $data = $updateMe->updateProfile($input);
+            return $this->respondUpdated($data);
         } catch (\Exception $e) {
-            return $this->respond($e->getMessage());
+            return $this->fail($e->getMessage());
         }
     }
 }
