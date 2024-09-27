@@ -251,6 +251,10 @@ class UsersController extends BaseController
         $searchApp = new SearchAppointments();
         
         $input = $this->request->getGet();
+
+        if(empty($input['type'])){
+
+        }
         $data = $searchApp->statisticsWithComparison(2, $input['start'], $input['end']);
         return $this->respond($data);
     }
