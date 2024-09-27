@@ -1,42 +1,24 @@
 <?php
 
-namespace Config;
+namespace App\Config;
 
 use CodeIgniter\Config\BaseConfig;
 
 class Cors extends BaseConfig
 {
     public array $default = [
-        /*'allowedOrigins' => ["*"],
-        'allowedOriginsPatterns' => ["*"],
-        'supportsCredentials' => true,
-        'allowedHeaders' => ["*"],
-        'exposedHeaders' => ["*"],
-        'allowedMethods' => ["*"],
-        'maxAge' => 7200,*/
+        'allowedOrigins' => ['*'], // Permitir todas as origens (somente para desenvolvimento)
+        'allowedOriginsPatterns' => [],
+        'supportsCredentials' => false,
+        'allowedHeaders' => ['*'],
+        'allowedMethods' => ['*'],
+        'maxAge' => 3600,
     ];
 
     public array $api = [
-        /*'allowedOrigins' => ["*"],
-        'allowedOriginsPatterns' => ["*"],
-        'supportsCredentials' => true,
-        'allowedHeaders' => [],
-        'exposedHeaders' => [],
-        'allowedMethods' => [
-            'GET',
-            'POST',
-            'PUT',
-            'DELETE',
-            'OPTIONS'
-        ],
-        'maxAge' => 7200,*/
-    ];
-
-    public array $apiAdmin = [
-        // Replicando a configuração para uso em APIs específicas
-        /*'allowedOrigins' => ['http://localhost:8000', 'https://terapia.conect.app', 'http://5.161.224.69:8800'],
+        'allowedOrigins' => ['*'], // Domínios específicos para produção
         'allowedOriginsPatterns' => [],
-        'supportsCredentials' => true,
+        'supportsCredentials' => true, // Permite envio de cookies e headers de autenticação
         'allowedHeaders' => [
             'Content-Type',
             'Authorization',
@@ -44,14 +26,14 @@ class Cors extends BaseConfig
             'Accept',
             'Origin',
         ],
-        'exposedHeaders' => [],
         'allowedMethods' => [
             'GET',
             'POST',
+            'PATCH',
             'PUT',
             'DELETE',
-            'OPTIONS'
+            'OPTIONS',
         ],
-        'maxAge' => 7200,*/
+        'maxAge' => 7200,
     ];
 }
