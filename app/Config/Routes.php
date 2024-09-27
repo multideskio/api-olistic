@@ -40,7 +40,8 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     //A busca pelo cliente está aberta para todos os usuários buscarem de acordo com seu próprio ID
     $routes->get('customers', 'Api\V1\CustomerController::index');
 
-    //dados do usuário
+    //dados do usuário /api/v1/user/statistics
+    $routes->get('user/statistics', 'Api\V1\UsersController::statistic');
     $routes->get('user/me', 'Api\V1\UsersController::me');
     $routes->put('user/me', 'Api\V1\UsersController::updateMe');
 });

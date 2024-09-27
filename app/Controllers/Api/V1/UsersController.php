@@ -3,6 +3,7 @@
 namespace App\Controllers\Api\V1;
 
 use App\Config\JwtConfig;
+use App\Models\Appointments\V1\SearchAppointments;
 use App\Models\Users\V1\MeUsers;
 use App\Models\Users\V1\ProfileUpdate;
 use App\Models\UsersModel;
@@ -242,5 +243,15 @@ class UsersController extends BaseController
         } catch (\Exception $e) {
             return $this->fail($e->getMessage());
         }
+    }
+
+
+    public function statistic(){
+
+        $searchApp = new SearchAppointments();
+        
+        $input = $this->request->getGet();
+        $data = $searchApp->statisticsWithComparison(2, $input['start'], $input['end']);
+        return $this->respond($data);
     }
 }
