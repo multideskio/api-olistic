@@ -685,7 +685,7 @@ class AnamnesesController extends BaseController
         ]
     )]
 
-
+    
 
     public function comparation()
     {

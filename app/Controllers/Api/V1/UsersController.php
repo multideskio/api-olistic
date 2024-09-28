@@ -41,14 +41,35 @@ class UsersController extends BaseController
                         new OA\Property(property: "id", type: "integer", example: 1),
                         new OA\Property(property: "name", type: "string", example: "John Doe"),
                         new OA\Property(property: "email", type: "string", example: "john.doe@example.com"),
+                        new OA\Property(property: "photo", type: "string", example: "https://example.com/photo.jpg"),
                         new OA\Property(property: "role", type: "string", example: "PROFISSIONAL"),
-                        new OA\Property(property: "type", type: "string", example: "cache")
+                        new OA\Property(property: "plan", type: "string", example: "Premium"),
+                        new OA\Property(property: "lang", type: "string", example: "en"),
+                        new OA\Property(property: "languages", type: "array", items: new OA\Items(type: "string"), example: "en, es"),
+                        new OA\Property(property: "description", type: "string", example: "Experienced professional in healthcare."),
+                        new OA\Property(property: "education", type: "string", example: "PhD in Radiology"),
+                        new OA\Property(property: "department", type: "string", example: "Radiology"),
+                        new OA\Property(property: "social_networks", type: "object", example: "https://linkedin.com/in/johndoe, https://instagram.com/in/johndoe"),
+                        new OA\Property(property: "company", type: "string", example: "Medical Inc."),
+                        new OA\Property(property: "birthdate", type: "string", format: "date", example: "1985-08-15"),
+                        new OA\Property(property: "show_personal_chart_dashboard", type: "boolean", example: true),
+                        new OA\Property(property: "show_family_chart_dashboard", type: "boolean", example: false),
+                        new OA\Property(property: "show_friends_chart_dashboard", type: "boolean", example: true),
+                        new OA\Property(property: "show_appointments_chart_dashboard", type: "boolean", example: true),
+                        new OA\Property(property: "show_basic_info_dashboard", type: "boolean", example: true),
+                        new OA\Property(property: "receive_updates_email", type: "boolean", example: true),
+                        new OA\Property(property: "receive_updates_sms", type: "boolean", example: false),
+                        new OA\Property(property: "receive_updates_whatsapp", type: "boolean", example: true),
+                        new OA\Property(property: "receive_scheduling_reminders", type: "boolean", example: true),
+                        new OA\Property(property: "receive_cancellation_reminders", type: "boolean", example: true),
+                        new OA\Property(property: "statistics", type: "object", example: "{\"total_appointments\": 50, \"cancelled_appointments\": 5}")
                     ]
                 )
             ),
             new OA\Response(response: 401, description: "Não autorizado")
         ]
     )]
+    
 
     public function me()
     {
@@ -60,7 +81,7 @@ class UsersController extends BaseController
         }
     }
 
-    #[OA\Get(
+    /*#[OA\Get(
         path: "/api/v1/users",
         summary: "Lista de usuários - Acesso admin - última atualização 13/09/2024 04:57",
         description: "Retorna todos os usuários e o plano contratado por ele",
@@ -146,7 +167,7 @@ class UsersController extends BaseController
             new OA\Response(response: 401, description: 'Token inválido ou ausente'),
             new OA\Response(response: 403, description: 'Usuário sem permissão'),
         ]
-    )]
+    )]*/
 
     public function index()
     {
@@ -233,6 +254,75 @@ class UsersController extends BaseController
         //
         return $this->respondNoContent();
     }
+
+
+    #[OA\Put(
+        path: "/api/v1/user/me",
+        summary: "Atualizar informações do usuário autenticado",
+        description: "Permite que o usuário autenticado atualize suas informações de perfil.",
+        tags: ["Usuários"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["name", "photo", "phone", "lang", "languages", "description", "education", "department", "company", "birthdate"],
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "TERAPEUTA TP"),
+                    new OA\Property(property: "photo", type: "string", example: "https://vinha-dev.s3.us-east-1.amazonaws.com/admin_geral/1/66c4784ed3f9f.png"),
+                    new OA\Property(property: "phone", type: "string", example: "+55 62 9 9999 9999"),
+                    new OA\Property(property: "lang", type: "string", example: "pt-BR"),
+                    new OA\Property(property: "languages", type: "string", example: "En, Es, pt-BR"),
+                    new OA\Property(property: "description", type: "string", example: "Coloque o texto que quiser"),
+                    new OA\Property(property: "education", type: "string", example: "FACULDADE"),
+                    new OA\Property(property: "department", type: "string", example: "Radiology"),
+                    new OA\Property(property: "social_networks", type: "string", example: "social_networks"),
+                    new OA\Property(property: "company", type: "string", example: "company"),
+                    new OA\Property(property: "birthdate", type: "string", format: "date", example: "1990-01-01"),
+                    new OA\Property(property: "show_personal_chart_dashboard", type: "boolean", example: true),
+                    new OA\Property(property: "show_family_chart_dashboard", type: "boolean", example: true),
+                    new OA\Property(property: "show_friends_chart_dashboard", type: "boolean", example: true),
+                    new OA\Property(property: "show_appointments_chart_dashboard", type: "boolean", example: true),
+                    new OA\Property(property: "show_basic_info_dashboard", type: "boolean", example: true),
+                    new OA\Property(property: "receive_updates_email", type: "boolean", example: true),
+                    new OA\Property(property: "receive_updates_sms", type: "boolean", example: true),
+                    new OA\Property(property: "receive_updates_whatsapp", type: "boolean", example: true),
+                    new OA\Property(property: "receive_scheduling_reminders", type: "boolean", example: true),
+                    new OA\Property(property: "receive_cancellation_reminders", type: "boolean", example: true)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Perfil atualizado com sucesso",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Perfil atualizado com sucesso"),
+                        new OA\Property(property: "data", type: "object", example: "{\"id\": 1, \"name\": \"TERAPEUTA TP\", \"email\": \"user@example.com\"}")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Erro de validação",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "Nome e foto são obrigatórios")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: "Erro inesperado no servidor",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "Internal server error")
+                    ]
+                )
+            )
+        ]
+    )]
+    
     public function updateMe()
     {
         try {

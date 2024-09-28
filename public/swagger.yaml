@@ -987,6 +987,107 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/recover:
+    put:
+      tags:
+        - Autenticação
+      summary: 'Atualização de senha'
+      description: 'Permite que o usuário atualize sua senha usando um token de recuperação.'
+      operationId: 1e6906d84277eab763bcc0b24db707ae
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - token
+                - password
+              properties:
+                token:
+                  type: string
+                  example: token_de_recuperacao_gerado
+                password:
+                  type: string
+                  example: NovaSenhaForte123!
+              type: object
+      responses:
+        '200':
+          description: 'Senha atualizada com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Password updated successfully' }
+                type: object
+        '400':
+          description: 'Token ou senha não fornecidos'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Token and password required' }
+                type: object
+        '500':
+          description: 'Erro inesperado no servidor'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Internal server error' }
+                type: object
+    post:
+      tags:
+        - Autenticação
+      summary: 'Recuperação de senha'
+      description: 'Permite que um usuário solicite a recuperação de senha através do seu email.'
+      operationId: cfcb64eeb4b59dfcb0b78b6e80c1feff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+              type: object
+      responses:
+        '200':
+          description: 'Recuperação de senha bem-sucedida'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Recovery successfully completed' }
+                  data: { type: object, example: '{"recovery_token": "xyz123abc"}' }
+                type: object
+        '400':
+          description: 'Email não fornecido ou inválido'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Email is required' }
+                type: object
+        '404':
+          description: 'Usuário não encontrado'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'User not found' }
+                type: object
+        '500':
+          description: 'Erro inesperado no servidor'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Internal server error' }
+                type: object
   /api/v1/customers:
     get:
       tags:
@@ -1502,83 +1603,148 @@ paths:
                   id: { type: integer, example: 1 }
                   name: { type: string, example: 'John Doe' }
                   email: { type: string, example: john.doe@example.com }
+                  photo: { type: string, example: 'https://example.com/photo.jpg' }
                   role: { type: string, example: PROFISSIONAL }
-                  type: { type: string, example: cache }
+                  plan: { type: string, example: Premium }
+                  lang: { type: string, example: en }
+                  languages: { type: array, items: { type: string }, example: 'en, es' }
+                  description: { type: string, example: 'Experienced professional in healthcare.' }
+                  education: { type: string, example: 'PhD in Radiology' }
+                  department: { type: string, example: Radiology }
+                  social_networks: { type: object, example: 'https://linkedin.com/in/johndoe, https://instagram.com/in/johndoe' }
+                  company: { type: string, example: 'Medical Inc.' }
+                  birthdate: { type: string, format: date, example: '1985-08-15' }
+                  show_personal_chart_dashboard: { type: boolean, example: true }
+                  show_family_chart_dashboard: { type: boolean, example: false }
+                  show_friends_chart_dashboard: { type: boolean, example: true }
+                  show_appointments_chart_dashboard: { type: boolean, example: true }
+                  show_basic_info_dashboard: { type: boolean, example: true }
+                  receive_updates_email: { type: boolean, example: true }
+                  receive_updates_sms: { type: boolean, example: false }
+                  receive_updates_whatsapp: { type: boolean, example: true }
+                  receive_scheduling_reminders: { type: boolean, example: true }
+                  receive_cancellation_reminders: { type: boolean, example: true }
+                  statistics: { type: object, example: '{"total_appointments": 50, "cancelled_appointments": 5}' }
                 type: object
         '401':
           description: 'Não autorizado'
       security:
         -
           bearerAuth: []
-  /api/v1/users:
-    get:
+    put:
       tags:
         - Usuários
-      summary: 'Lista de usuários - Acesso admin - última atualização 13/09/2024 04:57'
-      description: 'Retorna todos os usuários e o plano contratado por ele'
-      operationId: fb3b9d612f472659bcf1ab9f534217bd
-      parameters:
-        -
-          name: sort_by
-          in: query
-          description: 'Campo para ordenação dos resultados'
-          required: false
-          schema:
-            type: string
-            default: id
-            enum:
-              - id
-              - name
-              - email
-        -
-          name: order
-          in: query
-          description: 'Ordem de ordenação (ASC ou DESC)'
-          required: false
-          schema:
-            type: string
-            default: ASC
-            enum:
-              - ASC
-              - DESC
-        -
-          name: s
-          in: query
-          description: 'Termo de busca para filtrar os usuários'
-          required: false
-          schema:
-            type: string
-        -
-          name: limite
-          in: query
-          description: 'Número de itens por página'
-          required: false
-          schema:
-            type: integer
-            default: 15
-            maximum: 100
-        -
-          name: page
-          in: query
-          description: 'Número da página para paginação'
-          required: false
-          schema:
-            type: integer
-            default: 1
+      summary: 'Atualizar informações do usuário autenticado'
+      description: 'Permite que o usuário autenticado atualize suas informações de perfil.'
+      operationId: 21ad00e8e69df5d13e16c2a1c9c190e8
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - photo
+                - phone
+                - lang
+                - languages
+                - description
+                - education
+                - department
+                - company
+                - birthdate
+              properties:
+                name:
+                  type: string
+                  example: 'TERAPEUTA TP'
+                photo:
+                  type: string
+                  example: 'https://vinha-dev.s3.us-east-1.amazonaws.com/admin_geral/1/66c4784ed3f9f.png'
+                phone:
+                  type: string
+                  example: '+55 62 9 9999 9999'
+                lang:
+                  type: string
+                  example: pt-BR
+                languages:
+                  type: string
+                  example: 'En, Es, pt-BR'
+                description:
+                  type: string
+                  example: 'Coloque o texto que quiser'
+                education:
+                  type: string
+                  example: FACULDADE
+                department:
+                  type: string
+                  example: Radiology
+                social_networks:
+                  type: string
+                  example: social_networks
+                company:
+                  type: string
+                  example: company
+                birthdate:
+                  type: string
+                  format: date
+                  example: '1990-01-01'
+                show_personal_chart_dashboard:
+                  type: boolean
+                  example: true
+                show_family_chart_dashboard:
+                  type: boolean
+                  example: true
+                show_friends_chart_dashboard:
+                  type: boolean
+                  example: true
+                show_appointments_chart_dashboard:
+                  type: boolean
+                  example: true
+                show_basic_info_dashboard:
+                  type: boolean
+                  example: true
+                receive_updates_email:
+                  type: boolean
+                  example: true
+                receive_updates_sms:
+                  type: boolean
+                  example: true
+                receive_updates_whatsapp:
+                  type: boolean
+                  example: true
+                receive_scheduling_reminders:
+                  type: boolean
+                  example: true
+                receive_cancellation_reminders:
+                  type: boolean
+                  example: true
+              type: object
       responses:
         '200':
-          description: 'Lista de usuários'
+          description: 'Perfil atualizado com sucesso'
           content:
             application/json:
               schema:
                 properties:
-                  rows: { type: array, items: { properties: { id: { type: integer, example: 101 }, name: { type: string, example: 'John Doe' }, email: { type: string, example: john.doe@example.com }, phone: { type: string, example: '+55 (11) 9 8765-4321' }, platformId: { type: integer, example: 2 }, admin: { type: boolean, example: false }, created: { type: string, format: date-time, example: '2024-08-15T10:30:00Z', nullable: true }, update: { type: string, format: date-time, example: '2024-09-12T14:45:00Z', nullable: true }, subscription_id: { type: integer, example: 5, nullable: true }, subscription_create: { type: string, format: date-time, example: '2024-09-09T16:12:03Z', nullable: true }, plan_name: { type: string, example: 'Premium Plan', nullable: true }, plan_id: { type: string, example: abcd1234efgh5678ijkl9101, nullable: true }, plan_permissionUser: { type: integer, example: 3, nullable: true }, plan_timeSubscription: { type: integer, example: 12, nullable: true } }, type: object } }
-                  pagination: { properties: { current_page: { type: integer, example: 1 }, total_pages: { type: integer, example: 1 }, total_items: { type: integer, example: 3 }, items_per_page: { type: integer, example: 15 }, prev_page: { type: integer, example: null, nullable: true }, next_page: { type: integer, example: null, nullable: true } }, type: object }
+                  message: { type: string, example: 'Perfil atualizado com sucesso' }
+                  data: { type: object, example: '{"id": 1, "name": "TERAPEUTA TP", "email": "user@example.com"}' }
                 type: object
-        '401':
-          description: 'Token inválido ou ausente'
-        '403':
-          description: 'Usuário sem permissão'
+        '400':
+          description: 'Erro de validação'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Nome e foto são obrigatórios' }
+                type: object
+        '500':
+          description: 'Erro inesperado no servidor'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Internal server error' }
+                type: object
       security:
         -
           bearerAuth: []
@@ -1630,19 +1796,21 @@ paths:
     get:
       tags:
         - Status
-      summary: 'Endpoint de status'
-      description: 'Retorna o status da aplicação'
+      summary: 'Verifica o status do sistema'
+      description: 'Retorna o status atual do sistema, versão, consumo de memória e tempo de carregamento.'
       operationId: 5b8bbea83af70a9a8a53b270333d2915
       responses:
         '200':
-          description: 'Status da aplicação'
+          description: 'Status atual do sistema'
           content:
             application/json:
               schema:
                 properties:
-                  status: { type: string, example: Development }
+                  status: { type: string, example: development }
                   version: { type: string, example: 1.0.0 }
-                  php: { type: string, example: 8.1.2 }
+                  memory: { type: string, example: '13.08 MB' }
+                  load: { type: string, example: '0.0944 seconds' }
+                  docs: { type: string, example: 'https://api.multidesk.io/docs' }
                 type: object
 components:
   schemas:
@@ -1730,6 +1898,24 @@ components:
         order:
           description: 'Ordem da tarefa'
           type: integer
+      type: object
+    StatusResponse:
+      properties:
+        status:
+          type: string
+          example: development
+        version:
+          type: string
+          example: 1.0.0
+        memory:
+          type: string
+          example: '13.08 MB'
+        load:
+          type: string
+          example: '0.0944 seconds'
+        docs:
+          type: string
+          example: 'https://api.multidesk.io/docs'
       type: object
   securitySchemes:
     bearerAuth:

@@ -199,6 +199,63 @@ class AuthController extends BaseController
         return $this->fail(['message' => 'Not found!'], 404);
     }
 
+    
+    #[OA\Post(
+        path: "/api/v1/recover",
+        summary: "Recuperação de senha",
+        description: "Permite que um usuário solicite a recuperação de senha através do seu email.",
+        tags: ["Autenticação"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["email"],
+                properties: [
+                    new OA\Property(property: "email", type: "string", format: "email", example: "user@example.com")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Recuperação de senha bem-sucedida",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Recovery successfully completed"),
+                        new OA\Property(property: "data", type: "object", example: "{\"recovery_token\": \"xyz123abc\"}")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Email não fornecido ou inválido",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "Email is required")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Usuário não encontrado",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "User not found")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: "Erro inesperado no servidor",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "Internal server error")
+                    ]
+                )
+            )
+        ]
+    )]
+    
+    
     //recuperação de senha
     public function recover()
     {
@@ -237,6 +294,54 @@ class AuthController extends BaseController
             return $this->fail($e->getMessage(), 500);
         }
     }
+
+
+    #[OA\Put(
+        path: "/api/v1/recover",
+        summary: "Atualização de senha",
+        description: "Permite que o usuário atualize sua senha usando um token de recuperação.",
+        tags: ["Autenticação"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["token", "password"],
+                properties: [
+                    new OA\Property(property: "token", type: "string", example: "token_de_recuperacao_gerado"),
+                    new OA\Property(property: "password", type: "string", example: "NovaSenhaForte123!")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Senha atualizada com sucesso",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Password updated successfully")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Token ou senha não fornecidos",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "Token and password required")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: "Erro inesperado no servidor",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "error", type: "string", example: "Internal server error")
+                    ]
+                )
+            )
+        ]
+    )]
+    
 
     public function newPass()
     {

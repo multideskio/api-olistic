@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
-use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 use OpenApi\Attributes as OA;
 
@@ -11,55 +10,50 @@ class Home extends ResourceController
 {
     use ResponseTrait;
 
-
     #[OA\Get(
-        path: '/',
-        summary: 'Endpoint de status',
-        description: 'Retorna o status da aplicação',
-        tags: ['Status'],
+        path: "/",
+        tags: ["Status"],
+        summary: "Verifica o status do sistema",
+        description: "Retorna o status atual do sistema, versão, consumo de memória e tempo de carregamento.",
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Status da aplicação',
+                description: "Status atual do sistema",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'status', type: 'string', example: 'Development'),
-                        new OA\Property(property: 'version', type: 'string', example: '1.0.0'),
-                        new OA\Property(property: 'php', type: 'string', example: '8.1.2')
+                        new OA\Property(property: "status", type: "string", example: "development"),
+                        new OA\Property(property: "version", type: "string", example: "1.0.0"),
+                        new OA\Property(property: "memory", type: "string", example: "13.08 MB"),
+                        new OA\Property(property: "load", type: "string", example: "0.0944 seconds"),
+                        new OA\Property(property: "docs", type: "string", example: "https://api.multidesk.io/docs"),
                     ]
                 )
             )
         ]
     )]
 
+    #[OA\Schema(
+        schema: "StatusResponse",
+        type: "object",
+        properties: [
+            new OA\Property(property: "status", type: "string", example: "development"),
+            new OA\Property(property: "version", type: "string", example: "1.0.0"),
+            new OA\Property(property: "memory", type: "string", example: "13.08 MB"),
+            new OA\Property(property: "load", type: "string", example: "0.0944 seconds"),
+            new OA\Property(property: "docs", type: "string", example: "https://api.multidesk.io/docs"),
+        ]
+    )]
     public function index()
     {
-
         $elapsedTime = microtime(true) - APP_START;
-        // Calcula o uso de memória em MB
         $memoryUsage = memory_get_usage() / (1024 * 1024);
+
         return $this->respond([
             'status' => getenv("CI_ENVIRONMENT"),
             "version" => "1.0.0",
-            //"php" => phpversion(),
-            "memory" => number_format($memoryUsage, 2) . ' MB', // Formata com 2 casas decimais
-            "load"  => number_format($elapsedTime, 4) . ' seconds', // Formata com 4 casas decimais
+            "memory" => number_format($memoryUsage, 2) . ' MB',
+            "load"  => number_format($elapsedTime, 4) . ' seconds',
             "docs" => site_url("docs")
         ]);
-    }
-
-    public function teste()
-    {
-        
-    }
-
-    public function sendSuporte(){
-        $input = $this->request->getJSON(true);
-
-        $nome = $input['nome'];
-        $nome = $input['nome'];
-        $nome = $input['nome'];
-        $nome = $input['nome'];
-        
     }
 }

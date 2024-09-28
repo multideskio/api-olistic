@@ -11,6 +11,7 @@ use App\Models\UsersModel;
 
 class MeUsers extends UsersModel
 {
+    
 
     // Retorna dados do usuário logado
     public function me()
