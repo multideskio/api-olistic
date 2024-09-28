@@ -360,11 +360,11 @@ class AnamnesesController extends BaseController
                 'corFalta' => 'required',
                 'corExcesso' => 'required',
                 'energia' => 'required|integer|greater_than_equal_to[0]',
-                'areasFamiliar' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                /*'areasFamiliar' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
                 'areasAfetivo' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
                 'areasProfissional' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
                 'areasFinanceiro' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasMissao' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                'areasMissao' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',*/
             ];
 
             // Defina as mensagens de erro personalizadas
@@ -685,7 +685,7 @@ class AnamnesesController extends BaseController
         ]
     )]
 
-    
+
 
     public function comparation()
     {
