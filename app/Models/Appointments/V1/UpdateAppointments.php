@@ -41,6 +41,6 @@ class UpdateAppointments extends AppointmentsModel
     }
 
     public function updateDelete($id, $idUser){
-        $this->update($id, ['id_deleted' => $idUser]);
+        $this->update($id, ['id_deleted' => $idUser, 'status' => 'cancelled']);
     }
 }
