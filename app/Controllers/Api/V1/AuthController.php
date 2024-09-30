@@ -199,7 +199,7 @@ class AuthController extends BaseController
         return $this->fail(['message' => 'Not found!'], 404);
     }
 
-    
+
     #[OA\Post(
         path: "/api/v1/recover",
         summary: "Recuperação de senha",
@@ -254,8 +254,8 @@ class AuthController extends BaseController
             )
         ]
     )]
-    
-    
+
+
     //recuperação de senha
     public function recover()
     {
@@ -341,7 +341,7 @@ class AuthController extends BaseController
             )
         ]
     )]
-    
+
 
     public function newPass()
     {
@@ -352,15 +352,26 @@ class AuthController extends BaseController
         $token    = $input['token'] ?? null;
         $password = $input['password'] ?? null;
 
+        // Define as regras de validação
+        $rules = [
+            'password' => 'required|min_length[6]',
+        ];
+
         // Verifica se o token ou a senha estão vazios
         if (empty($token) || empty($password)) {
             return $this->fail('Token and password required', 400);
         }
-        try{
-            $recoverModel = new RecoverUsers;
+
+        // Valida a senha
+        if (!$this->validate($rules)) {
+            return $this->fail($this->validator->getErrors(), 400);
+        }
+
+        try {
+            $recoverModel = new RecoverUsers();
             $data = $recoverModel->updatePass($token, $password);
             return $this->respondUpdated(['message' => $data]);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->fail($e->getMessage());
         }
     }
