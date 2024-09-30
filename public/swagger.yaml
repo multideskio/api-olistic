@@ -2026,10 +2026,10 @@ tags:
     description: 'Operações relacionadas à autenticação de usuários'
   -
     name: Usuários
-    description: 'Gerenciamento de usuários - última atualização 13/09'
+    description: 'Gerenciamento de usuários'
   -
     name: Agendamentos
-    description: 'Agendamento de atendimento - Atualizado em 15/09/2024'
+    description: 'Agendamento de atendimento'
   -
     name: Clientes
     description: 'Gerenciamento de clientes'
