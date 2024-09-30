@@ -607,16 +607,27 @@ class AnamnesesController extends BaseController
     #[OA\Get(
         path: '/api/v1/anamneses/comparation',
         tags: ['Anamneses'],
+        security: [['bearerAuth' => []]],
         summary: 'Compara anamneses de um cliente com base em IDs fornecidos',
-        description: 'Realiza a comparação entre anamneses com base nos IDs fornecidos. A primeira anamnese é utilizada como base e as demais são comparadas com ela.',
+        description: '',
         operationId: 'compareAnamneses',
         parameters: [
             new OA\Parameter(
-                name: 'ids',
+                name: 'baseId',
                 in: 'query',
                 required: true,
-                description: 'IDs das anamneses separadas por vírgula para comparação. Exemplo: 1,2,3',
-                example: '1,2,3',
+                description: 'ID anamnese base',
+                example: '1',
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            ),
+            new OA\Parameter(
+                name: 'comparationId',
+                in: 'query',
+                required: true,
+                description: 'ID anamnese para comparar',
+                example: '2',
                 schema: new OA\Schema(
                     type: 'string'
                 )
