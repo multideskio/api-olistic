@@ -40,7 +40,7 @@ class MeUsers extends UsersModel
                 'email' => $user['email'],
                 'photo' => $user['photo'],
                 'role'  => $role,
-                'plan'  => $this->namePlanUser($userId)['namePlan'],
+                'plan'  => $this->namePlanUser($userId)['namePlan'] ?? null,
                 'lang'  => $user['default_lang'],
                 'languages'  => $user['languages'],
                 'description' => $user['description'],
