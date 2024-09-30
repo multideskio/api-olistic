@@ -1655,6 +1655,32 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/dashboard/appointments:
+    get:
+      tags:
+        - Relatórios
+      summary: 'Relatório mensal de compromissos'
+      description: 'Este endpoint retorna um relatório mensal detalhado dos compromissos, cancelamentos, anamneses e retornos do usuário autenticado.'
+      operationId: c34783cc58a30ff9f2c9ec4217bd75af
+      responses:
+        '200':
+          description: 'Relatório mensal gerado com sucesso'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties: { date: { description: 'Mês no formato YYYY-MM', type: string }, appointments: { description: 'Número de compromissos no mês', type: integer }, cancelled: { description: 'Número de compromissos cancelados no mês', type: integer }, anamneses: { description: 'Número de anamneses no mês', type: integer }, return: { description: 'Número de retornos no mês', type: integer } }
+                  type: object
+        '400':
+          description: 'Erro de validação'
+        '401':
+          description: 'Token inválido ou ausente'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
   /api/v1/user/me:
     get:
       tags:
@@ -2019,3 +2045,6 @@ tags:
   -
     name: Webhooks
     description: 'Gerenciamento de Webhooks'
+  -
+    name: Relatórios
+    description: Relatórios

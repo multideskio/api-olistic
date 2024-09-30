@@ -336,6 +336,8 @@ class UsersController extends BaseController
     }
 
 
+    
+
     public function statistic(){
 
         $searchApp = new SearchAppointments();

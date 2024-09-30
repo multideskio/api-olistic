@@ -53,6 +53,12 @@ class ReportsLibraries
                 ->like('created_at', $data)
                 ->countAllResults();
 
+            $numReturn = $this->mAppointments
+                ->where('id_user', $idUser)
+                ->where('type', 'return')
+                ->like('created_at', $data)
+                ->countAllResults();
+
             $numAnamneses = $this->mAnanmanese
                 ->where('id_user', $idUser)
                 ->like('created_at', $data)
@@ -63,7 +69,8 @@ class ReportsLibraries
                 'date' => $data,
                 'appointments' => $numAppointments,
                 'cancelled' => $numCancelleds,
-                'anamneses' => $numAnamneses
+                'anamneses' => $numAnamneses,
+                'return' => $numReturn
             ];
         }
 

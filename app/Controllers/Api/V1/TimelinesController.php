@@ -110,37 +110,66 @@ class TimelinesController extends BaseController
 
 
     #[OA\Get(
-        path: '/api/v1/tasks',
-        summary: 'Criar uma nova tarefa',
-        description: 'Cria uma nova tarefa com os dados fornecidos no corpo da requisição',
-        tags: ['Tasks'],
-        security: [['bearerAuth' => []]],
-        requestBody: new OA\RequestBody(
-            description: 'Dados da nova tarefa',
-            required: true,
-            content: new OA\JsonContent(
-                required: ['title'],
-                properties: [
-                    new OA\Property(property: 'title', type: 'string', description: 'Título da tarefa'),
-                    new OA\Property(property: 'description', type: 'string', description: 'Descrição da tarefa (opcional)'),
-                    new OA\Property(property: 'status', type: 'string', description: 'Status da tarefa (pending/completed)'),
-                    new OA\Property(property: 'datetime', type: 'string', format: 'date-time', description: 'Data e hora da tarefa (opcional)')
-                ]
-            )
-        ),
+        path: '/api/v1/dashboard/appointments',
+        summary: 'Relatório mensal de compromissos',
+        description: 'Este endpoint retorna um relatório mensal detalhado dos compromissos, cancelamentos, anamneses e retornos do usuário autenticado.',
+        tags: ['Relatórios'],
+        security: [['bearerAuth' => []]], // Necessita de autenticação via Bearer Token
         responses: [
             new OA\Response(
-                response: 201,
-                description: 'Tarefa criada com sucesso',
-                content: new OA\JsonContent(type: 'object')
+                response: 200,
+                description: 'Relatório mensal gerado com sucesso',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        type: 'object',
+                        properties: [
+                            new OA\Property(
+                                property: 'date',
+                                type: 'string',
+                                description: 'Mês no formato YYYY-MM'
+                            ),
+                            new OA\Property(
+                                property: 'appointments',
+                                type: 'integer',
+                                description: 'Número de compromissos no mês'
+                            ),
+                            new OA\Property(
+                                property: 'cancelled',
+                                type: 'integer',
+                                description: 'Número de compromissos cancelados no mês'
+                            ),
+                            new OA\Property(
+                                property: 'anamneses',
+                                type: 'integer',
+                                description: 'Número de anamneses no mês'
+                            ),
+                            new OA\Property(
+                                property: 'return',
+                                type: 'integer',
+                                description: 'Número de retornos no mês'
+                            ),
+                        ]
+                    )
+                )
             ),
-            new OA\Response(response: 400, description: 'Erro de validação'),
-            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
-            new OA\Response(response: 500, description: 'Erro interno do servidor')
+            new OA\Response(
+                response: 400,
+                description: 'Erro de validação'
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Token inválido ou ausente'
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Erro interno do servidor'
+            )
         ]
     )]
 
-    public function reportJson(){
+    public function reportJson()
+    {
         $reportMes = new ReportsLibraries();
         return $this->respond($reportMes->mensal());
     }
