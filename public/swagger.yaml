@@ -1659,8 +1659,8 @@ paths:
     get:
       tags:
         - Usuários
-      summary: 'Relatório mensal de compromissos'
-      description: 'Este endpoint retorna um relatório mensal detalhado dos compromissos, cancelamentos, anamneses e retornos do usuário autenticado.'
+      summary: 'Relatório mensal '
+      description: 'Este endpoint retorna um relatório mensal detalhado, cancelamentos, anamneses e retornos do usuário autenticado.'
       operationId: c34783cc58a30ff9f2c9ec4217bd75af
       responses:
         '200':

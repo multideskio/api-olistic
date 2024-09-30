@@ -111,8 +111,8 @@ class TimelinesController extends BaseController
 
     #[OA\Get(
         path: '/api/v1/dashboard/appointments',
-        summary: 'Relatório mensal de compromissos',
-        description: 'Este endpoint retorna um relatório mensal detalhado dos compromissos, cancelamentos, anamneses e retornos do usuário autenticado.',
+        summary: 'Relatório mensal ',
+        description: 'Este endpoint retorna um relatório mensal detalhado, cancelamentos, anamneses e retornos do usuário autenticado.',
         tags: ['Usuários'],
         security: [['bearerAuth' => []]], // Necessita de autenticação via Bearer Token
         responses: [
