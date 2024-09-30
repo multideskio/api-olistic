@@ -370,7 +370,7 @@ paths:
                   description: 'ID do cliente'
                   type: integer
                 idAppointment:
-                  description: 'ID do cliente'
+                  description: 'ID do agendamento'
                   type: integer
                 mentalDesequilibrio:
                   description: 'Desequilíbrio mental'

@@ -233,7 +233,7 @@ class AnamnesesController extends BaseController
                 type: 'object',
                 properties: [
                     new OA\Property(property: 'idCustomer', type: 'integer', description: 'ID do cliente'),
-                    new OA\Property(property: 'idAppointment', type: 'integer', description: 'ID do cliente'),
+                    new OA\Property(property: 'idAppointment', type: 'integer', description: 'ID do agendamento'),
                     new OA\Property(property: 'mentalDesequilibrio', type: 'string', description: 'Desequilíbrio mental', enum: ['sim', 'não']),
                     new OA\Property(property: 'mentalPercentual', type: 'integer', description: 'Percentual de desequilíbrio mental', minimum: 0, maximum: 100),
                     new OA\Property(property: 'emocionalDesequilibrio', type: 'string', description: 'Desequilíbrio emocional', enum: ['sim', 'não']),
@@ -361,11 +361,11 @@ class AnamnesesController extends BaseController
                 'corFalta' => 'required',
                 'corExcesso' => 'required',
                 'energia' => 'required|integer|greater_than_equal_to[0]',
-                /*'areasFamiliar' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasAfetivo' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasProfissional' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasFinanceiro' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasMissao' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',*/
+                'areasFamiliar' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasAfetivo' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasProfissional' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasFinanceiro' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasMissao' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
             ];
 
             // Defina as mensagens de erro personalizadas
@@ -563,11 +563,11 @@ class AnamnesesController extends BaseController
                 'corFalta' => 'required',
                 'corExcesso' => 'required',
                 'energia' => 'required|integer|greater_than_equal_to[0]',
-                'areasFamiliar' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasAfetivo' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasProfissional' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasFinanceiro' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
-                'areasMissao' => 'required|in_list[pessimo,muito mal,mal,regular,bom,muito bom,excelente]',
+                'areasFamiliar' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasAfetivo' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasProfissional' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasFinanceiro' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
+                'areasMissao' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
             ];
 
             // Defina as mensagens de erro personalizadas
