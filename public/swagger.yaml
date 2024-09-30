@@ -1658,7 +1658,7 @@ paths:
   /api/v1/dashboard/appointments:
     get:
       tags:
-        - Usuarios
+        - Usuários
       summary: 'Relatório mensal de compromissos'
       description: 'Este endpoint retorna um relatório mensal detalhado dos compromissos, cancelamentos, anamneses e retornos do usuário autenticado.'
       operationId: c34783cc58a30ff9f2c9ec4217bd75af
@@ -2045,6 +2045,3 @@ tags:
   -
     name: Webhooks
     description: 'Gerenciamento de Webhooks'
-  -
-    name: Usuarios
-    description: Usuarios
