@@ -369,6 +369,9 @@ paths:
                 idCustomer:
                   description: 'ID do cliente'
                   type: integer
+                idAppointment:
+                  description: 'ID do cliente'
+                  type: integer
                 mentalDesequilibrio:
                   description: 'Desequilíbrio mental'
                   type: string
@@ -543,27 +546,33 @@ paths:
                 energia:
                   description: 'Nível de energia'
                   type: integer
+                  maximum: 100
                   minimum: 0
                 areasFamiliar:
                   description: 'Área familiar'
-                  type: string
-                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                  type: integer
+                  maximum: 100
+                  minimum: 0
                 areasAfetivo:
                   description: 'Área afetiva'
-                  type: string
-                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                  type: integer
+                  maximum: 100
+                  minimum: 0
                 areasProfissional:
                   description: 'Área profissional'
-                  type: string
-                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                  type: integer
+                  maximum: 100
+                  minimum: 0
                 areasFinanceiro:
                   description: 'Área financeira'
-                  type: string
-                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                  type: integer
+                  maximum: 100
+                  minimum: 0
                 areasMissao:
                   description: 'Área de missão'
-                  type: string
-                  enum: [pessimo, 'muito mal', mal, regular, bom, 'muito bom', excelente]
+                  type: integer
+                  maximum: 100
+                  minimum: 0
               type: object
       responses:
         '201':

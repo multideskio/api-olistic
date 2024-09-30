@@ -233,6 +233,7 @@ class AnamnesesController extends BaseController
                 type: 'object',
                 properties: [
                     new OA\Property(property: 'idCustomer', type: 'integer', description: 'ID do cliente'),
+                    new OA\Property(property: 'idAppointment', type: 'integer', description: 'ID do cliente'),
                     new OA\Property(property: 'mentalDesequilibrio', type: 'string', description: 'Desequilíbrio mental', enum: ['sim', 'não']),
                     new OA\Property(property: 'mentalPercentual', type: 'integer', description: 'Percentual de desequilíbrio mental', minimum: 0, maximum: 100),
                     new OA\Property(property: 'emocionalDesequilibrio', type: 'string', description: 'Desequilíbrio emocional', enum: ['sim', 'não']),
@@ -283,12 +284,12 @@ class AnamnesesController extends BaseController
                         description: 'Cores em excesso',
                         items: new OA\Items(type: 'string')
                     ),
-                    new OA\Property(property: 'energia', type: 'integer', description: 'Nível de energia', minimum: 0),
-                    new OA\Property(property: 'areasFamiliar', type: 'string', description: 'Área familiar', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
-                    new OA\Property(property: 'areasAfetivo', type: 'string', description: 'Área afetiva', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
-                    new OA\Property(property: 'areasProfissional', type: 'string', description: 'Área profissional', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
-                    new OA\Property(property: 'areasFinanceiro', type: 'string', description: 'Área financeira', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente']),
-                    new OA\Property(property: 'areasMissao', type: 'string', description: 'Área de missão', enum: ['pessimo', 'muito mal', 'mal', 'regular', 'bom', 'muito bom', 'excelente'])
+                    new OA\Property(property: 'energia', type: 'integer', description: 'Nível de energia', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'areasFamiliar', type: 'integer', description: 'Área familiar', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'areasAfetivo', type: 'integer', description: 'Área afetiva', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'areasProfissional', type: 'integer', description: 'Área profissional', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'areasFinanceiro', type: 'integer', description: 'Área financeira', minimum: 0, maximum: 100),
+                    new OA\Property(property: 'areasMissao', type: 'integer', description: 'Área de missão', minimum: 0, maximum: 100)
                 ]
             )
         ),
