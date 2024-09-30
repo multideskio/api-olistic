@@ -51,8 +51,9 @@ class AppointmentsModel extends Model
      * @return array Dados do usuário autenticado.
      * @throws \RuntimeException Se o usuário não estiver autenticado.
      */
-    protected function getAuthenticatedUser(): array
+    public function getAuthenticatedUser(): array
     {
+        
         $userModel = new UsersModel();
         $currentUser = $userModel->me();
 

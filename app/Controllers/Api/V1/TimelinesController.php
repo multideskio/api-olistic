@@ -2,6 +2,8 @@
 
 namespace App\Controllers\Api\V1;
 
+use OpenApi\Attributes as OA;
+use App\Libraries\ReportsLibraries;
 use App\Models\TimeLinesModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -104,5 +106,42 @@ class TimelinesController extends BaseController
     public function delete($id = null)
     {
         //
+    }
+
+
+    #[OA\Get(
+        path: '/api/v1/tasks',
+        summary: 'Criar uma nova tarefa',
+        description: 'Cria uma nova tarefa com os dados fornecidos no corpo da requisição',
+        tags: ['Tasks'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'Dados da nova tarefa',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['title'],
+                properties: [
+                    new OA\Property(property: 'title', type: 'string', description: 'Título da tarefa'),
+                    new OA\Property(property: 'description', type: 'string', description: 'Descrição da tarefa (opcional)'),
+                    new OA\Property(property: 'status', type: 'string', description: 'Status da tarefa (pending/completed)'),
+                    new OA\Property(property: 'datetime', type: 'string', format: 'date-time', description: 'Data e hora da tarefa (opcional)')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Tarefa criada com sucesso',
+                content: new OA\JsonContent(type: 'object')
+            ),
+            new OA\Response(response: 400, description: 'Erro de validação'),
+            new OA\Response(response: 401, description: 'Token inválido ou ausente'),
+            new OA\Response(response: 500, description: 'Erro interno do servidor')
+        ]
+    )]
+
+    public function reportJson(){
+        $reportMes = new ReportsLibraries();
+        return $this->respond($reportMes->mensal());
     }
 }

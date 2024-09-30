@@ -160,7 +160,7 @@ class TasksController extends BaseController
      */
 
 
-     #[OA\Post(
+    #[OA\Post(
         path: '/api/v1/tasks',
         summary: 'Criar uma nova tarefa',
         description: 'Cria uma nova tarefa com os dados fornecidos no corpo da requisição',

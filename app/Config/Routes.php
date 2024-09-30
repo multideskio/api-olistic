@@ -46,6 +46,11 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     $routes->get('user/statistics', 'Api\V1\UsersController::statistic');
     $routes->get('user/me', 'Api\V1\UsersController::me');
     $routes->put('user/me', 'Api\V1\UsersController::updateMe');
+
+
+    $routes->get('dashboard/appointments', 'Api\V1\TimelinesController::reportJson');
+
+    $routes->resource('timeline', ['controller' => 'Api\V1\TimelinesController']);
 });
 
 // Rotas apenas SUPERADMIN
