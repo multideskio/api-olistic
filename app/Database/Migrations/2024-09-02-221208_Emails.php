@@ -19,7 +19,6 @@ class Emails extends Migration
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-
             'platformId' => [
                 'type' => 'int',
                 'unsigned' => true

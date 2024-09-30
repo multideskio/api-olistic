@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class PlatformModel extends Model
+class SupportModel extends Model
 {
-    protected $table            = 'platform';
+    protected $table            = 'supports';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['company', 'logo', 'emailSupport', 'urlBase', 'senderEmail', 'senderName', 'smtpHost', 'smtpUser', 'smtpPass', 'smtpPort', 'smtpCrypto', 'activeSmtp'];
+    protected $allowedFields    = ['id_user', 'email', 'name', 'subject', 'type', 'message', 'protocol', 'channel'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -43,4 +43,16 @@ class PlatformModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    protected function getAuthenticatedUser(): array
+    {
+        $userModel = new UsersModel();
+        $currentUser = $userModel->me();
+        
+        if (!isset($currentUser['id'])) {
+            throw new \RuntimeException('Usuário não autenticado.');
+        }
+
+        return $currentUser;
+    }
 }

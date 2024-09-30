@@ -1348,6 +1348,55 @@ paths:
       security:
         -
           bearerAuth: []
+  /api/v1/support:
+    post:
+      tags:
+        - Suporte
+      summary: 'Criar novo chamado de suporte'
+      description: 'Este endpoint cria um novo chamado de suporte para um cliente. O ID do cliente é identificado internamente.'
+      operationId: d9ecd9442c1f8b5bb1244539385142c1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  description: 'Nome do cliente'
+                  type: string
+                subject:
+                  description: 'Assunto do chamado de suporte'
+                  type: string
+                type:
+                  description: 'Tipo do suporte (e.g., técnico, financeiro)'
+                  type: string
+                message:
+                  description: 'Mensagem detalhada do suporte'
+                  type: string
+                channel:
+                  description: 'Canal de origem do suporte (e.g., form, webhook)'
+                  type: string
+                  default: form
+              type: object
+      responses:
+        '201':
+          description: 'Chamado de suporte criado com sucesso'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { description: 'ID do chamado criado', type: integer }
+                  protocol: { description: 'Protocolo do chamado', type: string }
+                type: object
+        '409':
+          description: 'Conflito: Chamado de suporte já existe'
+        '422':
+          description: 'Erro de validação'
+        '500':
+          description: 'Erro interno do servidor'
+      security:
+        -
+          bearerAuth: []
   /api/v1/tasks:
     get:
       tags:
@@ -1964,6 +2013,9 @@ tags:
   -
     name: Anamneses
     description: 'Gerenciamento de Anamneses'
+  -
+    name: Suporte
+    description: 'Gerenciamento de suporte'
   -
     name: Webhooks
     description: 'Gerenciamento de Webhooks'

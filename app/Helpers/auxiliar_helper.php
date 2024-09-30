@@ -68,3 +68,17 @@ if (!function_exists('generateMagicLink')) {
         return $hash;
     }
 }
+
+
+if (!function_exists('create_protocol')) {
+    function create_protocol(int $id_customer): string
+    {
+        // Obtém a data e hora atual no formato desejado
+        $dateTime = date('YmdHis'); // AnoMêsDiaHoraMinutoSegundo
+
+        // Gera o protocolo concatenando com o ID do cliente
+        $protocol = $dateTime . $id_customer;
+
+        return $protocol;
+    }
+}

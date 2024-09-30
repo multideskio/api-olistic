@@ -24,9 +24,9 @@ $routes->get('suporte', '');
 //Anamnese aberta
 $routes->get('anamnese/(:any)', 'Api\V1\AnamnesesController::slug/$1');
 
-$routes->get('teste', function () {
+/*$routes->get('teste', function () {
     echo password_hash("123456", PASSWORD_BCRYPT);
-});
+});*/
 
 // Rotas para usuários logados
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'], function ($routes) {
@@ -36,10 +36,12 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     $routes->resource('plans', ['controller' => 'Api\V1\PlansController']);
     $routes->put('tasks/order', 'Api\V1\TasksController::order');
     $routes->resource('tasks',  ['controller' => 'Api\V1\TasksController']);
+
+    $routes->resource('support',  ['controller' => 'Api\V1\SupportController']);
     
     //A busca pelo cliente está aberta para todos os usuários buscarem de acordo com seu próprio ID
     $routes->get('customers', 'Api\V1\CustomerController::index');
-
+    
     //dados do usuário /api/v1/user/statistics
     $routes->get('user/statistics', 'Api\V1\UsersController::statistic');
     $routes->get('user/me', 'Api\V1\UsersController::me');
@@ -86,4 +88,7 @@ $routes->group('api/v1', function ($routes) {
     $routes->get('auth/google/callback', 'Api\V1\AuthController::googleCallback');
     //webhook greem
     $routes->post('webhook/greem', 'Api\V1\WebhookController::greem');
+
+    //
+    $routes->post('crisp/first-chat', 'Api\V1\SupportController::webhookCrispFirstChat');
 });

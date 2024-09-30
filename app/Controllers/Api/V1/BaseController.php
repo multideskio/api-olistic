@@ -40,7 +40,9 @@ use OpenApi\Attributes as OA;
         new OA\Tag(name: "Clientes", description: "Gerenciamento de clientes"),
         new OA\Tag(name: "Tasks", description: "Tarefas para serem realizadas cadastradas pelo proprio usuário do sistema"),
         new OA\Tag(name: "Anamneses", description: "Gerenciamento de Anamneses"),
+        new OA\Tag(name: "Suporte", description: "Gerenciamento de suporte"),
         new OA\Tag(name: "Webhooks", description: "Gerenciamento de Webhooks"),
+        
         // Outras tags podem ser adicionadas aqui
     ]
 )]

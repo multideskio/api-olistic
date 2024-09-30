@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\EmailsLibraries;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
 use OpenApi\Attributes as OA;
@@ -55,5 +56,11 @@ class Home extends ResourceController
             "load"  => number_format($elapsedTime, 4) . ' seconds',
             "docs" => site_url("docs")
         ]);
+    }
+
+    public function teste(){
+        $email = new EmailsLibraries();
+
+        $email->testarEnvioEmail('multidesk.io@gmail.com', 'TESTE DE ENVIO', 'Isso é um teste');
     }
 }
