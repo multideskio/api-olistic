@@ -691,19 +691,23 @@ class AnamnesesController extends BaseController
     {
         try {
             // Receber os dados via GET ou POST com getVar()
-            $input = $this->request->getVar('ids');  // Capturar os IDs de qualquer requisição (GET ou POST)
-            $customer = $this->request->getVar('customer') ?? null;
+            $baseId        = $this->request->getGet('baseId');  // Capturar os IDs de qualquer requisição (GET ou POST)
+            $comparationId = $this->request->getGet('comparationId');  // Capturar os IDs de qualquer requisição (GET ou POST)
+            //$customer = $this->request->getVar('customer') ?? null;
 
             // Verificar se os IDs foram passados
-            if (empty($input)) {
+            if (empty($baseId) && empty($comparationId)) {
                 return $this->fail('No IDs provided');
             }
+
+            $ids = "{$baseId},{$comparationId}";
+
 
             // Instanciar o modelo para realizar a comparação
             $anamnesesModel = new ComparationAnamneses();
 
             // Realizar a comparação (passando a string de IDs)
-            $comparisonResults = $anamnesesModel->compare($input, $customer);
+            $comparisonResults = $anamnesesModel->compare($ids);
 
             // Retornar os resultados
             return $this->respond([
