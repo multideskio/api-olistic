@@ -14,7 +14,7 @@ class ComparationAnamneses extends AnamnesesModel
      * @param array $anamneses Lista de anamneses a serem comparadas.
      * @return array Resultados da comparação.
      */
-    public function compare(string $input, int $customer): array
+    public function compare(string $input): array
     {
         $currentUser = $this->getAuthenticatedUser();
 
@@ -31,9 +31,6 @@ class ComparationAnamneses extends AnamnesesModel
             throw new \RuntimeException(lang('Errors.twoIdsRequired') ?: 'You need at least two IDs for comparison.');
         }
 
-        if($customer){
-            $this->where('id_customer', $customer);
-        }
         // Consultar o banco de dados para os IDs fornecidos
         $this->where('id_user', $currentUser->id);
         $anamneses = $this->whereIn('id', $idsArray)->findAll();
