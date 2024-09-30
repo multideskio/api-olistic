@@ -130,6 +130,7 @@ class WebhookLibraries
                 'type' => 'subscription_updated',
                 'description' => 'Inscrição atualizada'
             ]);
+            
             //envia email de atualização de conta
             $email->send($user['email'], 'Sua conta foi atualizada', view('emails/update-subscription', $configDataEmail));
             /*log_message('info', '[LINE ' . __LINE__ . '] [WebhookLibraries::processPaidTransaction] Email sent to user: ' . $user['email']);
@@ -220,8 +221,7 @@ class WebhookLibraries
                 'name'     => $request->getJsonVar('client.name'),
                 'email'    => $email,
                 'password' => 'mudar@123',
-                'token'    => gera_token(),
-                ''
+                'token'    => gera_token()
             ];
 
             $this->modelUser->insert($data);

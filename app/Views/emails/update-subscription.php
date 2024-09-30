@@ -1,5 +1,5 @@
 <div style="border: 1px solid #e7e9eb; border-radius: 5px; padding: 20px; font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto;">
-    <h1 style="font-size: 22px; color: #520172; text-align: center; margin-bottom: 20px;">
+    <h1 style="font-size: 22px; color: #ffa974; text-align: center; margin-bottom: 20px;">
         Conta Atualizada!
     </h1>
 
@@ -39,7 +39,7 @@
     <p style="margin: 20px 0 10px; font-size: 14px; color: #888;">
         Caso tenha qualquer dúvida ou precise de ajuda, nossa equipe de suporte está sempre disponível para assisti-lo.
         Basta responder a este e-mail ou visitar nossa <a href="[URL da Central de Ajuda]"
-            style="color: #520172; text-decoration: none; font-weight: bold;">Central de Ajuda</a>.
+            style="color: #ffa974; text-decoration: none; font-weight: bold;">Central de Ajuda</a>.
     </p>
 
     <p style="margin: 0 0 10px; font-size: 14px;">
