@@ -178,7 +178,7 @@ class AnamnesesModel extends Model
             'mental_imbalance' => $params['mentalDesequilibrio'] ?? null,
             'mental_percentage' => $params['mentalPercentual'] ?? null,
             'emotional_imbalance' => $params['emocionalDesequilibrio'] ?? null,
-            'emotional_percentage' => $params['emocionalPercentual'] ?? null,
+            'emotional_percentage' => $params['emocionalPercentual'] ?? 0,
             'spiritual_imbalance' => $params['espiritualDesequilibrio'] ?? null,
             'spiritual_percentage' => $params['espiritualPercentual'] ?? null,
             'physical_imbalance' => $params['fisicoDesequilibrio'] ?? null,
