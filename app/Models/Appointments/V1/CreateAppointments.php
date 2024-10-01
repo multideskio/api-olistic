@@ -32,9 +32,9 @@ class CreateAppointments extends AppointmentsModel
         }
 
         // Verifica conflito de horário com outros compromissos
-        if ($this->hasScheduleConflict($date, intval($currentUser['id']))) {
+        /*if ($this->hasScheduleConflict($date, intval($currentUser['id']))) {
             throw new \DomainException('There is already a schedule at the same time or within a 30-minute interval.'); // 409
-        }
+        }*/
 
         // Dados para inserção no banco de dados
         $data = [
