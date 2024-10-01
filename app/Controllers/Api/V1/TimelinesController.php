@@ -111,44 +111,47 @@ class TimelinesController extends BaseController
 
     #[OA\Get(
         path: '/api/v1/dashboard/appointments',
-        summary: 'Relatório mensal ',
-        description: 'Este endpoint retorna um relatório mensal detalhado, cancelamentos, anamneses e retornos do usuário autenticado.',
+        summary: 'Relatórios de compromissos, cancelamentos, anamneses e retornos.',
+        description: 'Este endpoint retorna relatórios detalhados de compromissos, cancelamentos, anamneses e retornos do usuário autenticado. O relatório pode ser gerado por ano, mês, semana ou dia, dependendo dos parâmetros passados.',
         tags: ['Usuários'],
         security: [['bearerAuth' => []]], // Necessita de autenticação via Bearer Token
+        parameters: [
+            new OA\Parameter(
+                name: 'type',
+                in: 'query',
+                description: 'O tipo de relatório. Pode ser "annual", "monthly", "weekly", "daily" ou "compareWithLastWeek". compareWithLastWeek não respeita o campo start e end, pega a semana passada e a semana atual.',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['annual', 'monthly', 'weekly', 'daily', 'compareWithLastWeek'])
+            ),
+            new OA\Parameter(
+                name: 'start',
+                in: 'query',
+                description: 'A data de início no formato YYYY-MM-DD. Exigido para relatórios que não sejam "compareWithLastWeek".',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date')
+            ),
+            new OA\Parameter(
+                name: 'end',
+                in: 'query',
+                description: 'A data de fim no formato YYYY-MM-DD. Exigido para relatórios que não sejam "compareWithLastWeek".',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date')
+            )
+        ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Relatório mensal gerado com sucesso',
+                description: 'Relatório gerado com sucesso',
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(
                         type: 'object',
                         properties: [
-                            new OA\Property(
-                                property: 'date',
-                                type: 'string',
-                                description: 'Mês no formato YYYY-MM'
-                            ),
-                            new OA\Property(
-                                property: 'appointments',
-                                type: 'integer',
-                                description: 'Número de compromissos no mês'
-                            ),
-                            new OA\Property(
-                                property: 'cancelled',
-                                type: 'integer',
-                                description: 'Número de compromissos cancelados no mês'
-                            ),
-                            new OA\Property(
-                                property: 'anamneses',
-                                type: 'integer',
-                                description: 'Número de anamneses no mês'
-                            ),
-                            new OA\Property(
-                                property: 'return',
-                                type: 'integer',
-                                description: 'Número de retornos no mês'
-                            ),
+                            new OA\Property(property: 'date', type: 'string', description: 'Data ou intervalo de tempo no relatório (varia de acordo com o tipo de relatório)'),
+                            new OA\Property(property: 'appointments', type: 'integer', description: 'Número de compromissos'),
+                            new OA\Property(property: 'cancelled', type: 'integer', description: 'Número de compromissos cancelados'),
+                            new OA\Property(property: 'anamneses', type: 'integer', description: 'Número de anamneses'),
+                            new OA\Property(property: 'return', type: 'integer', description: 'Número de retornos')
                         ]
                     )
                 )
@@ -168,9 +171,26 @@ class TimelinesController extends BaseController
         ]
     )]
 
+
     public function reportJson()
     {
-        $reportMes = new ReportsLibraries();
-        return $this->respond($reportMes->mensal());
+        try {
+            $reportMes = new ReportsLibraries();
+            $input = $this->request->getGet();
+
+            // Validar os parâmetros fornecidos
+            if (empty($input['type'])) {
+                return $this->fail('O parâmetro "type" é obrigatório.', 422);
+            }
+
+            // Verificar se start e end são necessários para o tipo de relatório
+            if ($input['type'] !== 'compareWithLastWeek' && (empty($input['start']) || empty($input['end']))) {
+                return $this->fail('Os parâmetros "start" e "end" são obrigatórios para este tipo de relatório.', 422);
+            }
+
+            return $this->respond($reportMes->resultReports($input));
+        } catch (\Exception $e) {
+            return $this->failServerError($e->getMessage());
+        }
     }
 }

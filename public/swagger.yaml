@@ -1659,18 +1659,48 @@ paths:
     get:
       tags:
         - Usuários
-      summary: 'Relatório mensal '
-      description: 'Este endpoint retorna um relatório mensal detalhado, cancelamentos, anamneses e retornos do usuário autenticado.'
+      summary: 'Relatórios de compromissos, cancelamentos, anamneses e retornos.'
+      description: 'Este endpoint retorna relatórios detalhados de compromissos, cancelamentos, anamneses e retornos do usuário autenticado. O relatório pode ser gerado por ano, mês, semana ou dia, dependendo dos parâmetros passados.'
       operationId: c34783cc58a30ff9f2c9ec4217bd75af
+      parameters:
+        -
+          name: type
+          in: query
+          description: 'O tipo de relatório. Pode ser "annual", "monthly", "weekly", "daily" ou "compareWithLastWeek". compareWithLastWeek não respeita o campo start e end, pega a semana passada e a semana atual.'
+          required: true
+          schema:
+            type: string
+            enum:
+              - annual
+              - monthly
+              - weekly
+              - daily
+              - compareWithLastWeek
+        -
+          name: start
+          in: query
+          description: 'A data de início no formato YYYY-MM-DD. Exigido para relatórios que não sejam "compareWithLastWeek".'
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end
+          in: query
+          description: 'A data de fim no formato YYYY-MM-DD. Exigido para relatórios que não sejam "compareWithLastWeek".'
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         '200':
-          description: 'Relatório mensal gerado com sucesso'
+          description: 'Relatório gerado com sucesso'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  properties: { date: { description: 'Mês no formato YYYY-MM', type: string }, appointments: { description: 'Número de compromissos no mês', type: integer }, cancelled: { description: 'Número de compromissos cancelados no mês', type: integer }, anamneses: { description: 'Número de anamneses no mês', type: integer }, return: { description: 'Número de retornos no mês', type: integer } }
+                  properties: { date: { description: 'Data ou intervalo de tempo no relatório (varia de acordo com o tipo de relatório)', type: string }, appointments: { description: 'Número de compromissos', type: integer }, cancelled: { description: 'Número de compromissos cancelados', type: integer }, anamneses: { description: 'Número de anamneses', type: integer }, return: { description: 'Número de retornos', type: integer } }
                   type: object
         '400':
           description: 'Erro de validação'

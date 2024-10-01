@@ -60,10 +60,7 @@ class Home extends ResourceController
     }
 
     public function teste(){
-        $email = new ReportsLibraries();
-
-        echo "<pre>";
-        print_r($email->mensal());
+        
 
         //$email->testarEnvioEmail('multidesk.io@gmail.com', 'TESTE DE ENVIO', 'Isso é um teste');
     }

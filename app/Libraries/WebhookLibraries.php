@@ -53,15 +53,17 @@ class WebhookLibraries
                 throw new InvalidArgumentException("[LINE " . __LINE__ . "] [WebhookLibraries::processTransaction] Missing or invalid status");
             }
 
+            $user = $this->getUserData($request);
+
             switch ($currentStatus) {
                 case 'paid':
-                    $user = $this->getUserData($request);
+                    //$user = $this->getUserData($request);
                     return $this->processPaidTransaction($request, $user);
                 case 'refunded':
-                    $user = $this->getUserData($request);
+                    //$user = $this->getUserData($request);
                     return $this->processRefundedTransaction($request, $user);
                 case 'chargedback':
-                    $user = $this->getUserData($request);
+                    //$user = $this->getUserData($request);
                     return $this->processChargebackTransaction($request, $user);
                 default:
                     throw new InvalidArgumentException("[LINE " . __LINE__ . "] [WebhookLibraries::processTransaction] Unknown status: {$currentStatus}");
