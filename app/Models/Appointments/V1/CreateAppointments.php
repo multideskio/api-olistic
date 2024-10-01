@@ -28,7 +28,8 @@ class CreateAppointments extends AppointmentsModel
 
         // Valida a data do compromisso
         if (!$date) {
-            throw new \RuntimeException('Invalid scheduling date or earlier than the current date.'); // 422
+            // throw new \RuntimeException('Invalid scheduling date or earlier than the current date.'); // 422
+            $date = date('Y-m-d H:i:s');
         }
 
         // Verifica conflito de horário com outros compromissos
@@ -55,7 +56,8 @@ class CreateAppointments extends AppointmentsModel
         return ['id' => $id, 'message' => 'Schedule created successfully.'];
     }
 
-    private function validateType($type){
+    private function validateType($type)
+    {
         $allowedSortFields = ['consultation', 'anamnesis', 'return'];
         return in_array($type, $allowedSortFields) ? $type : 'consultation';
     }
