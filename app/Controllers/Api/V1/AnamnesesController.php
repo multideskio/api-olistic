@@ -317,7 +317,7 @@ class AnamnesesController extends BaseController
             $input = $this->request->getJSON(true); // true garante que o JSON é convertido para array
 
             // Defina as regras de validação
-            $rules = [
+            /*$rules = [
                 'idCustomer' => 'required|integer',
                 'idAppointment' => 'required|integer',
                 'mentalDesequilibrio' => 'required|in_list[sim,não]',
@@ -387,7 +387,7 @@ class AnamnesesController extends BaseController
                 $errors = $validation->getErrors();
                 // Retorna os erros como uma resposta de erro
                 return $this->failValidationErrors([$errors]);
-            }
+            }*/
 
             $data = $this->modelAnamnese->createAnamnese($input);
             return $this->respond($data);
@@ -537,7 +537,7 @@ class AnamnesesController extends BaseController
             */
 
             // Defina as regras de validação
-            $rules = [
+           /* $rules = [
                 'mentalDesequilibrio' => 'required|in_list[sim,não]',
                 //'mentalPercentual' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[100]',
                 'emocionalDesequilibrio' => 'required|in_list[sim,não]',
@@ -605,7 +605,7 @@ class AnamnesesController extends BaseController
                 $errors = $validation->getErrors();
                 // Retorna os erros como uma resposta de erro
                 return $this->failValidationErrors([$errors]);
-            }
+            }*/
 
             $data = $this->modelAnamnese->updateAnamnese($input, $id);
 
