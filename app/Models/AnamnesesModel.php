@@ -212,20 +212,20 @@ class AnamnesesModel extends Model
             'base_chakra_percentage' => $params['chakraBasicoPercentual'] ?? 0,
             'base_chakra_activity' => $params['chakraBasicoAtividade'] ?? null,
             'base_chakra_affects_organ' => $params['chakraBasicoOrgao'] ?? null,
-            'aura_size' => $params['tamanhoAura'] ?? null,
-            'aura_protection' => $params['auraProtection'] ?? null,
+            'aura_size' => $params['tamanhoAura'] ?? 0,
+            'aura_protection' => $params['auraProtection'] ?? 0,
             'aura_size_comments' => $params['tamanhoAuraComments'] ?? '',
-            'opening_size' => $params['tamanhoAbertura'] ?? null,
+            'opening_size' => $params['tamanhoAbertura'] ?? 0,
             'opening_size_comments' => $params['tamanhoAberturaComments'] ?? '',
             'color_lack' => implode(', ', $params['corFalta']) ?? null,
             'color_excess' => implode(', ', $params['corExcesso']) ?? null,
             'health_energy' => $params['energia'] ?? null,
             'energy_comments' => $params['energiaComments'] ?? '',
-            'family_area' => $params['areasFamiliar'] ?? null,
-            'affective_area' => $params['areasAfetivo'] ?? null,
-            'professional_area' => $params['areasProfissional'] ?? null,
-            'financial_area' => $params['areasFinanceiro'] ?? null,
-            'mission_area' => $params['areasMissao'] ?? null
+            'family_area' => $params['areasFamiliar'] ?? 0,
+            'affective_area' => $params['areasAfetivo'] ?? 0,
+            'professional_area' => $params['areasProfissional'] ?? 0,
+            'financial_area' => $params['areasFinanceiro'] ?? 0,
+            'mission_area' => $params['areasMissao'] ?? 0
         ];
 
         // Aqui você pode inserir os dados no banco de dados
@@ -305,20 +305,20 @@ class AnamnesesModel extends Model
             'base_chakra_percentage' => $params['chakraBasicoPercentual'],
             'base_chakra_activity' => $params['chakraBasicoAtividade'],
             'base_chakra_affects_organ' => $params['chakraBasicoOrgao'],
-            'aura_size' => $params['tamanhoAura'],
-            'aura_protection' => $params['auraProtection'],
+            'aura_size' => $params['tamanhoAura'] ?? 0,
+            'aura_protection' => $params['auraProtection'] ?? 0,
             'aura_size_comments' => $params['tamanhoAuraComments'] ?? '',
-            'opening_size' => $params['tamanhoAbertura'],
+            'opening_size' => $params['tamanhoAbertura'] ?? 0,
             'opening_size_comments' => $params['tamanhoAberturaComments'] ?? '',
             'color_lack' => implode(', ', $params['corFalta']),
             'color_excess' => implode(', ', $params['corExcesso']),
             'health_energy' => $params['energia'],
             'energy_comments' => $params['energiaComments'] ?? '',
-            'family_area' => $params['areasFamiliar'],
-            'affective_area' => $params['areasAfetivo'],
-            'professional_area' => $params['areasProfissional'],
-            'financial_area' => $params['areasFinanceiro'],
-            'mission_area' => $params['areasMissao']
+            'family_area' => $params['areasFamiliar'] ?? 0,
+            'affective_area' => $params['areasAfetivo'] ?? 0,
+            'professional_area' => $params['areasProfissional'] ?? 0,
+            'financial_area' => $params['areasFinanceiro'] ?? 0,
+            'mission_area' => $params['areasMissao'] ?? 0
         ];
 
         // Tentar salvar os dados e verificar se houve erros
