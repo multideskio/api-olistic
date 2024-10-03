@@ -79,7 +79,7 @@ class RecoverUsers extends UsersModel
         // Prepara os dados para atualizar a senha
         $update = [
             'id' => $data['id'],
-            'password' => password_hash($password, PASSWORD_BCRYPT) // Hash da nova senha
+            'password' => $password // Hash da nova senha
         ];
 
         // Tenta salvar os dados atualizados
