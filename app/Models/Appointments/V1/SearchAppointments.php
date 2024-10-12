@@ -84,6 +84,7 @@ class SearchAppointments extends AppointmentsModel
      */
     private function validateTypeCustomer($typeCustomer)
     {
+        // 1 - 2 - 3 - 4
         $allowedTypes = ["myself", "family", "friend", "professional"];
         return in_array($typeCustomer, $allowedTypes) ? $typeCustomer : null;
     }
@@ -129,7 +130,7 @@ class SearchAppointments extends AppointmentsModel
         }
 
         //return ['start' => $startDate, 'end' => $endDate];
-        return ['start' => $params['start'], 'end' => $params['end']];
+        return ['start' => $params['start'] ?? null, 'end' => $params['end'] ?? null];
     }
 
     /**
@@ -164,9 +165,15 @@ class SearchAppointments extends AppointmentsModel
             ->select("users.id As id_user, users.name As name_user")
             ->join("users", "appointments.id_user = users.id")
             ->join("customers", "appointments.id_customer = customers.id", "left")
-            ->orderBy('appointments.' . $sortBy, $sortOrder)
-            ->where('date >=', $dateRange['start'])
-            ->where('date <=', $dateRange['end']);
+            ->orderBy('appointments.' . $sortBy, $sortOrder);
+
+        if ($dateRange['start']) {
+            $this->where('date >=', $dateRange['start']);
+        }
+
+        if ($dateRange['end']) {
+            $this->where('date <=', $dateRange['end']);
+        }
 
         // Filtra por status, se especificado
         if ($status) {
