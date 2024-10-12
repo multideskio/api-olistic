@@ -53,6 +53,9 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     $routes->get('dashboard/appointments', 'Api\V1\TimelinesController::reportJson');
 
     $routes->resource('timeline', ['controller' => 'Api\V1\TimelinesController']);
+
+    //Rotas de clientes
+    $routes->resource('customers', ['controller' => 'Api\V1\CustomerController']);
 });
 
 // Rotas apenas SUPERADMIN
@@ -64,8 +67,7 @@ $routes->group('api/v1', ['filter' => 'jwt:SUPERADMIN'], function ($routes) {
 
 //Rotas liberadas apenas para os profissionais e superadmins
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function ($routes) {
-    //Rotas de clientes
-    $routes->resource('customers', ['controller' => 'Api\V1\CustomerController']);
+    
    
 });
 
