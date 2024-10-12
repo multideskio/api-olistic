@@ -46,7 +46,9 @@ $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,TERAPEUTA_SI,SUPERADMIN'
     $routes->get('user/statistics', 'Api\V1\UsersController::statistic');
     $routes->get('user/me', 'Api\V1\UsersController::me');
     $routes->put('user/me', 'Api\V1\UsersController::updateMe');
-
+    
+    //Rotas de agendamentos
+    $routes->resource('appointments', ['controller' => 'Api\V1\AppointmentsController']);
 
     $routes->get('dashboard/appointments', 'Api\V1\TimelinesController::reportJson');
 
@@ -64,8 +66,7 @@ $routes->group('api/v1', ['filter' => 'jwt:SUPERADMIN'], function ($routes) {
 $routes->group('api/v1', ['filter' => 'jwt:PROFISSIONAL,SUPERADMIN'], function ($routes) {
     //Rotas de clientes
     $routes->resource('customers', ['controller' => 'Api\V1\CustomerController']);
-    //Rotas de agendamentos
-    $routes->resource('appointments', ['controller' => 'Api\V1\AppointmentsController']);
+   
 });
 
 
