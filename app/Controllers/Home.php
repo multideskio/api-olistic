@@ -8,7 +8,7 @@ use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
 use OpenApi\Attributes as OA;
 
-use Dompdf\Dompdf;
+
 
 class Home extends ResourceController
 {
@@ -61,31 +61,5 @@ class Home extends ResourceController
         ]);
     }
 
-    public function teste()
-{
-    // Impede que qualquer saída anterior interfira
-    ob_start();  // Inicia o buffer de saída
-
-    // Crie uma instância do Dompdf
-    $dompdf = new Dompdf();
-
-    // Conteúdo HTML para o PDF (carregando uma view)
-    $html = view('pdf_template');
-
-    // Carregar o HTML no Dompdf
-    $dompdf->loadHtml($html);
-
-    // Definir o tamanho e a orientação do papel
-    $dompdf->setPaper('A4', 'portrait');
-
-    // Renderizar o HTML como PDF
-    $dompdf->render();
-
-    // Limpa o buffer de saída e envia o PDF para o navegador
-    ob_end_clean();  // Limpa o buffer de saída antes de enviar o PDF
-
-    // Envia o PDF para o navegador sem o cabeçalho "attachment"
-    $dompdf->stream("meu_arquivo.pdf", ["Attachment" => false]);
-}
-
+    public function teste() {}
 }
