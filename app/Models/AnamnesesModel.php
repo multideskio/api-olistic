@@ -311,7 +311,7 @@ class AnamnesesModel extends Model
             'opening_size' => $params['tamanhoAbertura'] ?? 0,
             'opening_size_comments' => $params['tamanhoAberturaComments'] ?? '',
             'color_lack' => implode(', ', $params['corFalta']),
-            'color_excess' => implode(', ', $params['corExcesso']),
+            'color_excess' => implode(', ', $params['corExcesso']) ?? '',
             'health_energy' => $params['energia'],
             'energy_comments' => $params['energiaComments'] ?? '',
             'family_area' => $params['areasFamiliar'] ?? 0,

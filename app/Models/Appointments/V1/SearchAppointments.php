@@ -128,7 +128,8 @@ class SearchAppointments extends AppointmentsModel
             $endDate = $maxEndDate;
         }
 
-        return ['start' => $startDate, 'end' => $endDate];
+        //return ['start' => $startDate, 'end' => $endDate];
+        return ['start' => $params['start'], 'end' => $params['end']];
     }
 
     /**
