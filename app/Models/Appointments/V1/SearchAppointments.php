@@ -155,10 +155,11 @@ class SearchAppointments extends AppointmentsModel
      */
     private function buildAppointmentQuery($currentUser, $searchTerm, $sortBy, $sortOrder, $dateRange, $status, $idCustomer, $typeCustomer): void
     {
+
         // Filtra compromissos por usuário, se não for SUPERADMIN
-        if ($currentUser['role'] !== 'SUPERADMIN') {
-            $this->where('appointments.id_user', $currentUser['id']);
-        }
+        
+        $this->where('appointments.id_user', $currentUser['id']);
+        
 
         $this->select("appointments.id As id_appointment, appointments.date As date_appointment, appointments.status As status_appointment, appointments.type As type_appointment")
             ->select("customers.id As id_customer, customers.name As name_customer, customers.type As type_customer, customers.email AS email_customer")
