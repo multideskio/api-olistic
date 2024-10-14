@@ -11,11 +11,14 @@ class ReportsLibraries
 {
     protected $mAnanmanese;
     protected $mAppointments;
+    protected $currentUser;
 
     public function __construct()
     {
         $this->mAnanmanese  = new AnamnesesModel();
         $this->mAppointments = new AppointmentsModel();
+
+        $this->currentUser = $this->mAppointments->getAuthenticatedUser();
     }
 
     /**
@@ -78,17 +81,21 @@ class ReportsLibraries
         return [
             'year' => $data,
             'appointments' => $this->mAppointments
+                ->where('id_user', $this->currentUser['id'])
                 ->where('status !=', 'cancelled')
                 ->like('created_at', $data)
                 ->countAllResults(),
             'cancelled' => $this->mAppointments
+                ->where('id_user', $this->currentUser['id'])
                 ->where('status', 'cancelled')
                 ->like('created_at', $data)
                 ->countAllResults(),
             'anamneses' => $this->mAnanmanese
+                ->where('id_user', $this->currentUser['id'])
                 ->like('created_at', $data)
                 ->countAllResults(),
             'return' => $this->mAppointments
+                ->where('id_user', $this->currentUser['id'])
                 ->where('type', 'return')
                 ->like('created_at', $data)
                 ->countAllResults(),
@@ -117,17 +124,21 @@ class ReportsLibraries
         return [
             'date' => $data,
             'appointments' => $this->mAppointments
+                ->where('id_user', $this->currentUser['id'])
                 ->where('status !=', 'cancelled')
                 ->like('created_at', $data)
                 ->countAllResults(),
             'cancelled' => $this->mAppointments
+                ->where('id_user', $this->currentUser['id'])
                 ->where('status', 'cancelled')
                 ->like('created_at', $data)
                 ->countAllResults(),
             'anamneses' => $this->mAnanmanese
+                ->where('id_user', $this->currentUser['id'])
                 ->like('created_at', $data)
                 ->countAllResults(),
             'return' => $this->mAppointments
+                ->where('id_user', $this->currentUser['id'])
                 ->where('type', 'return')
                 ->like('created_at', $data)
                 ->countAllResults(),
@@ -150,20 +161,24 @@ class ReportsLibraries
             [
                 'date_range' => "{$start} to {$end}",
                 'appointments' => $this->mAppointments
+                    ->where('id_user', $this->currentUser['id'])
                     ->where('created_at >=', $start)
                     ->where('created_at <=', $end)
                     ->where('status !=', 'cancelled')
                     ->countAllResults(),
                 'cancelled' => $this->mAppointments
+                    ->where('id_user', $this->currentUser['id'])
                     ->where('created_at >=', $start)
                     ->where('created_at <=', $end)
                     ->where('status', 'cancelled')
                     ->countAllResults(),
                 'anamneses' => $this->mAnanmanese
+                    ->where('id_user', $this->currentUser['id'])
                     ->where('created_at >=', $start)
                     ->where('created_at <=', $end)
                     ->countAllResults(),
                 'return' => $this->mAppointments
+                    ->where('id_user', $this->currentUser['id'])
                     ->where('created_at >=', $start)
                     ->where('created_at <=', $end)
                     ->where('type', 'return')
