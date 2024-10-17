@@ -6,8 +6,13 @@ use App\Models\PlatformModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 
-class PlatformController extends ResourceController
+class PlatformController extends BaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * Return an array of resource objects, themselves in array format.
      *
@@ -86,7 +91,7 @@ class PlatformController extends ResourceController
         //
     }
 
-    public function listPlans()
+    public function listPlans(): ResponseInterface
     {
         $modelPlatfom = new PlatformModel();
         return $this->respond($modelPlatfom->select('links_plans')->findAll());

@@ -10,13 +10,13 @@ use OpenApi\Attributes as OA;
 
 #[OA\OpenApi(
     info: new OA\Info(
-        title: "Therapeutic Radiesthesia API",
         version: "1.0.0",
         description: "`API para demonstrar endpoints básicos do sistema`<br><ul><li>Essa documentação está sendo desenvolvida gradualmente, todos os endpoints estão passando por uma revisão.</li><li>Os endpoints que precisam estar com a autorização estão com um cadeado indicando o uso.</li><li>Para gerar o token, utilize o endpoint login.</li><li>Endpoints marcados como acesso ADMIN.</li></ul>",
+        title: "Therapeutic Radiesthesia API",
         contact: new OA\Contact(
             name: 'Paulo Henrique',
-            email: "webmaster@multidesk.io",
-            url: "https://api.conect.app"
+            url: "https://api.conect.app",
+            email: "webmaster@multidesk.io"
         ),
         /*license: new OA\License(
             name: 'API EM DESENVOLVIMENTO'
@@ -50,8 +50,8 @@ use OpenApi\Attributes as OA;
 #[OA\SecurityScheme(
     securityScheme: "bearerAuth",
     type: "http",
-    scheme: "bearer",
-    bearerFormat: "JWT"
+    bearerFormat: "JWT",
+    scheme: "bearer"
 )]
 
 class BaseController extends ResourceController
@@ -60,7 +60,7 @@ class BaseController extends ResourceController
 
     // Esta classe pode ser utilizada para definir anotações gerais e ser estendida pelos controladores específicos.
     protected $request;
-    protected $validation;
+    protected \CodeIgniter\Validation\ValidationInterface $validation;
 
     //protected $predis;
 

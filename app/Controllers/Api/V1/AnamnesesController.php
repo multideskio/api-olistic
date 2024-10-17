@@ -17,10 +17,11 @@ class AnamnesesController extends BaseController
      *
      * @return ResponseInterface
      */
-    protected $modelAnamnese;
+    protected AnamnesesModel $modelAnamnese;
 
     public function __construct()
     {
+        parent::__construct();
         $this->modelAnamnese = new AnamnesesModel();
     }
 

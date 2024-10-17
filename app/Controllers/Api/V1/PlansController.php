@@ -8,9 +8,10 @@ use CodeIgniter\HTTP\ResponseInterface;
 class PlansController extends BaseController
 {
 
-    protected $modelPlans;
+    protected PlansModel $modelPlans;
     public function __construct()
     {
+        parent::__construct();
         $this->modelPlans = new PlansModel();
     }
 
@@ -18,7 +19,7 @@ class PlansController extends BaseController
     {
         $input = $this->request->getVar('link');
 
-        if($input == "true"){
+        if($input){
             $this->modelPlans->where('link !=', null);
         }
         

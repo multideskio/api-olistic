@@ -2,12 +2,20 @@
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\SupportModel;
 use OpenApi\Attributes as OA;
 use App\Models\Supports\V1\CreateSupports;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportController extends BaseController
 {
+    protected SupportModel $modelSupport;
+    public function __construct()
+    {
+        parent::__construct();
+        $this->modelSupport = new CreateSupports();
+    }
+
     /**
      * Return an array of resource objects, themselves in array format.
      *
@@ -49,54 +57,54 @@ class SupportController extends BaseController
 
     #[OA\Post(
         path: '/api/v1/support',
-        summary: 'Criar novo chamado de suporte',
         description: 'Este endpoint cria um novo chamado de suporte para um cliente. O ID do cliente é identificado internamente.',
-        tags: ['Suporte'],
+        summary: 'Criar novo chamado de suporte',
         security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                type: 'object',
                 properties: [
                     new OA\Property(
                         property: 'name',
-                        type: 'string',
-                        description: 'Nome do cliente'
+                        description: 'Nome do cliente',
+                        type: 'string'
                     ),
                     new OA\Property(
                         property: 'subject',
-                        type: 'string',
-                        description: 'Assunto do chamado de suporte'
+                        description: 'Assunto do chamado de suporte',
+                        type: 'string'
                     ),
                     new OA\Property(
                         property: 'type',
-                        type: 'string',
-                        description: 'Tipo do suporte (e.g., técnico, financeiro)'
+                        description: 'Tipo do suporte (e.g., técnico, financeiro)',
+                        type: 'string'
                     ),
                     new OA\Property(
                         property: 'message',
-                        type: 'string',
-                        description: 'Mensagem detalhada do suporte'
+                        description: 'Mensagem detalhada do suporte',
+                        type: 'string'
                     ),
                     new OA\Property(
                         property: 'channel',
-                        type: 'string',
                         description: 'Canal de origem do suporte (e.g., form, webhook)',
+                        type: 'string',
                         default: 'form'
                     ),
-                ]
+                ],
+                type: 'object'
             )
         ),
+        tags: ['Suporte'],
         responses: [
             new OA\Response(
                 response: 201,
                 description: 'Chamado de suporte criado com sucesso',
                 content: new OA\JsonContent(
-                    type: 'object',
                     properties: [
-                        new OA\Property(property: 'id', type: 'integer', description: 'ID do chamado criado'),
-                        new OA\Property(property: 'protocol', type: 'string', description: 'Protocolo do chamado')
-                    ]
+                        new OA\Property(property: 'id', description: 'ID do chamado criado', type: 'integer'),
+                        new OA\Property(property: 'protocol', description: 'Protocolo do chamado', type: 'string')
+                    ],
+                    type: 'object'
                 )
             ),
             new OA\Response(
@@ -114,7 +122,7 @@ class SupportController extends BaseController
         ]
     )]
 
-    public function create()
+    public function create(): ResponseInterface
     {
         $input = $this->request->getJSON(true);
 
@@ -124,8 +132,7 @@ class SupportController extends BaseController
         }
 
         try {
-            $modelSupport = new CreateSupports();
-            $response = $modelSupport->createSupportSystem($input);
+            $response = $this->modelSupport->createSupportSystem($input);
             return $this->respondCreated($response); // Usando 'respondCreated' para retornar 201
         } catch (\InvalidArgumentException $e) {
             // Captura exceções específicas de validação
@@ -176,7 +183,7 @@ class SupportController extends BaseController
         //
     }
 
-    public function webhookCrispFirstChat()
+    public function webhookCrispFirstChat(): ResponseInterface
     {
         $input = $this->request->getVar(TRUE);
         return $this->respond($input);

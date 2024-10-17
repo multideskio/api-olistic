@@ -12,16 +12,12 @@ use OpenApi\Attributes as OA;
 class UsersController extends BaseController
 {
 
-    /**
-     * Return an array of resource objects, themselves in array format.
-     *
-     * @return ResponseInterface
-     */
-    protected $userModel;
-    protected $jwtConfig;
+    protected UsersModel $userModel;
+    protected JwtConfig $jwtConfig;
 
     public function __construct()
     {
+        parent::__construct();
         $this->jwtConfig = new JwtConfig();
         $this->userModel = new UsersModel();
     }

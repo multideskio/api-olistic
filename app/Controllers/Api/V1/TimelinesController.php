@@ -9,9 +9,10 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class TimelinesController extends BaseController
 {
-    protected $modelTimeLine;
+    protected TimeLinesModel $modelTimeLine;
     public function __construct()
     {
+        parent::__construct();
         $this->modelTimeLine = new TimeLinesModel();
     }
     public function index()

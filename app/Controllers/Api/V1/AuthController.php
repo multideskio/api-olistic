@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\UsersModel;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\Config\JwtConfig;
@@ -15,13 +16,14 @@ class AuthController extends BaseController
 {
     use ResponseTrait;
 
-    protected $userModel;
-    protected $jwtConfig;
+    protected UsersModel $userModel;
+    protected JwtConfig $jwtConfig;
 
     public function __construct()
     {
+        parent::__construct();
         $this->jwtConfig = new JwtConfig();
-        $this->userModel = new \App\Models\UsersModel();
+        $this->userModel = new UsersModel();
     }
 
 

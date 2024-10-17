@@ -21,10 +21,11 @@ class AppointmentsController extends BaseController
      *
      * @return ResponseInterface
      */
-    protected $modelAppointments;
+    protected AppointmentsModel $modelAppointments;
 
     public function __construct()
     {
+        parent::__construct();
         $this->modelAppointments = new AppointmentsModel();
     }
 

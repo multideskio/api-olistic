@@ -15,10 +15,11 @@ class CustomerController extends BaseController
      *
      * @return ResponseInterface
      */
-    protected $modelCustomer;
+    protected CustomersModel $modelCustomer;
 
     public function __construct()
     {
+        parent::__construct();
         $this->modelCustomer = new CustomersModel();
     }
 
